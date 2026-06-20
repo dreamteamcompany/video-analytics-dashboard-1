@@ -84,12 +84,22 @@ export default function Index() {
     }
   }, []);
 
+  const loadFaces = useCallback(async () => {
+    try {
+      const data = await facesApi.list();
+      if (data.length) setFaces(data);
+    } catch {
+      /* silent */
+    }
+  }, []);
+
   useEffect(() => {
     loadCameras();
     loadEvents();
+    loadFaces();
     const id = setInterval(loadEvents, 5000);
     return () => clearInterval(id);
-  }, [loadCameras, loadEvents]);
+  }, [loadCameras, loadEvents, loadFaces]);
 
   const handleAddCamera = async () => {
     if (!camName || !camUrl) return toast.error('Заполните название и RTSP URL');
