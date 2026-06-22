@@ -59,14 +59,17 @@ export default function Index() {
 
   const handlePing = async () => {
     setCheckingPing(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
     try {
-      await fetch(API_URL + '/');
+      await fetch(API_URL + '/', { signal: controller.signal });
       setOnline(true);
       toast.success('Сервер доступен');
     } catch {
       setOnline(false);
-      toast.error('Сервер недоступен');
+      toast.error('Сервер недоступен — проверьте, что FastAPI запущен на 72.56.35.26:8000');
     } finally {
+      clearTimeout(timer);
       setCheckingPing(false);
     }
   };
