@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { API_URL } from '@/api/client';
+import { api } from '@/api/client';
 import { camerasApi, Camera } from '@/api/cameras';
 import { eventsApi, AppEvent } from '@/api/events';
 import { facesApi } from '@/api/faces';
@@ -62,7 +62,7 @@ export default function Index() {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
     try {
-      await fetch(API_URL + '/', { signal: controller.signal });
+      await fetch(api.pingUrl(), { signal: controller.signal });
       setOnline(true);
       toast.success('Сервер доступен');
     } catch {
@@ -200,7 +200,7 @@ export default function Index() {
             <span className="text-muted-foreground">
               {online ? 'SERVER ONLINE' : online === false ? 'OFFLINE' : 'CONNECTING…'}
             </span>
-            <span className="ml-3 hidden text-muted-foreground/60 md:inline">{API_URL}</span>
+            <span className="ml-3 hidden text-muted-foreground/60 md:inline">72.56.35.26:8000</span>
             <button
               onClick={handlePing}
               disabled={checkingPing}

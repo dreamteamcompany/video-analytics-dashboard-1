@@ -1,0 +1,10 @@
+{
+  "tests": [
+    {
+      "name": "Ping root via proxy",
+      "method": "GET",
+      "path": "/?path=/",
+      "expectedStatus": 200
+    }
+  ]
+}
