@@ -37,6 +37,8 @@ export const facesApi = {
     form.append('file', file);
     return api.postForm<unknown>('/upload_face', form);
   },
+  delete: (filename: string) =>
+    api.postJson<unknown>('/delete_face', { filename }),
   detect: (file: File) => {
     const form = new FormData();
     form.append('file', file);

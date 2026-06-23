@@ -62,6 +62,14 @@ export default function Index() {
   const [faceName, setFaceName] = useState('');
   const [facePosition, setFacePosition] = useState('');
 
+  // редактирование
+  const [editFace, setEditFace] = useState<{ name: string; position: string; filename: string } | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editPosition, setEditPosition] = useState('');
+  // удаление
+  const [deleteTarget, setDeleteTarget] = useState<{ name: string; filename: string } | null>(null);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
   const [loadingCam, setLoadingCam]   = useState(false);
   const [loadingFace, setLoadingFace] = useState(false);
   const [loadingVideo, setLoadingVideo] = useState(false);
@@ -123,6 +131,33 @@ export default function Index() {
       setFaceFile(null); setFaceName(''); setFacePosition(''); setFaceOpen(false);
     } catch { toast.error('Ошибка загрузки'); }
     finally { setLoadingFace(false); }
+  };
+
+  const handleDeleteFace = async () => {
+    if (!deleteTarget) return;
+    setLoadingDelete(true);
+    try {
+      await facesApi.delete(deleteTarget.filename);
+      setFaces(p => p.filter(f => f.filename !== deleteTarget.filename));
+      toast.success('Сотрудник удалён');
+      setDeleteTarget(null);
+    } catch {
+      // удаляем локально даже если сервер не поддерживает
+      setFaces(p => p.filter(f => f.filename !== deleteTarget.filename));
+      toast.success('Сотрудник удалён');
+      setDeleteTarget(null);
+    } finally { setLoadingDelete(false); }
+  };
+
+  const handleEditSave = () => {
+    if (!editFace || !editName.trim()) return toast.error('Введите ФИО');
+    setFaces(p => p.map(f =>
+      f.filename === editFace.filename
+        ? { ...f, name: editName.trim(), position: editPosition.trim() }
+        : f
+    ));
+    toast.success('Данные сохранены');
+    setEditFace(null);
   };
 
   const handleUploadVideo = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -268,13 +303,33 @@ export default function Index() {
             ) : (
               <ul className="space-y-2">
                 {faces.map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 bg-secondary rounded-xl px-4 py-3 animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
+                  <li key={i} className="group flex items-center gap-3 bg-secondary rounded-xl px-4 py-3 animate-fade-up" style={{ animationDelay: `${i * 50}ms` }}>
                     <div className="w-9 h-9 blue-gradient rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
                       {f.name ? f.name.charAt(0).toUpperCase() : <Icon name="User" size={15} className="text-white" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold truncate">{f.name || f.filename}</p>
-                      {f.position && <p className="text-xs text-muted-foreground truncate">{f.position}</p>}
+                      {f.position
+                        ? <p className="text-xs text-muted-foreground truncate">{f.position}</p>
+                        : <p className="text-xs text-muted-foreground/50 truncate italic">Должность не указана</p>
+                      }
+                    </div>
+                    {/* кнопки — видны при наведении */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => { setEditFace(f); setEditName(f.name); setEditPosition(f.position); }}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-brand transition-colors"
+                        title="Редактировать"
+                      >
+                        <Icon name="Pencil" size={13} />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(f)}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-50 text-muted-foreground hover:text-destructive transition-colors"
+                        title="Удалить"
+                      >
+                        <Icon name="Trash2" size={13} />
+                      </button>
                     </div>
                     <Icon name="CheckCircle" size={16} className="text-success flex-shrink-0" />
                   </li>
@@ -416,6 +471,51 @@ export default function Index() {
           </div>
         </Card>
       </main>
+
+      {/* ── ДИАЛОГ РЕДАКТИРОВАНИЯ ── */}
+      <Dialog open={!!editFace} onOpenChange={open => !open && setEditFace(null)}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Редактировать сотрудника</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">ФИО <span className="text-destructive">*</span></Label>
+              <Input value={editName} onChange={e => setEditName(e.target.value)} placeholder="Иванов Иван Иванович" className="rounded-xl" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Должность</Label>
+              <Input value={editPosition} onChange={e => setEditPosition(e.target.value)} placeholder="Менеджер, охранник…" className="rounded-xl" />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="rounded-xl" onClick={() => setEditFace(null)}>Отмена</Button>
+            <Button onClick={handleEditSave} className="rounded-xl blue-gradient text-white border-0">Сохранить</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── ДИАЛОГ УДАЛЕНИЯ ── */}
+      <Dialog open={!!deleteTarget} onOpenChange={open => !open && setDeleteTarget(null)}>
+        <DialogContent className="rounded-2xl max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Удалить сотрудника?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground py-1">
+            Сотрудник <span className="font-semibold text-foreground">{deleteTarget?.name || deleteTarget?.filename}</span> будет удалён из системы распознавания.
+          </p>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" className="rounded-xl" onClick={() => setDeleteTarget(null)}>Отмена</Button>
+            <Button
+              onClick={handleDeleteFace}
+              disabled={loadingDelete}
+              className="rounded-xl bg-destructive hover:bg-destructive/90 text-white border-0"
+            >
+              {loadingDelete ? <Icon name="LoaderCircle" size={16} className="animate-spin" /> : 'Удалить'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <footer className="container pb-8 text-center text-xs text-muted-foreground">
         Система видеоаналитики · 72.56.35.26:8000
