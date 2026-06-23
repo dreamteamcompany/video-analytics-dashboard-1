@@ -16,6 +16,7 @@ import { api } from '@/api/client';
 import { camerasApi, Camera } from '@/api/cameras';
 import { eventsApi, AppEvent } from '@/api/events';
 import { facesApi } from '@/api/faces';
+import ZoneManager from '@/components/ZoneManager';
 
 /* ── helpers ── */
 const eventMeta = (type: string) => {
@@ -405,6 +406,17 @@ export default function Index() {
               </ul>
             )}
           </Card>
+        </div>
+
+        {/* ── ZONE MANAGER ── */}
+        <div className="bg-white rounded-2xl card-shadow p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-8 h-8 blue-gradient rounded-xl flex items-center justify-center">
+              <Icon name="PenLine" size={16} className="text-white" />
+            </div>
+            <h2 className="text-base font-bold text-foreground">Разметка рабочих зон</h2>
+          </div>
+          <ZoneManager />
         </div>
 
         {/* ── EVENTS ── */}
