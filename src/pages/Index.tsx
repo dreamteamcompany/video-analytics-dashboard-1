@@ -315,8 +315,7 @@ export default function Index() {
                         : <p className="text-xs text-muted-foreground/50 truncate italic">Должность не указана</p>
                       }
                     </div>
-                    {/* кнопки — видны при наведении */}
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1">
                       <button
                         onClick={() => { setEditFace(f); setEditName(f.name); setEditPosition(f.position); }}
                         className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-brand transition-colors"
