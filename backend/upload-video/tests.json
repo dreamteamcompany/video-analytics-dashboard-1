@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Missing body returns error",
+      "method": "POST",
+      "path": "/",
+      "body": {},
+      "expectedStatus": 502,
+      "bodyMatcher": "partial"
+    }
+  ]
+}

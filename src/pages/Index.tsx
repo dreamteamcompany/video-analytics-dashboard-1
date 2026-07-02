@@ -74,6 +74,7 @@ export default function Index() {
   const [loadingCam, setLoadingCam]   = useState(false);
   const [loadingFace, setLoadingFace] = useState(false);
   const [loadingVideo, setLoadingVideo] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
 
   /* ── loaders ── */
   const loadCameras = useCallback(async () => {
@@ -164,9 +165,17 @@ export default function Index() {
   const handleUploadVideo = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
     setLoadingVideo(true);
-    try { await camerasApi.uploadVideo(file); toast.success('Видео загружено'); }
-    catch { toast.error('Ошибка загрузки видео'); }
-    finally { setLoadingVideo(false); e.target.value = ''; }
+    setVideoProgress(0);
+    try {
+      await camerasApi.uploadVideo(file, (pct) => setVideoProgress(pct));
+      toast.success('Видео загружено');
+    } catch {
+      toast.error('Ошибка загрузки видео');
+    } finally {
+      setLoadingVideo(false);
+      setVideoProgress(0);
+      e.target.value = '';
+    }
   };
 
   const statCards = [
@@ -345,12 +354,16 @@ export default function Index() {
               title="Камеры и видео"
               action={
                 <div className="flex gap-2">
-                  <label className="inline-flex items-center gap-1.5 cursor-pointer rounded-xl border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary transition-colors">
-                    {loadingVideo
-                      ? <Icon name="LoaderCircle" size={13} className="animate-spin" />
-                      : <Icon name="Film" size={13} />}
-                    Видео
-                    <input type="file" accept="video/*" className="hidden" onChange={handleUploadVideo} />
+                  <label className={`relative inline-flex items-center gap-1.5 cursor-pointer rounded-xl border border-border px-3 py-1.5 text-xs font-medium overflow-hidden transition-colors ${loadingVideo ? 'text-brand pointer-events-none' : 'text-muted-foreground hover:bg-secondary'}`}>
+                    {loadingVideo && (
+                      <span className="absolute inset-0 bg-brand/10 transition-all" style={{ width: `${videoProgress}%` }} />
+                    )}
+                    <span className="relative flex items-center gap-1.5">
+                      {loadingVideo
+                        ? <><Icon name="LoaderCircle" size={13} className="animate-spin" />{videoProgress}%</>
+                        : <><Icon name="Film" size={13} />Видео</>}
+                    </span>
+                    <input type="file" accept="video/*" className="hidden" disabled={loadingVideo} onChange={handleUploadVideo} />
                   </label>
                   <Dialog open={camOpen} onOpenChange={setCamOpen}>
                     <DialogTrigger asChild>
