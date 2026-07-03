@@ -8,7 +8,7 @@ export interface Camera {
 }
 
 const UPLOAD_VIDEO_URL = 'https://functions.poehali.dev/5a09fdd4-da8f-4553-93e0-8282e36decae';
-const CHUNK_SIZE = 4 * 1024 * 1024; // 4 MB
+const CHUNK_SIZE = 200 * 1024; // 200 KB (после base64 ~270 KB — укладывается в лимит платформы)
 
 async function fileToBase64Chunk(slice: Blob): Promise<string> {
   const buf = await slice.arrayBuffer();
