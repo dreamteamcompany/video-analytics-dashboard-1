@@ -7,11 +7,18 @@
       "expectedStatus": 200
     },
     {
-      "name": "Missing body returns error",
+      "name": "GET stream without filename returns 400",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 400,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "POST without upload_id returns 400",
       "method": "POST",
       "path": "/",
       "body": {},
-      "expectedStatus": 502,
+      "expectedStatus": 400,
       "bodyMatcher": "partial"
     }
   ]

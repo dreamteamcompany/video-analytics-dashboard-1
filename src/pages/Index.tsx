@@ -17,6 +17,7 @@ import { camerasApi, Camera } from '@/api/cameras';
 import { eventsApi, AppEvent } from '@/api/events';
 import { facesApi } from '@/api/faces';
 import ZoneManager from '@/components/ZoneManager';
+import VideoAnalysis from '@/components/VideoAnalysis';
 
 /* ── helpers ── */
 const eventMeta = (type: string) => {
@@ -75,6 +76,7 @@ export default function Index() {
   const [loadingFace, setLoadingFace] = useState(false);
   const [loadingVideo, setLoadingVideo] = useState(false);
   const [videoProgress, setVideoProgress] = useState(0);
+  const [videoTaskId, setVideoTaskId] = useState<string | null>(null);
 
   /* ── loaders ── */
   const loadCameras = useCallback(async () => {
@@ -166,9 +168,15 @@ export default function Index() {
     const file = e.target.files?.[0]; if (!file) return;
     setLoadingVideo(true);
     setVideoProgress(0);
+    setVideoTaskId(null);
     try {
-      await camerasApi.uploadVideo(file, (pct) => setVideoProgress(pct));
-      toast.success('Видео загружено');
+      const res = await camerasApi.uploadVideo(file, (pct) => setVideoProgress(pct));
+      if (res.task_id) {
+        setVideoTaskId(res.task_id);
+        toast.success('Видео загружено, начат AI-анализ');
+      } else {
+        toast.success('Видео загружено');
+      }
     } catch {
       toast.error('Ошибка загрузки видео');
     } finally {
@@ -419,6 +427,11 @@ export default function Index() {
             )}
           </Card>
         </div>
+
+        {/* ── VIDEO ANALYSIS ── */}
+        {videoTaskId && (
+          <VideoAnalysis taskId={videoTaskId} onClose={() => setVideoTaskId(null)} />
+        )}
 
         {/* ── ZONE MANAGER ── */}
         <div className="bg-white rounded-2xl card-shadow p-6">

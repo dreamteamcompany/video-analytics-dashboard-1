@@ -1,83 +1,141 @@
 """
-Загрузка видео чанками на FastAPI-бэкенд (72.56.35.26:8000).
-Принимает base64-чанк, пересылает multipart/form-data на /upload_video.
-Обходит ограничение 413 у основного прокси.
+Сборка видео из чанков в S3 и запуск анализа на FastAPI-сервере (72.56.35.26:8000).
+
+POST (JSON body): { filename, upload_id, chunk (base64), chunk_index, total_chunks }
+  - Каждый чанк сохраняется в S3 (files/video_chunks/{upload_id}/{index}.part)
+  - На последнем чанке все части склеиваются в один файл и одним запросом
+    отправляются на FastAPI /upload_video — возвращается { task_id, status }
+
+GET ?stream={filename} — проксирует готовое обработанное видео с FastAPI /videos/{filename},
+чтобы браузер мог воспроизвести его (обход mixed content HTTPS→HTTP).
 """
 
 import json
 import os
+import io
 import base64
 import urllib.request
 import urllib.error
-import io
+import boto3
 
 TARGET = os.environ.get("FASTAPI_URL", "http://72.56.35.26:8000")
+BUCKET = "files"
 
 CORS = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
 }
 
-CHUNK_SIZE = 5 * 1024 * 1024  # 5 MB — безопасный лимит для одного чанка
+s3 = boto3.client(
+    "s3",
+    endpoint_url="https://bucket.poehali.dev",
+    aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+)
 
 
-def build_multipart(filename: str, chunk_bytes: bytes, chunk_index: int, total_chunks: int) -> tuple[bytes, str]:
+def build_multipart(filename: str, file_bytes: bytes) -> tuple[bytes, str]:
     boundary = "----FormBoundary7MA4YWxkTrZu0gW"
     body = io.BytesIO()
 
     def w(s: str):
         body.write(s.encode("utf-8"))
 
-    # поле file
     w(f"--{boundary}\r\n")
     w(f'Content-Disposition: form-data; name="file"; filename="{filename}"\r\n')
-    w("Content-Type: application/octet-stream\r\n\r\n")
-    body.write(chunk_bytes)
+    w("Content-Type: video/mp4\r\n\r\n")
+    body.write(file_bytes)
     w("\r\n")
-
-    # метаданные чанка
-    for name, val in [("chunk_index", str(chunk_index)), ("total_chunks", str(total_chunks))]:
-        w(f"--{boundary}\r\n")
-        w(f'Content-Disposition: form-data; name="{name}"\r\n\r\n')
-        w(f"{val}\r\n")
-
     w(f"--{boundary}--\r\n")
     return body.getvalue(), f"multipart/form-data; boundary={boundary}"
 
 
-def handler(event: dict, context) -> dict:
-    if event.get("httpMethod") == "OPTIONS":
-        return {"statusCode": 200, "headers": CORS, "body": ""}
+def chunk_key(upload_id: str, index: int) -> str:
+    return f"video_chunks/{upload_id}/{index:05d}.part"
 
+
+def error_response(status: int, message: str) -> dict:
+    return {
+        "statusCode": status,
+        "headers": {**CORS, "Content-Type": "application/json"},
+        "body": json.dumps({"error": message}),
+    }
+
+
+def handle_stream(event: dict) -> dict:
+    qs = event.get("queryStringParameters") or {}
+    filename = qs.get("stream")
+    if not filename:
+        return error_response(400, "Параметр stream (имя файла) обязателен")
+
+    url = f"{TARGET.rstrip('/')}/videos/{filename}"
     try:
-        body_raw = event.get("body") or "{}"
-        if event.get("isBase64Encoded"):
-            body_raw = base64.b64decode(body_raw).decode("utf-8")
-        data = json.loads(body_raw)
+        with urllib.request.urlopen(url, timeout=25) as resp:
+            video_bytes = resp.read()
+            return {
+                "statusCode": 200,
+                "headers": {**CORS, "Content-Type": "video/mp4"},
+                "body": base64.b64encode(video_bytes).decode("utf-8"),
+                "isBase64Encoded": True,
+            }
+    except urllib.error.HTTPError as e:
+        return {
+            "statusCode": e.code,
+            "headers": {**CORS, "Content-Type": "application/json"},
+            "body": e.read().decode("utf-8", errors="replace"),
+        }
+    except Exception as e:
+        return error_response(502, str(e))
 
-        filename    = data.get("filename", "video.mp4")
-        chunk_b64   = data.get("chunk", "")
+
+def handle_chunk(event: dict) -> dict:
+    try:
+        body_raw = event.get("body") or ""
+        if event.get("isBase64Encoded") and body_raw:
+            body_raw = base64.b64decode(body_raw).decode("utf-8")
+        data = json.loads(body_raw) if body_raw.strip() else {}
+
+        filename = data.get("filename", "video.mp4")
+        upload_id = data.get("upload_id")
+        chunk_b64 = data.get("chunk", "")
         chunk_index = int(data.get("chunk_index", 0))
         total_chunks = int(data.get("total_chunks", 1))
 
+        if not upload_id:
+            return error_response(400, "upload_id обязателен")
+
         chunk_bytes = base64.b64decode(chunk_b64)
+        s3.put_object(Bucket=BUCKET, Key=chunk_key(upload_id, chunk_index), Body=chunk_bytes)
 
-        # Если чанков > 1, добавляем суффикс в URL, чтобы бэкенд мог собирать части
-        # Если бэкенд не поддерживает chunks — шлём целиком (total_chunks == 1)
-        path = "/upload_video"
-        url = TARGET.rstrip("/") + path
+        is_last = chunk_index == total_chunks - 1
+        if not is_last:
+            return {
+                "statusCode": 200,
+                "headers": {**CORS, "Content-Type": "application/json"},
+                "body": json.dumps({"received": chunk_index, "status": "chunk_uploaded"}),
+            }
 
-        multipart_body, content_type = build_multipart(filename, chunk_bytes, chunk_index, total_chunks)
+        buffer = io.BytesIO()
+        for i in range(total_chunks):
+            obj = s3.get_object(Bucket=BUCKET, Key=chunk_key(upload_id, i))
+            buffer.write(obj["Body"].read())
+        full_bytes = buffer.getvalue()
 
+        for i in range(total_chunks):
+            try:
+                s3.delete_object(Bucket=BUCKET, Key=chunk_key(upload_id, i))
+            except Exception:
+                pass
+
+        multipart_body, content_type = build_multipart(filename, full_bytes)
         req = urllib.request.Request(
-            url,
+            TARGET.rstrip("/") + "/upload_video",
             data=multipart_body,
             headers={"Content-Type": content_type},
             method="POST",
         )
-
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        with urllib.request.urlopen(req, timeout=25) as resp:
             resp_body = resp.read().decode("utf-8", errors="replace")
             return {
                 "statusCode": resp.status,
@@ -86,15 +144,22 @@ def handler(event: dict, context) -> dict:
             }
 
     except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
         return {
             "statusCode": e.code,
             "headers": {**CORS, "Content-Type": "application/json"},
-            "body": body,
+            "body": e.read().decode("utf-8", errors="replace"),
         }
     except Exception as e:
-        return {
-            "statusCode": 502,
-            "headers": {**CORS, "Content-Type": "application/json"},
-            "body": json.dumps({"error": str(e)}),
-        }
+        return error_response(502, str(e))
+
+
+def handler(event: dict, context) -> dict:
+    method = event.get("httpMethod", "GET")
+
+    if method == "OPTIONS":
+        return {"statusCode": 200, "headers": CORS, "body": ""}
+
+    if method == "GET":
+        return handle_stream(event)
+
+    return handle_chunk(event)
