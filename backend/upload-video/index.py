@@ -84,6 +84,17 @@ def error_response(status: int, message: str) -> dict:
 CHUNK_SIZE = 3 * 1024 * 1024
 
 
+def _skip_stream(resp, n: int) -> None:
+    """Пропускает n байт из потока, читая порциями (без буферизации всего)."""
+    remaining = n
+    step = 1024 * 1024
+    while remaining > 0:
+        buf = resp.read(min(step, remaining))
+        if not buf:
+            break
+        remaining -= len(buf)
+
+
 def handle_stream(event: dict) -> dict:
     qs = event.get("queryStringParameters") or {}
     filename = qs.get("stream")
@@ -117,9 +128,19 @@ def handle_stream(event: dict) -> dict:
 
     try:
         resp = urllib.request.urlopen(req, timeout=60)
-        chunk = resp.read()
         status = resp.status
         content_range = resp.headers.get("Content-Range", "")
+        content_length = resp.headers.get("Content-Length", "")
+
+        if status == 200:
+            # Сервер проигнорировал Range и отдаёт файл с байта 0.
+            # Пропускаем start байт, затем читаем нужный кусок.
+            if start > 0:
+                _skip_stream(resp, start)
+            chunk = resp.read(CHUNK_SIZE)
+        else:
+            # 206 Partial Content — сервер уже отдаёт нужный диапазон.
+            chunk = resp.read(CHUNK_SIZE)
         resp.close()
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="replace")
@@ -133,12 +154,16 @@ def handle_stream(event: dict) -> dict:
         print(f"[stream] proxy error for {filename}: {type(e).__name__}: {e}")
         return error_response(502, f"Сервер анализа не отдаёт видео: {e}")
 
-    # Определяем общий размер файла из Content-Range: "bytes start-end/total"
+    # Определяем полный размер файла.
     total = None
     if "/" in content_range:
+        # 206 Partial Content: "bytes start-end/total"
         tail = content_range.rsplit("/", 1)[-1].strip()
         if tail.isdigit():
             total = int(tail)
+    elif status == 200 and content_length.isdigit():
+        # Сервер вернул весь файл — Content-Length равен полному размеру.
+        total = int(content_length)
 
     chunk_len = len(chunk)
     real_end = start + chunk_len - 1
@@ -147,21 +172,17 @@ def handle_stream(event: dict) -> dict:
         **CORS,
         "Content-Type": "video/mp4",
         "Accept-Ranges": "bytes",
+        "Cache-Control": "no-store",
         "Access-Control-Expose-Headers": "Content-Range, Accept-Ranges, Content-Length",
     }
 
-    # Если сервер поддержал Range (206) — отдаём частичный контент браузеру.
-    if status == 206 or range_header:
-        total_str = str(total) if total is not None else "*"
-        resp_headers["Content-Range"] = f"bytes {start}-{real_end}/{total_str}"
-        status_code = 206
-    else:
-        status_code = 200
+    total_str = str(total) if total is not None else "*"
+    resp_headers["Content-Range"] = f"bytes {start}-{real_end}/{total_str}"
 
     print(f"[stream] {filename}: sent bytes {start}-{real_end} ({chunk_len}), total={total}, src_status={status}")
 
     return {
-        "statusCode": status_code,
+        "statusCode": 206,
         "headers": resp_headers,
         "body": base64.b64encode(chunk).decode("utf-8"),
         "isBase64Encoded": True,
