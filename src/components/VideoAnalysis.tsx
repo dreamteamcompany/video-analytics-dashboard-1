@@ -40,8 +40,14 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
 
       if (s.status === 'done') {
         const r = await videoApi.result(taskId);
-        setVideoUrl(videoApi.streamUrl(r.video_url));
         setEvents(r.events || []);
+        try {
+          const url = await videoApi.resolveVideoUrl(r.video_url);
+          setVideoUrl(url);
+        } catch {
+          setStatus('error');
+          setErrorMsg('Видео обработано, но файл не удалось загрузить с сервера');
+        }
       }
     } catch {
       setStatus('error');

@@ -79,10 +79,12 @@ def handle_stream(event: dict) -> dict:
     except Exception:
         cached = False
 
+    cdn_url = f"https://cdn.poehali.dev/projects/{access_key}/bucket/{cache_key}"
+
     if not cached:
         url = f"{TARGET.rstrip('/')}/videos/{filename}"
         try:
-            with urllib.request.urlopen(url, timeout=25) as resp:
+            with urllib.request.urlopen(url, timeout=120) as resp:
                 video_bytes = resp.read()
         except urllib.error.HTTPError as e:
             return {
@@ -95,11 +97,10 @@ def handle_stream(event: dict) -> dict:
 
         s3.put_object(Bucket=BUCKET, Key=cache_key, Body=video_bytes, ContentType="video/mp4")
 
-    cdn_url = f"https://cdn.poehali.dev/projects/{access_key}/bucket/{cache_key}"
     return {
-        "statusCode": 302,
-        "headers": {**CORS, "Location": cdn_url},
-        "body": "",
+        "statusCode": 200,
+        "headers": {**CORS, "Content-Type": "application/json"},
+        "body": json.dumps({"url": cdn_url, "cached": cached}),
     }
 
 
