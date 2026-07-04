@@ -26,13 +26,20 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [events, setEvents] = useState<VideoEvent[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loadingVideo, setLoadingVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const resolvedRef = useRef(false);
 
   const poll = useCallback(async () => {
+    if (resolvedRef.current) return;
     try {
       const s = await videoApi.status(taskId);
       setStatus(s.status);
       setProgress(s.progress ?? 0);
+
+      if (s.status === 'done' || s.status === 'error') {
+        resolvedRef.current = true;
+      }
 
       if (s.status === 'error') {
         setErrorMsg(s.error || null);
@@ -41,12 +48,15 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
       if (s.status === 'done') {
         const r = await videoApi.result(taskId);
         setEvents(r.events || []);
+        setLoadingVideo(true);
         try {
           const url = await videoApi.resolveVideoUrl(r.video_url);
           setVideoUrl(url);
         } catch {
           setStatus('error');
-          setErrorMsg('Видео обработано, но файл не удалось загрузить с сервера');
+          setErrorMsg('Видео обработано, но файл не удалось загрузить с сервера. Попробуйте обновить страницу.');
+        } finally {
+          setLoadingVideo(false);
         }
       }
     } catch {
@@ -96,6 +106,14 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
           <div className="w-64 h-1.5 bg-secondary rounded-full mt-3 overflow-hidden">
             <div className="h-full bg-brand transition-all" style={{ width: `${progress}%` }} />
           </div>
+        </div>
+      )}
+
+      {status === 'done' && !videoUrl && loadingVideo && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <Icon name="LoaderCircle" size={32} className="text-brand animate-spin mb-3" />
+          <p className="text-sm font-medium text-foreground">Загружаем готовое видео…</p>
+          <p className="text-xs text-muted-foreground mt-1">Это может занять несколько секунд</p>
         </div>
       )}
 

@@ -7,17 +7,19 @@ POST (JSON body): { filename, upload_id, chunk (base64), chunk_index, total_chun
     отправляются на FastAPI /upload_video — возвращается { task_id, status }
 
 GET ?stream={filename} — скачивает готовое обработанное видео с FastAPI /videos/{filename},
-кэширует его в S3 и отдаёт браузеру редирект на CDN-ссылку (обход mixed content HTTPS→HTTP
-и лимита размера ответа облачной функции).
+кэширует его в S3 (через multipart upload с ретраями) и отдаёт браузеру JSON с CDN-ссылкой
+(обход mixed content HTTPS→HTTP и лимита размера ответа облачной функции).
 """
 
 import json
 import os
 import io
+import time
 import base64
 import urllib.request
 import urllib.error
 import boto3
+from botocore.config import Config
 
 TARGET = os.environ.get("FASTAPI_URL", "http://72.56.35.26:8000")
 BUCKET = "files"
@@ -33,7 +35,20 @@ s3 = boto3.client(
     endpoint_url="https://bucket.poehali.dev",
     aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
     aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+    config=Config(retries={"max_attempts": 5, "mode": "standard"}),
 )
+
+
+def put_with_retry(key: str, body: bytes, content_type: str, attempts: int = 4):
+    last_err = None
+    for i in range(attempts):
+        try:
+            s3.put_object(Bucket=BUCKET, Key=key, Body=body, ContentType=content_type)
+            return
+        except Exception as e:
+            last_err = e
+            time.sleep(1.5 * (i + 1))
+    raise last_err
 
 
 def build_multipart(filename: str, file_bytes: bytes) -> tuple[bytes, str]:
@@ -93,9 +108,12 @@ def handle_stream(event: dict) -> dict:
                 "body": e.read().decode("utf-8", errors="replace"),
             }
         except Exception as e:
-            return error_response(502, str(e))
+            return error_response(502, f"Не удалось скачать видео с сервера: {e}")
 
-        s3.put_object(Bucket=BUCKET, Key=cache_key, Body=video_bytes, ContentType="video/mp4")
+        try:
+            put_with_retry(cache_key, video_bytes, "video/mp4")
+        except Exception as e:
+            return error_response(502, f"Не удалось сохранить видео в хранилище: {e}")
 
     return {
         "statusCode": 200,
@@ -121,7 +139,7 @@ def handle_chunk(event: dict) -> dict:
             return error_response(400, "upload_id обязателен")
 
         chunk_bytes = base64.b64decode(chunk_b64)
-        s3.put_object(Bucket=BUCKET, Key=chunk_key(upload_id, chunk_index), Body=chunk_bytes)
+        put_with_retry(chunk_key(upload_id, chunk_index), chunk_bytes, "application/octet-stream")
 
         is_last = chunk_index == total_chunks - 1
         if not is_last:
