@@ -28,11 +28,13 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const resolvedRef = useRef(false);
+  const failCountRef = useRef(0);
 
   const poll = useCallback(async () => {
     if (resolvedRef.current) return;
     try {
       const s = await videoApi.status(taskId);
+      failCountRef.current = 0;
       setStatus(s.status);
       setProgress(s.progress ?? 0);
 
@@ -50,8 +52,15 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
         setVideoUrl(videoApi.streamUrl(r.video_url));
       }
     } catch {
-      setStatus('error');
-      setErrorMsg('Не удалось связаться с сервером анализа');
+      // Сервер анализа может временно отвечать ошибкой (например, 500),
+      // пока идёт обработка. Не роняем весь процесс из-за разовых сбоев —
+      // показываем ошибку только если сервер недоступен долго подряд.
+      failCountRef.current += 1;
+      if (failCountRef.current >= 10) {
+        resolvedRef.current = true;
+        setStatus('error');
+        setErrorMsg('Сервер анализа долго не отвечает. Попробуйте позже.');
+      }
     }
   }, [taskId]);
 
