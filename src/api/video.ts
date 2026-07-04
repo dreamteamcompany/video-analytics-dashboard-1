@@ -14,6 +14,7 @@ export interface VideoEvent {
 export interface VideoStatus {
   status: 'pending' | 'processing' | 'done' | 'error';
   progress: number;
+  error?: string;
 }
 
 export interface VideoResult {

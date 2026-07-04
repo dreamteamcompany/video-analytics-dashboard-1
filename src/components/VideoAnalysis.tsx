@@ -25,6 +25,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
   const [progress, setProgress] = useState(0);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [events, setEvents] = useState<VideoEvent[]>([]);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const poll = useCallback(async () => {
@@ -33,6 +34,10 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
       setStatus(s.status);
       setProgress(s.progress ?? 0);
 
+      if (s.status === 'error') {
+        setErrorMsg(s.error || null);
+      }
+
       if (s.status === 'done') {
         const r = await videoApi.result(taskId);
         setVideoUrl(videoApi.streamUrl(r.video_url));
@@ -40,6 +45,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
       }
     } catch {
       setStatus('error');
+      setErrorMsg('Не удалось связаться с сервером анализа');
     }
   }, [taskId]);
 
@@ -91,6 +97,11 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <Icon name="CircleAlert" size={32} className="text-red-500 mb-3" />
           <p className="text-sm font-medium text-foreground">Не удалось обработать видео</p>
+          {errorMsg && (
+            <div className="mt-3 max-w-md bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <p className="text-xs text-red-600 break-words">{errorMsg}</p>
+            </div>
+          )}
         </div>
       )}
 
