@@ -26,7 +26,6 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [events, setEvents] = useState<VideoEvent[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [loadingVideo, setLoadingVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const resolvedRef = useRef(false);
 
@@ -48,16 +47,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
       if (s.status === 'done') {
         const r = await videoApi.result(taskId);
         setEvents(r.events || []);
-        setLoadingVideo(true);
-        try {
-          const url = await videoApi.resolveVideoUrl(r.video_url);
-          setVideoUrl(url);
-        } catch {
-          setStatus('error');
-          setErrorMsg('Видео обработано, но файл не удалось загрузить с сервера. Попробуйте обновить страницу.');
-        } finally {
-          setLoadingVideo(false);
-        }
+        setVideoUrl(videoApi.streamUrl(r.video_url));
       }
     } catch {
       setStatus('error');
@@ -109,13 +99,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
         </div>
       )}
 
-      {status === 'done' && !videoUrl && loadingVideo && (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Icon name="LoaderCircle" size={32} className="text-brand animate-spin mb-3" />
-          <p className="text-sm font-medium text-foreground">Загружаем готовое видео…</p>
-          <p className="text-xs text-muted-foreground mt-1">Это может занять несколько секунд</p>
-        </div>
-      )}
+
 
       {status === 'error' && (
         <div className="flex flex-col items-center justify-center py-12 text-center">

@@ -79,61 +79,92 @@ def error_response(status: int, message: str) -> dict:
     }
 
 
+# Максимальный размер одного куска, отдаваемого браузеру за запрос.
+# Держим ниже лимита ответа облачной функции (~6 МБ) с запасом на base64.
+CHUNK_SIZE = 3 * 1024 * 1024
+
+
 def handle_stream(event: dict) -> dict:
     qs = event.get("queryStringParameters") or {}
     filename = qs.get("stream")
     if not filename:
         return error_response(400, "Параметр stream (имя файла) обязателен")
 
-    cache_key = f"video_results/{filename}"
-    access_key = os.environ.get("AWS_ACCESS_KEY_ID")
-    cdn_url = f"https://cdn.poehali.dev/projects/{access_key}/bucket/{cache_key}"
+    headers = event.get("headers") or {}
+    range_header = (
+        headers.get("Range")
+        or headers.get("range")
+        or headers.get("X-Range")
+        or headers.get("x-range")
+        or ""
+    )
 
-    # Уже закэшировано в S3 — сразу отдаём CDN-ссылку
-    try:
-        s3.head_object(Bucket=BUCKET, Key=cache_key)
-        return {
-            "statusCode": 200,
-            "headers": {**CORS, "Content-Type": "application/json"},
-            "body": json.dumps({"url": cdn_url, "ready": True}),
-        }
-    except Exception:
-        pass
+    # Определяем начало диапазона. Если браузер не прислал Range — начинаем с 0.
+    start = 0
+    if range_header.startswith("bytes="):
+        try:
+            spec = range_header.split("=", 1)[1].split(",")[0].strip()
+            start_str = spec.split("-", 1)[0].strip()
+            if start_str:
+                start = int(start_str)
+        except Exception:
+            start = 0
 
-    # Скачиваем видео с FastAPI-сервера и кладём в S3.
+    end = start + CHUNK_SIZE - 1
+
     url = f"{TARGET.rstrip('/')}/videos/{filename}"
+    req = urllib.request.Request(url, headers={"Range": f"bytes={start}-{end}"})
+
     try:
-        resp = urllib.request.urlopen(url, timeout=90)
-        video_bytes = resp.read()
-        resp_ct = resp.headers.get("Content-Type", "")
+        resp = urllib.request.urlopen(req, timeout=60)
+        chunk = resp.read()
+        status = resp.status
+        content_range = resp.headers.get("Content-Range", "")
         resp.close()
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="replace")
-        print(f"[stream] FastAPI HTTPError {e.code} for {filename}: {body[:300]}")
+        print(f"[stream] FastAPI HTTPError {e.code} for {filename}: {body[:200]}")
         return {
             "statusCode": e.code,
             "headers": {**CORS, "Content-Type": "application/json"},
-            "body": json.dumps({"error": f"Сервер анализа вернул {e.code}", "detail": body[:300]}),
+            "body": json.dumps({"error": f"Сервер анализа вернул {e.code}"}),
         }
     except Exception as e:
-        print(f"[stream] download error for {filename}: {type(e).__name__}: {e}")
+        print(f"[stream] proxy error for {filename}: {type(e).__name__}: {e}")
         return error_response(502, f"Сервер анализа не отдаёт видео: {e}")
 
-    size = len(video_bytes)
-    print(f"[stream] downloaded {filename}: {size} bytes, content-type={resp_ct}")
-    if size == 0:
-        return error_response(502, "Сервер анализа вернул пустой видеофайл")
+    # Определяем общий размер файла из Content-Range: "bytes start-end/total"
+    total = None
+    if "/" in content_range:
+        tail = content_range.rsplit("/", 1)[-1].strip()
+        if tail.isdigit():
+            total = int(tail)
 
-    try:
-        put_with_retry(cache_key, video_bytes, "video/mp4")
-    except Exception as e:
-        print(f"[stream] S3 put error for {filename}: {type(e).__name__}: {e}")
-        return error_response(502, f"Не удалось сохранить видео в хранилище: {e}")
+    chunk_len = len(chunk)
+    real_end = start + chunk_len - 1
+
+    resp_headers = {
+        **CORS,
+        "Content-Type": "video/mp4",
+        "Accept-Ranges": "bytes",
+        "Access-Control-Expose-Headers": "Content-Range, Accept-Ranges, Content-Length",
+    }
+
+    # Если сервер поддержал Range (206) — отдаём частичный контент браузеру.
+    if status == 206 or range_header:
+        total_str = str(total) if total is not None else "*"
+        resp_headers["Content-Range"] = f"bytes {start}-{real_end}/{total_str}"
+        status_code = 206
+    else:
+        status_code = 200
+
+    print(f"[stream] {filename}: sent bytes {start}-{real_end} ({chunk_len}), total={total}, src_status={status}")
 
     return {
-        "statusCode": 200,
-        "headers": {**CORS, "Content-Type": "application/json"},
-        "body": json.dumps({"url": cdn_url, "ready": True}),
+        "statusCode": status_code,
+        "headers": resp_headers,
+        "body": base64.b64encode(chunk).decode("utf-8"),
+        "isBase64Encoded": True,
     }
 
 
