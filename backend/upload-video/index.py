@@ -100,34 +100,35 @@ def handle_stream(event: dict) -> dict:
     except Exception:
         pass
 
-    # Потоково перекладываем видео с медленного FastAPI-сервера в S3,
-    # НЕ буферизуя весь файл в памяти (upload_fileobj читает по частям).
+    # Скачиваем видео с FastAPI-сервера и кладём в S3.
     url = f"{TARGET.rstrip('/')}/videos/{filename}"
     try:
-        resp = urllib.request.urlopen(url, timeout=25)
+        resp = urllib.request.urlopen(url, timeout=90)
+        video_bytes = resp.read()
+        resp_ct = resp.headers.get("Content-Type", "")
+        resp.close()
     except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        print(f"[stream] FastAPI HTTPError {e.code} for {filename}: {body[:300]}")
         return {
             "statusCode": e.code,
             "headers": {**CORS, "Content-Type": "application/json"},
-            "body": e.read().decode("utf-8", errors="replace"),
+            "body": json.dumps({"error": f"Сервер анализа вернул {e.code}", "detail": body[:300]}),
         }
     except Exception as e:
+        print(f"[stream] download error for {filename}: {type(e).__name__}: {e}")
         return error_response(502, f"Сервер анализа не отдаёт видео: {e}")
 
+    size = len(video_bytes)
+    print(f"[stream] downloaded {filename}: {size} bytes, content-type={resp_ct}")
+    if size == 0:
+        return error_response(502, "Сервер анализа вернул пустой видеофайл")
+
     try:
-        s3.upload_fileobj(
-            resp,
-            BUCKET,
-            cache_key,
-            ExtraArgs={"ContentType": "video/mp4"},
-        )
+        put_with_retry(cache_key, video_bytes, "video/mp4")
     except Exception as e:
+        print(f"[stream] S3 put error for {filename}: {type(e).__name__}: {e}")
         return error_response(502, f"Не удалось сохранить видео в хранилище: {e}")
-    finally:
-        try:
-            resp.close()
-        except Exception:
-            pass
 
     return {
         "statusCode": 200,
