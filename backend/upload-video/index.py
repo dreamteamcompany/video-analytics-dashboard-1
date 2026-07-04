@@ -6,8 +6,9 @@ POST (JSON body): { filename, upload_id, chunk (base64), chunk_index, total_chun
   - На последнем чанке все части склеиваются в один файл и одним запросом
     отправляются на FastAPI /upload_video — возвращается { task_id, status }
 
-GET ?stream={filename} — проксирует готовое обработанное видео с FastAPI /videos/{filename},
-чтобы браузер мог воспроизвести его (обход mixed content HTTPS→HTTP).
+GET ?stream={filename} — скачивает готовое обработанное видео с FastAPI /videos/{filename},
+кэширует его в S3 и отдаёт браузеру редирект на CDN-ссылку (обход mixed content HTTPS→HTTP
+и лимита размера ответа облачной функции).
 """
 
 import json
@@ -69,24 +70,37 @@ def handle_stream(event: dict) -> dict:
     if not filename:
         return error_response(400, "Параметр stream (имя файла) обязателен")
 
-    url = f"{TARGET.rstrip('/')}/videos/{filename}"
+    cache_key = f"video_results/{filename}"
+    access_key = os.environ.get("AWS_ACCESS_KEY_ID")
+
     try:
-        with urllib.request.urlopen(url, timeout=25) as resp:
-            video_bytes = resp.read()
+        s3.head_object(Bucket=BUCKET, Key=cache_key)
+        cached = True
+    except Exception:
+        cached = False
+
+    if not cached:
+        url = f"{TARGET.rstrip('/')}/videos/{filename}"
+        try:
+            with urllib.request.urlopen(url, timeout=25) as resp:
+                video_bytes = resp.read()
+        except urllib.error.HTTPError as e:
             return {
-                "statusCode": 200,
-                "headers": {**CORS, "Content-Type": "video/mp4"},
-                "body": base64.b64encode(video_bytes).decode("utf-8"),
-                "isBase64Encoded": True,
+                "statusCode": e.code,
+                "headers": {**CORS, "Content-Type": "application/json"},
+                "body": e.read().decode("utf-8", errors="replace"),
             }
-    except urllib.error.HTTPError as e:
-        return {
-            "statusCode": e.code,
-            "headers": {**CORS, "Content-Type": "application/json"},
-            "body": e.read().decode("utf-8", errors="replace"),
-        }
-    except Exception as e:
-        return error_response(502, str(e))
+        except Exception as e:
+            return error_response(502, str(e))
+
+        s3.put_object(Bucket=BUCKET, Key=cache_key, Body=video_bytes, ContentType="video/mp4")
+
+    cdn_url = f"https://cdn.poehali.dev/projects/{access_key}/bucket/{cache_key}"
+    return {
+        "statusCode": 302,
+        "headers": {**CORS, "Location": cdn_url},
+        "body": "",
+    }
 
 
 def handle_chunk(event: dict) -> dict:
