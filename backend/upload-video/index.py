@@ -80,19 +80,66 @@ def error_response(status: int, message: str) -> dict:
 
 
 # Максимальный размер одного куска, отдаваемого браузеру за запрос.
-# Держим ниже лимита ответа облачной функции (~6 МБ) с запасом на base64.
-CHUNK_SIZE = 3 * 1024 * 1024
+# base64 раздувает данные в ~1.37 раза, поэтому держим кусок небольшим,
+# чтобы итоговый ответ не упирался в лимит размера ответа облачной функции.
+CHUNK_SIZE = 1024 * 1024
 
 
 def _skip_stream(resp, n: int) -> None:
     """Пропускает n байт из потока, читая порциями (без буферизации всего)."""
     remaining = n
-    step = 1024 * 1024
+    step = 256 * 1024
     while remaining > 0:
         buf = resp.read(min(step, remaining))
         if not buf:
             break
         remaining -= len(buf)
+
+
+def _size_cache_key(filename: str) -> str:
+    return f"video_sizes/{filename}.size"
+
+
+def get_total_size(filename: str) -> int | None:
+    """Определяет полный размер видеофайла и кэширует его в S3.
+
+    Сервер анализа не отдаёт Content-Length при статусе 200, поэтому размер
+    приходится вычислять, прочитав файл целиком один раз (считая байты, не
+    сохраняя их). Результат кэшируется, чтобы не делать это повторно.
+    """
+    key = _size_cache_key(filename)
+    try:
+        obj = s3.get_object(Bucket=BUCKET, Key=key)
+        val = obj["Body"].read().decode("utf-8").strip()
+        if val.isdigit():
+            return int(val)
+    except Exception:
+        pass
+
+    url = f"{TARGET.rstrip('/')}/videos/{filename}"
+    try:
+        resp = urllib.request.urlopen(url, timeout=90)
+        cl = resp.headers.get("Content-Length", "")
+        if cl.isdigit():
+            total = int(cl)
+        else:
+            # Content-Length отсутствует — считаем байты, читая поток.
+            total = 0
+            while True:
+                buf = resp.read(1024 * 1024)
+                if not buf:
+                    break
+                total += len(buf)
+        resp.close()
+    except Exception as e:
+        print(f"[size] failed for {filename}: {type(e).__name__}: {e}")
+        return None
+
+    try:
+        s3.put_object(Bucket=BUCKET, Key=key, Body=str(total).encode("utf-8"))
+    except Exception:
+        pass
+    return total
 
 
 def handle_stream(event: dict) -> dict:
@@ -164,6 +211,10 @@ def handle_stream(event: dict) -> dict:
     elif status == 200 and content_length.isdigit():
         # Сервер вернул весь файл — Content-Length равен полному размеру.
         total = int(content_length)
+
+    # Сервер не отдал размер в заголовках — вычисляем и кэшируем его.
+    if total is None:
+        total = get_total_size(filename)
 
     chunk_len = len(chunk)
     real_end = start + chunk_len - 1
