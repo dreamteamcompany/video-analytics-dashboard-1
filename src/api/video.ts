@@ -27,9 +27,26 @@ export const videoApi = {
   result: (taskId: string) => api.get<VideoResult>(`/video_result/${taskId}`),
   resolveVideoUrl: async (videoUrl: string): Promise<string> => {
     const filename = videoUrl.split('/').pop() || '';
-    const res = await fetch(`${STREAM_URL}?stream=${encodeURIComponent(filename)}`);
-    if (!res.ok) throw new Error(`stream ${res.status}`);
-    const data = (await res.json()) as { url: string };
-    return data.url;
+    const streamUrl = `${STREAM_URL}?stream=${encodeURIComponent(filename)}`;
+
+    // Кэширование в хранилище может занять время (или упереться в таймаут
+    // при медленном сервере), но само сохранение при этом продолжается.
+    // Поэтому повторяем запрос несколько раз — как только файл окажется
+    // в кэше, функция мгновенно вернёт готовую ссылку.
+    let lastErr: unknown = null;
+    for (let attempt = 0; attempt < 8; attempt++) {
+      try {
+        const res = await fetch(streamUrl);
+        if (res.ok) {
+          const data = (await res.json()) as { url: string };
+          return data.url;
+        }
+        lastErr = new Error(`stream ${res.status}`);
+      } catch (e) {
+        lastErr = e;
+      }
+      await new Promise((r) => setTimeout(r, 4000));
+    }
+    throw lastErr ?? new Error('stream failed');
   },
 };

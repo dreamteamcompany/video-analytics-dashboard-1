@@ -87,38 +87,52 @@ def handle_stream(event: dict) -> dict:
 
     cache_key = f"video_results/{filename}"
     access_key = os.environ.get("AWS_ACCESS_KEY_ID")
-
-    try:
-        s3.head_object(Bucket=BUCKET, Key=cache_key)
-        cached = True
-    except Exception:
-        cached = False
-
     cdn_url = f"https://cdn.poehali.dev/projects/{access_key}/bucket/{cache_key}"
 
-    if not cached:
-        url = f"{TARGET.rstrip('/')}/videos/{filename}"
-        try:
-            with urllib.request.urlopen(url, timeout=120) as resp:
-                video_bytes = resp.read()
-        except urllib.error.HTTPError as e:
-            return {
-                "statusCode": e.code,
-                "headers": {**CORS, "Content-Type": "application/json"},
-                "body": e.read().decode("utf-8", errors="replace"),
-            }
-        except Exception as e:
-            return error_response(502, f"Не удалось скачать видео с сервера: {e}")
+    # Уже закэшировано в S3 — сразу отдаём CDN-ссылку
+    try:
+        s3.head_object(Bucket=BUCKET, Key=cache_key)
+        return {
+            "statusCode": 200,
+            "headers": {**CORS, "Content-Type": "application/json"},
+            "body": json.dumps({"url": cdn_url, "ready": True}),
+        }
+    except Exception:
+        pass
 
+    # Потоково перекладываем видео с медленного FastAPI-сервера в S3,
+    # НЕ буферизуя весь файл в памяти (upload_fileobj читает по частям).
+    url = f"{TARGET.rstrip('/')}/videos/{filename}"
+    try:
+        resp = urllib.request.urlopen(url, timeout=25)
+    except urllib.error.HTTPError as e:
+        return {
+            "statusCode": e.code,
+            "headers": {**CORS, "Content-Type": "application/json"},
+            "body": e.read().decode("utf-8", errors="replace"),
+        }
+    except Exception as e:
+        return error_response(502, f"Сервер анализа не отдаёт видео: {e}")
+
+    try:
+        s3.upload_fileobj(
+            resp,
+            BUCKET,
+            cache_key,
+            ExtraArgs={"ContentType": "video/mp4"},
+        )
+    except Exception as e:
+        return error_response(502, f"Не удалось сохранить видео в хранилище: {e}")
+    finally:
         try:
-            put_with_retry(cache_key, video_bytes, "video/mp4")
-        except Exception as e:
-            return error_response(502, f"Не удалось сохранить видео в хранилище: {e}")
+            resp.close()
+        except Exception:
+            pass
 
     return {
         "statusCode": 200,
         "headers": {**CORS, "Content-Type": "application/json"},
-        "body": json.dumps({"url": cdn_url, "cached": cached}),
+        "body": json.dumps({"url": cdn_url, "ready": True}),
     }
 
 
