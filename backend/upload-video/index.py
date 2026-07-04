@@ -101,11 +101,11 @@ def _size_cache_key(filename: str) -> str:
 
 
 def get_total_size(filename: str) -> int | None:
-    """Определяет полный размер видеофайла и кэширует его в S3.
+    """Определяет полный размер видеофайла из заголовка Content-Length.
 
-    Сервер анализа не отдаёт Content-Length при статусе 200, поэтому размер
-    приходится вычислять, прочитав файл целиком один раз (считая байты, не
-    сохраняя их). Результат кэшируется, чтобы не делать это повторно.
+    НЕ скачивает файл целиком (это упиралось бы в таймаут). Открывает
+    соединение, читает только заголовок Content-Length и сразу закрывает.
+    Результат кэшируется в S3.
     """
     key = _size_cache_key(filename)
     try:
@@ -117,22 +117,18 @@ def get_total_size(filename: str) -> int | None:
         pass
 
     url = f"{TARGET.rstrip('/')}/videos/{filename}"
+    total = None
     try:
-        resp = urllib.request.urlopen(url, timeout=90)
+        resp = urllib.request.urlopen(url, timeout=15)
         cl = resp.headers.get("Content-Length", "")
+        resp.close()  # закрываем НЕ читая тело
         if cl.isdigit():
             total = int(cl)
-        else:
-            # Content-Length отсутствует — считаем байты, читая поток.
-            total = 0
-            while True:
-                buf = resp.read(1024 * 1024)
-                if not buf:
-                    break
-                total += len(buf)
-        resp.close()
     except Exception as e:
         print(f"[size] failed for {filename}: {type(e).__name__}: {e}")
+        return None
+
+    if total is None:
         return None
 
     try:
