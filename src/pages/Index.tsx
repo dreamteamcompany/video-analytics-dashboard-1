@@ -177,8 +177,13 @@ export default function Index() {
       } else {
         toast.success('Видео загружено');
       }
-    } catch {
-      toast.error('Ошибка загрузки видео');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.includes('Модель не загружена') || msg.includes('503')) {
+        toast.error('Сервер анализа временно недоступен: модель распознавания не загружена');
+      } else {
+        toast.error('Ошибка загрузки видео');
+      }
     } finally {
       setLoadingVideo(false);
       setVideoProgress(0);
