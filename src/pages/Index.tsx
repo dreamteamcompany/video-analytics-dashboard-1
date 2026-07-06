@@ -171,7 +171,7 @@ export default function Index() {
     setVideoTaskId(null);
     try {
       const res = await camerasApi.uploadVideo(file, (pct) => setVideoProgress(pct));
-      console.log('[video] uploadVideo final result:', JSON.stringify(res));
+      console.error('[video-debug] uploadVideo final result:', JSON.stringify(res));
       if (res.task_id) {
         setVideoTaskId(res.task_id);
         toast.success('Видео загружено, начат AI-анализ');
