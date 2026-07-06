@@ -26,6 +26,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [events, setEvents] = useState<VideoEvent[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [preparing, setPreparing] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const resolvedRef = useRef(false);
   const failCountRef = useRef(0);
@@ -48,6 +49,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
       }
 
       if (s.status === 'done') {
+        setPreparing(true);
         const r = await videoApi.result(taskId);
         console.log('[video] result response:', JSON.stringify(r));
         setEvents(r.events || []);
@@ -57,7 +59,10 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
           setVideoUrl(url);
         } catch (e) {
           console.error('[video] resolveVideoUrl failed:', e);
+          setStatus('error');
           setErrorMsg('Видео обработано, но не удалось его загрузить');
+        } finally {
+          setPreparing(false);
         }
       }
     } catch (e) {
@@ -107,14 +112,23 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
         </button>
       </div>
 
-      {status !== 'done' && status !== 'error' && (
+      {status !== 'error' && (!videoUrl) && (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <Icon name="LoaderCircle" size={32} className="text-brand animate-spin mb-3" />
-          <p className="text-sm font-medium text-foreground">Видео обрабатывается…</p>
-          <p className="text-xs text-muted-foreground mt-1">Прогресс: {progress}%</p>
-          <div className="w-64 h-1.5 bg-secondary rounded-full mt-3 overflow-hidden">
-            <div className="h-full bg-brand transition-all" style={{ width: `${progress}%` }} />
-          </div>
+          {preparing || (status === 'done' && !videoUrl) ? (
+            <>
+              <p className="text-sm font-medium text-foreground">Готовим видео к просмотру…</p>
+              <p className="text-xs text-muted-foreground mt-1">Загружаем результат, это займёт несколько секунд</p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-medium text-foreground">Видео обрабатывается…</p>
+              <p className="text-xs text-muted-foreground mt-1">Прогресс: {progress}%</p>
+              <div className="w-64 h-1.5 bg-secondary rounded-full mt-3 overflow-hidden">
+                <div className="h-full bg-brand transition-all" style={{ width: `${progress}%` }} />
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -132,7 +146,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
         </div>
       )}
 
-      {status === 'done' && videoUrl && (
+      {videoUrl && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <div className="rounded-xl overflow-hidden bg-black">
             <video ref={videoRef} src={videoUrl} controls className="w-full aspect-video" />
