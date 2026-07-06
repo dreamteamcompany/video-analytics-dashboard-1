@@ -79,160 +79,69 @@ def error_response(status: int, message: str) -> dict:
     }
 
 
-# Максимальный размер одного куска, отдаваемого браузеру за запрос.
-# base64 раздувает данные в ~1.37 раза, поэтому держим кусок небольшим,
-# чтобы итоговый ответ не упирался в лимит размера ответа облачной функции.
-CHUNK_SIZE = 1024 * 1024
+def video_cache_key(filename: str) -> str:
+    return f"videos_ready/{filename}"
 
 
-def _skip_stream(resp, n: int) -> None:
-    """Пропускает n байт из потока, читая порциями (без буферизации всего)."""
-    remaining = n
-    step = 256 * 1024
-    while remaining > 0:
-        buf = resp.read(min(step, remaining))
-        if not buf:
-            break
-        remaining -= len(buf)
+def cdn_url(key: str) -> str:
+    return f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
 
 
-def _size_cache_key(filename: str) -> str:
-    return f"video_sizes/{filename}.size"
-
-
-def get_total_size(filename: str) -> int | None:
-    """Определяет полный размер видеофайла из заголовка Content-Length.
-
-    НЕ скачивает файл целиком (это упиралось бы в таймаут). Открывает
-    соединение, читает только заголовок Content-Length и сразу закрывает.
-    Результат кэшируется в S3.
-    """
-    key = _size_cache_key(filename)
+def s3_key_exists(key: str) -> bool:
     try:
-        obj = s3.get_object(Bucket=BUCKET, Key=key)
-        val = obj["Body"].read().decode("utf-8").strip()
-        if val.isdigit():
-            return int(val)
+        s3.head_object(Bucket=BUCKET, Key=key)
+        return True
     except Exception:
-        pass
-
-    url = f"{TARGET.rstrip('/')}/videos/{filename}"
-    total = None
-    try:
-        resp = urllib.request.urlopen(url, timeout=15)
-        cl = resp.headers.get("Content-Length", "")
-        resp.close()  # закрываем НЕ читая тело
-        if cl.isdigit():
-            total = int(cl)
-    except Exception as e:
-        print(f"[size] failed for {filename}: {type(e).__name__}: {e}")
-        return None
-
-    if total is None:
-        return None
-
-    try:
-        s3.put_object(Bucket=BUCKET, Key=key, Body=str(total).encode("utf-8"))
-    except Exception:
-        pass
-    return total
+        return False
 
 
 def handle_stream(event: dict) -> dict:
+    """Отдаёт браузеру постоянную CDN-ссылку на готовое видео.
+
+    Сервер анализа игнорирует Range-запросы и отдаёт файл целиком, из-за чего
+    покусочный стриминг через функцию упирался в таймаут. Поэтому готовое видео
+    один раз скачивается с сервера анализа, кладётся в S3 и дальше
+    воспроизводится браузером напрямую с CDN (быстро, с перемоткой).
+    """
     qs = event.get("queryStringParameters") or {}
     filename = qs.get("stream")
     if not filename:
         return error_response(400, "Параметр stream (имя файла) обязателен")
 
-    headers = event.get("headers") or {}
-    range_header = (
-        headers.get("Range")
-        or headers.get("range")
-        or headers.get("X-Range")
-        or headers.get("x-range")
-        or ""
-    )
+    key = video_cache_key(filename)
 
-    # Определяем начало диапазона. Если браузер не прислал Range — начинаем с 0.
-    start = 0
-    if range_header.startswith("bytes="):
-        try:
-            spec = range_header.split("=", 1)[1].split(",")[0].strip()
-            start_str = spec.split("-", 1)[0].strip()
-            if start_str:
-                start = int(start_str)
-        except Exception:
-            start = 0
+    # Видео уже перенесено в S3 — сразу отдаём CDN-ссылку.
+    if s3_key_exists(key):
+        return {
+            "statusCode": 200,
+            "headers": {**CORS, "Content-Type": "application/json"},
+            "body": json.dumps({"url": cdn_url(key), "ready": True}),
+        }
 
-    end = start + CHUNK_SIZE - 1
-
+    # Скачиваем готовое видео с сервера анализа и кладём в S3.
     url = f"{TARGET.rstrip('/')}/videos/{filename}"
-    req = urllib.request.Request(url, headers={"Range": f"bytes={start}-{end}"})
-
     try:
-        resp = urllib.request.urlopen(req, timeout=60)
-        status = resp.status
-        content_range = resp.headers.get("Content-Range", "")
-        content_length = resp.headers.get("Content-Length", "")
-
-        if status == 200:
-            # Сервер проигнорировал Range и отдаёт файл с байта 0.
-            # Пропускаем start байт, затем читаем нужный кусок.
-            if start > 0:
-                _skip_stream(resp, start)
-            chunk = resp.read(CHUNK_SIZE)
-        else:
-            # 206 Partial Content — сервер уже отдаёт нужный диапазон.
-            chunk = resp.read(CHUNK_SIZE)
+        resp = urllib.request.urlopen(url, timeout=90)
+        data = resp.read()
         resp.close()
     except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
-        print(f"[stream] FastAPI HTTPError {e.code} for {filename}: {body[:200]}")
-        return {
-            "statusCode": e.code,
-            "headers": {**CORS, "Content-Type": "application/json"},
-            "body": json.dumps({"error": f"Сервер анализа вернул {e.code}"}),
-        }
+        print(f"[stream] HTTPError {e.code} for {filename}")
+        return error_response(e.code, f"Сервер анализа вернул {e.code}")
     except Exception as e:
         print(f"[stream] proxy error for {filename}: {type(e).__name__}: {e}")
         return error_response(502, f"Сервер анализа не отдаёт видео: {e}")
 
-    # Определяем полный размер файла.
-    total = None
-    if "/" in content_range:
-        # 206 Partial Content: "bytes start-end/total"
-        tail = content_range.rsplit("/", 1)[-1].strip()
-        if tail.isdigit():
-            total = int(tail)
-    elif status == 200 and content_length.isdigit():
-        # Сервер вернул весь файл — Content-Length равен полному размеру.
-        total = int(content_length)
+    try:
+        put_with_retry(key, data, "video/mp4")
+    except Exception as e:
+        print(f"[stream] S3 upload failed for {filename}: {e}")
+        return error_response(502, "Не удалось сохранить видео")
 
-    # Сервер не отдал размер в заголовках — вычисляем и кэшируем его.
-    if total is None:
-        total = get_total_size(filename)
-
-    chunk_len = len(chunk)
-    real_end = start + chunk_len - 1
-
-    resp_headers = {
-        **CORS,
-        "Content-Type": "video/mp4",
-        "Accept-Ranges": "bytes",
-        "Cache-Control": "no-store",
-        "Access-Control-Expose-Headers": "Content-Range, Accept-Ranges, Content-Length",
-    }
-
-    total_str = str(total) if total is not None else "*"
-    resp_headers["Content-Range"] = f"bytes {start}-{real_end}/{total_str}"
-
-    print(f"[stream] {filename}: sent bytes {start}-{real_end} ({chunk_len}), total={total}, src_status={status}")
-
+    print(f"[stream] cached {filename}: {len(data)} bytes -> {key}")
     return {
-        "statusCode": 206,
-        "headers": resp_headers,
-        "body": base64.b64encode(chunk).decode("utf-8"),
-        "isBase64Encoded": True,
+        "statusCode": 200,
+        "headers": {**CORS, "Content-Type": "application/json"},
+        "body": json.dumps({"url": cdn_url(key), "ready": True}),
     }
 
 

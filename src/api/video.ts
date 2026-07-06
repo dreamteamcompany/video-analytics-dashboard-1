@@ -25,10 +25,13 @@ export interface VideoResult {
 export const videoApi = {
   status: (taskId: string) => api.get<VideoStatus>(`/video_status/${taskId}`),
   result: (taskId: string) => api.get<VideoResult>(`/video_result/${taskId}`),
-  // Прямая ссылка на потоковый прокси. Браузер сам подтягивает видео
-  // частями (Range-запросы), поэтому большой файл грузить целиком не нужно.
-  streamUrl: (videoUrl: string): string => {
+  // Переносит готовое видео в наше хранилище (один раз) и возвращает
+  // постоянную CDN-ссылку. Браузер играет видео напрямую с CDN.
+  resolveVideoUrl: async (videoUrl: string): Promise<string> => {
     const filename = videoUrl.split('/').pop() || '';
-    return `${STREAM_URL}?stream=${encodeURIComponent(filename)}`;
+    const res = await fetch(`${STREAM_URL}?stream=${encodeURIComponent(filename)}`);
+    if (!res.ok) throw new Error(`stream ${res.status}`);
+    const data = (await res.json()) as { url: string };
+    return data.url;
   },
 };
