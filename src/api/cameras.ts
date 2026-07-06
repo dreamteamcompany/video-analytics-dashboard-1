@@ -61,7 +61,10 @@ export const camerasApi = {
         throw new Error(`Chunk ${i} failed: ${err}`);
       }
 
-      lastResult = await res.json();
+      const raw = await res.json();
+      const taskId = raw.task_id ?? raw.taskId ?? raw.id ?? raw.task ?? '';
+      lastResult = { task_id: String(taskId || ''), status: raw.status ?? '' };
+      console.log('[video] upload chunk', i, 'response:', JSON.stringify(raw));
       onProgress?.(Math.round(((i + 1) / totalChunks) * 100));
     }
 

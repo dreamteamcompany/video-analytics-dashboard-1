@@ -171,11 +171,12 @@ export default function Index() {
     setVideoTaskId(null);
     try {
       const res = await camerasApi.uploadVideo(file, (pct) => setVideoProgress(pct));
+      console.log('[video] uploadVideo final result:', JSON.stringify(res));
       if (res.task_id) {
         setVideoTaskId(res.task_id);
         toast.success('Видео загружено, начат AI-анализ');
       } else {
-        toast.success('Видео загружено');
+        toast.error('Сервер не вернул идентификатор задачи анализа');
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
