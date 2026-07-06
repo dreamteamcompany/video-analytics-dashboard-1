@@ -34,6 +34,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
     if (resolvedRef.current) return;
     try {
       const s = await videoApi.status(taskId);
+      console.log('[video] status response:', JSON.stringify(s));
       failCountRef.current = 0;
       setStatus(s.status);
       setProgress(s.progress ?? 0);
@@ -48,15 +49,19 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
 
       if (s.status === 'done') {
         const r = await videoApi.result(taskId);
+        console.log('[video] result response:', JSON.stringify(r));
         setEvents(r.events || []);
         try {
           const url = await videoApi.resolveVideoUrl(r.video_url);
+          console.log('[video] resolved CDN url:', url);
           setVideoUrl(url);
-        } catch {
+        } catch (e) {
+          console.error('[video] resolveVideoUrl failed:', e);
           setErrorMsg('Видео обработано, но не удалось его загрузить');
         }
       }
-    } catch {
+    } catch (e) {
+      console.error('[video] poll error:', e);
       // Сервер анализа может временно отвечать ошибкой (например, 500),
       // пока идёт обработка. Не роняем весь процесс из-за разовых сбоев —
       // показываем ошибку только если сервер недоступен долго подряд.
