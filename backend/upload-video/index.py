@@ -96,67 +96,18 @@ def s3_key_exists(key: str) -> bool:
 
 
 def stream_to_s3(source_url: str, key: str) -> int:
-    """Скачивает файл по source_url и заливает в S3 частями по мере чтения.
+    """Скачивает готовое видео с сервера анализа и кладёт его в S3 одним put.
 
-    S3 multipart требует части >= 5 МБ (кроме последней). Читаем поток
-    буферами и собираем части нужного размера, не держа весь файл в памяти.
-    Возвращает число перенесённых байт.
+    Хранилище не поддерживает multipart upload, поэтому читаем файл целиком
+    и загружаем одним запросом. Возвращает число перенесённых байт.
     """
-    PART_SIZE = 8 * 1024 * 1024  # 8 МБ на часть
     resp = urllib.request.urlopen(source_url, timeout=120)
-
-    mp = s3.create_multipart_upload(Bucket=BUCKET, Key=key, ContentType="video/mp4")
-    upload_id = mp["UploadId"]
-    parts = []
-    total = 0
-    buf = io.BytesIO()
-    part_no = 1
-
-    def flush_part(final: bool = False):
-        nonlocal part_no
-        size = buf.tell()
-        if size == 0 and not final:
-            return
-        if size == 0 and final:
-            return
-        buf.seek(0)
-        res = s3.upload_part(
-            Bucket=BUCKET, Key=key, PartNumber=part_no,
-            UploadId=upload_id, Body=buf.read(),
-        )
-        parts.append({"ETag": res["ETag"], "PartNumber": part_no})
-        part_no += 1
-        buf.seek(0)
-        buf.truncate(0)
-
-    try:
-        while True:
-            chunk = resp.read(1024 * 1024)  # 1 МБ
-            if not chunk:
-                break
-            total += len(chunk)
-            buf.write(chunk)
-            if buf.tell() >= PART_SIZE:
-                flush_part()
-        flush_part(final=True)
-        resp.close()
-
-        if not parts:
-            s3.abort_multipart_upload(Bucket=BUCKET, Key=key, UploadId=upload_id)
-            raise RuntimeError("Сервер анализа отдал пустой файл")
-
-        s3.complete_multipart_upload(
-            Bucket=BUCKET, Key=key, UploadId=upload_id,
-            MultipartUpload={"Parts": parts},
-        )
-    except Exception:
-        try:
-            s3.abort_multipart_upload(Bucket=BUCKET, Key=key, UploadId=upload_id)
-        except Exception:
-            pass
-        raise
-
-    return total
+    data = resp.read()
+    resp.close()
+    if not data:
+        raise RuntimeError("Сервер анализа отдал пустой файл")
+    put_with_retry(key, data, "video/mp4")
+    return len(data)
 
 
 def handle_stream(event: dict) -> dict:
