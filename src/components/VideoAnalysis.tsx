@@ -27,6 +27,7 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
   const [events, setEvents] = useState<VideoEvent[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [preparing, setPreparing] = useState(false);
+  const [prepareAttempt, setPrepareAttempt] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const resolvedRef = useRef(false);
   const failCountRef = useRef(0);
@@ -54,13 +55,15 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
         console.log('[video] result response:', JSON.stringify(r));
         setEvents(r.events || []);
         try {
-          const url = await videoApi.resolveVideoUrl(r.video_url);
+          const url = await videoApi.resolveVideoUrl(r.video_url, (attempt) => {
+            if (attempt > 1) setPrepareAttempt(attempt);
+          });
           console.log('[video] resolved CDN url:', url);
           setVideoUrl(url);
         } catch (e) {
           console.error('[video] resolveVideoUrl failed:', e);
           setStatus('error');
-          setErrorMsg('Видео обработано, но не удалось его загрузить');
+          setErrorMsg('Видео обработано, но не удалось его загрузить. Попробуйте загрузить его ещё раз.');
         } finally {
           setPreparing(false);
         }
@@ -118,7 +121,11 @@ export default function VideoAnalysis({ taskId, onClose }: Props) {
           {preparing || (status === 'done' && !videoUrl) ? (
             <>
               <p className="text-sm font-medium text-foreground">Готовим видео к просмотру…</p>
-              <p className="text-xs text-muted-foreground mt-1">Загружаем результат, это займёт несколько секунд</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {prepareAttempt > 1
+                  ? 'Видео длинное, перенос занимает чуть больше времени…'
+                  : 'Загружаем результат, это займёт несколько секунд'}
+              </p>
             </>
           ) : (
             <>

@@ -95,6 +95,70 @@ def s3_key_exists(key: str) -> bool:
         return False
 
 
+def stream_to_s3(source_url: str, key: str) -> int:
+    """Скачивает файл по source_url и заливает в S3 частями по мере чтения.
+
+    S3 multipart требует части >= 5 МБ (кроме последней). Читаем поток
+    буферами и собираем части нужного размера, не держа весь файл в памяти.
+    Возвращает число перенесённых байт.
+    """
+    PART_SIZE = 8 * 1024 * 1024  # 8 МБ на часть
+    resp = urllib.request.urlopen(source_url, timeout=120)
+
+    mp = s3.create_multipart_upload(Bucket=BUCKET, Key=key, ContentType="video/mp4")
+    upload_id = mp["UploadId"]
+    parts = []
+    total = 0
+    buf = io.BytesIO()
+    part_no = 1
+
+    def flush_part(final: bool = False):
+        nonlocal part_no
+        size = buf.tell()
+        if size == 0 and not final:
+            return
+        if size == 0 and final:
+            return
+        buf.seek(0)
+        res = s3.upload_part(
+            Bucket=BUCKET, Key=key, PartNumber=part_no,
+            UploadId=upload_id, Body=buf.read(),
+        )
+        parts.append({"ETag": res["ETag"], "PartNumber": part_no})
+        part_no += 1
+        buf.seek(0)
+        buf.truncate(0)
+
+    try:
+        while True:
+            chunk = resp.read(1024 * 1024)  # 1 МБ
+            if not chunk:
+                break
+            total += len(chunk)
+            buf.write(chunk)
+            if buf.tell() >= PART_SIZE:
+                flush_part()
+        flush_part(final=True)
+        resp.close()
+
+        if not parts:
+            s3.abort_multipart_upload(Bucket=BUCKET, Key=key, UploadId=upload_id)
+            raise RuntimeError("Сервер анализа отдал пустой файл")
+
+        s3.complete_multipart_upload(
+            Bucket=BUCKET, Key=key, UploadId=upload_id,
+            MultipartUpload={"Parts": parts},
+        )
+    except Exception:
+        try:
+            s3.abort_multipart_upload(Bucket=BUCKET, Key=key, UploadId=upload_id)
+        except Exception:
+            pass
+        raise
+
+    return total
+
+
 def handle_stream(event: dict) -> dict:
     """Отдаёт браузеру постоянную CDN-ссылку на готовое видео.
 
@@ -118,26 +182,21 @@ def handle_stream(event: dict) -> dict:
             "body": json.dumps({"url": cdn_url(key), "ready": True}),
         }
 
-    # Скачиваем готовое видео с сервера анализа и кладём в S3.
+    # Переносим готовое видео с сервера анализа в S3 потоковой multipart-загрузкой:
+    # не держим весь файл в памяти и не ждём полного скачивания перед началом
+    # заливки — так минутные ролики укладываются в таймаут функции.
     url = f"{TARGET.rstrip('/')}/videos/{filename}"
     try:
-        resp = urllib.request.urlopen(url, timeout=90)
-        data = resp.read()
-        resp.close()
+        transferred = stream_to_s3(url, key)
     except urllib.error.HTTPError as e:
         print(f"[stream] HTTPError {e.code} for {filename}")
         return error_response(e.code, f"Сервер анализа вернул {e.code}")
     except Exception as e:
-        print(f"[stream] proxy error for {filename}: {type(e).__name__}: {e}")
-        return error_response(502, f"Сервер анализа не отдаёт видео: {e}")
+        print(f"[stream] transfer error for {filename}: {type(e).__name__}: {e}")
+        # Частичная загрузка не должна оставлять битый объект в S3.
+        return error_response(504, f"Перенос видео не завершён, повторите: {e}")
 
-    try:
-        put_with_retry(key, data, "video/mp4")
-    except Exception as e:
-        print(f"[stream] S3 upload failed for {filename}: {e}")
-        return error_response(502, "Не удалось сохранить видео")
-
-    print(f"[stream] cached {filename}: {len(data)} bytes -> {key}")
+    print(f"[stream] cached {filename}: {transferred} bytes -> {key}")
     return {
         "statusCode": 200,
         "headers": {**CORS, "Content-Type": "application/json"},
