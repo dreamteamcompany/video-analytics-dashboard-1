@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -216,6 +217,16 @@ export default function Index() {
 
           {/* status + ping */}
           <div className="flex items-center gap-3">
+            <Link to="/yuna">
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl gap-1.5 border-border"
+              >
+                <Icon name="Sparkles" size={14} />
+                Юна
+              </Button>
+            </Link>
             <div className="flex items-center gap-2 bg-secondary rounded-full px-3 py-1.5">
               <span className={`w-2 h-2 rounded-full live-ring ${online ? 'bg-success' : online === false ? 'bg-destructive' : 'bg-muted-foreground'}`} />
               <span className="text-xs font-medium text-muted-foreground">
