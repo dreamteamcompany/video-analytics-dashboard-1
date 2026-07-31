@@ -54,6 +54,25 @@ export interface DentalDiagnosis {
   plan: string[];
 }
 
+export interface Tactics {
+  approach: string;
+  sequence: string[];
+  equipment: string[];
+  notes: string[];
+}
+
+export interface Complications {
+  risk: number;
+  factors: { name: string; impact: string }[];
+}
+
+export interface Treatment {
+  recommended: { title: string; detail: string }[];
+  match: number;
+  alternatives: { name: string; score: number }[];
+  aftercare: string[];
+}
+
 export interface Analysis {
   empathy: number;
   trust: number;
@@ -65,6 +84,9 @@ export interface Analysis {
   strengths: string[];
   concerns: string[];
   dental?: DentalDiagnosis | null;
+  tactics?: Tactics | null;
+  complications?: Complications | null;
+  treatment?: Treatment | null;
 }
 
 export interface TranscribeResult {

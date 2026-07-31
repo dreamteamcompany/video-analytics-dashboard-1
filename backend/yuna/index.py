@@ -187,14 +187,33 @@ ANALYSIS_PROMPT = (
     "- examinations: массив из 1-4 объектов {name, reason} — рекомендуемые обследования "
     "(рентген/прицельный снимок, КЛКТ/3D, ЭОД, термопроба, перкуссия и т.п.) с краткой причиной;\n"
     "- plan: массив из 2-5 строк — план лечения по шагам.\n"
+    "Дополнительно сформируй tactics — тактику лечения:\n"
+    "- approach: строка, оптимальная тактика/подход одним предложением;\n"
+    "- sequence: массив из 2-6 строк — оптимальная последовательность этапов;\n"
+    "- equipment: массив из 1-6 строк — необходимые материалы/оборудование;\n"
+    "- notes: массив из 0-3 строк — важные заметки (успешность, среднее время и т.п.).\n"
+    "Дополнительно сформируй complications — прогноз осложнений:\n"
+    "- risk: int 0-100, общий риск послеоперационных осложнений;\n"
+    "- factors: массив из 0-4 объектов {name, impact} — факторы риска и их вклад "
+    "(impact — строка, например '+12% к риску'), из анамнеза в диалоге "
+    "(курение, возраст, сопутствующие болезни и т.п.).\n"
+    "Дополнительно сформируй treatment — рекомендации по лечению:\n"
+    "- recommended: массив из 1-4 объектов {title, detail} — основной план лечения;\n"
+    "- match: int 0-100, уверенность в рекомендации;\n"
+    "- alternatives: массив из 0-3 объектов {name, score} (score int 0-100) — альтернативы;\n"
+    "- aftercare: массив из 0-5 строк — рекомендации после лечения.\n"
     "Если данных в диалоге недостаточно — делай осторожные предположения с низкой "
-    "probability, но поля всё равно заполни осмысленно по контексту стоматологии.\n"
+    "probability/match, но поля всё равно заполни осмысленно по контексту стоматологии.\n"
     "Верни СТРОГО JSON без markdown вида: "
     '{"empathy":int,"trust":int,"patient_state":int,"quality":int,'
     '"communication":int,"summary":str,"recommendations":[str],'
     '"strengths":[str],"concerns":[str],'
     '"dental":{"primary_diagnosis":{"name":str,"probability":int,"tooth":str},'
-    '"differential":[str],"examinations":[{"name":str,"reason":str}],"plan":[str]}}. '
+    '"differential":[str],"examinations":[{"name":str,"reason":str}],"plan":[str]},'
+    '"tactics":{"approach":str,"sequence":[str],"equipment":[str],"notes":[str]},'
+    '"complications":{"risk":int,"factors":[{"name":str,"impact":str}]},'
+    '"treatment":{"recommended":[{"title":str,"detail":str}],"match":int,'
+    '"alternatives":[{"name":str,"score":int}],"aftercare":[str]}}. '
     "Ничего кроме JSON."
 )
 
@@ -254,6 +273,79 @@ def _analyze(transcript: str) -> dict:
         "strengths": arr("strengths"),
         "concerns": arr("concerns"),
         "dental": _parse_dental(p.get("dental")),
+        "tactics": _parse_tactics(p.get("tactics")),
+        "complications": _parse_complications(p.get("complications")),
+        "treatment": _parse_treatment(p.get("treatment")),
+    }
+
+
+def _str_list(v) -> list:
+    return [str(x).strip() for x in v if str(x).strip()] if isinstance(v, list) else []
+
+
+def _parse_tactics(t) -> dict:
+    """Разбор тактики лечения."""
+    if not isinstance(t, dict):
+        return {}
+    approach = str(t.get("approach") or "").strip()
+    sequence = _str_list(t.get("sequence"))
+    equipment = _str_list(t.get("equipment"))
+    notes = _str_list(t.get("notes"))
+    if not approach and not sequence and not equipment and not notes:
+        return {}
+    return {"approach": approach, "sequence": sequence, "equipment": equipment, "notes": notes}
+
+
+def _parse_complications(c) -> dict:
+    """Разбор прогноза осложнений."""
+    if not isinstance(c, dict):
+        return {}
+    factors = []
+    raw = c.get("factors")
+    if isinstance(raw, list):
+        for f in raw:
+            if isinstance(f, dict):
+                name = str(f.get("name") or "").strip()
+                if name:
+                    factors.append({"name": name, "impact": str(f.get("impact") or "").strip()})
+            elif str(f).strip():
+                factors.append({"name": str(f).strip(), "impact": ""})
+    has_risk = isinstance(c.get("risk"), (int, float))
+    if not has_risk and not factors:
+        return {}
+    return {"risk": _clamp_score(c.get("risk")), "factors": factors}
+
+
+def _parse_treatment(t) -> dict:
+    """Разбор рекомендаций по лечению."""
+    if not isinstance(t, dict):
+        return {}
+    recommended = []
+    raw = t.get("recommended")
+    if isinstance(raw, list):
+        for r in raw:
+            if isinstance(r, dict):
+                title = str(r.get("title") or "").strip()
+                if title:
+                    recommended.append({"title": title, "detail": str(r.get("detail") or "").strip()})
+            elif str(r).strip():
+                recommended.append({"title": str(r).strip(), "detail": ""})
+    alternatives = []
+    raw_alt = t.get("alternatives")
+    if isinstance(raw_alt, list):
+        for a in raw_alt:
+            if isinstance(a, dict):
+                name = str(a.get("name") or "").strip()
+                if name:
+                    alternatives.append({"name": name, "score": _clamp_score(a.get("score"))})
+    aftercare = _str_list(t.get("aftercare"))
+    if not recommended and not alternatives and not aftercare:
+        return {}
+    return {
+        "recommended": recommended,
+        "match": _clamp_score(t.get("match")),
+        "alternatives": alternatives,
+        "aftercare": aftercare,
     }
 
 

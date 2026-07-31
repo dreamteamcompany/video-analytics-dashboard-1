@@ -9,6 +9,7 @@ import AnalysisReport from './AnalysisReport';
 import SessionHistory from './SessionHistory';
 import YunaDashboard from './YunaDashboard';
 import DentalReport from './DentalReport';
+import { TacticsReport, ComplicationsReport, TreatmentReport } from './PatientReports';
 
 const YunaPage = () => {
   const { state, seconds, level, silent, error: recError, start, pause, resume, stop, cancel } = useRecorder();
@@ -729,40 +730,47 @@ const YunaPage = () => {
               </div>
 
               {/* Психологическое состояние */}
-              <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
+              <div className="bg-white rounded-2xl shadow-lg p-6">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                   <Icon name="Brain" size={20} className="text-purple-500 mr-2 inline" />
                   Психологическое состояние
                 </h2>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-xs text-gray-600">Спокойствие</span>
-                      <span className="text-xs font-semibold text-green-600">78%</span>
+                {!processing && analysis ? (
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-xs text-gray-600">Спокойствие</span>
+                        <span className="text-xs font-semibold text-green-600">{analysis.patient_state}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-green-500 h-2 rounded-full" style={{ width: `${analysis.patient_state}%` }} />
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '78%' }} />
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-xs text-gray-600">Доверие к врачу</span>
+                        <span className="text-xs font-semibold text-blue-600">{analysis.trust}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${analysis.trust}%` }} />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-xs text-gray-600">Уровень тревоги</span>
+                        <span className="text-xs font-semibold text-orange-600">{100 - analysis.patient_state}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${100 - analysis.patient_state}%` }} />
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-xs text-gray-600">Доверие к врачу</span>
-                      <span className="text-xs font-semibold text-blue-600">85%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: '85%' }} />
-                    </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-center py-6 text-gray-400">
+                    <Icon name="Brain" size={28} className="mb-2" />
+                    <p className="text-sm text-gray-500">Появится после приёма</p>
                   </div>
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-xs text-gray-600">Уровень тревоги</span>
-                      <span className="text-xs font-semibold text-orange-600">42%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-orange-500 h-2 rounded-full" style={{ width: '42%' }} />
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Лояльность пациента */}
@@ -874,52 +882,7 @@ const YunaPage = () => {
             )}
 
             {/* Тактика лечения */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                <Icon name="Grid3x3" size={20} className="text-purple-500 mr-2 inline" fallback="CircleAlert" />
-                Тактика лечения
-              </h2>
-              <div className="space-y-4">
-                <div className="bg-purple-50 rounded-xl p-4">
-                  <h3 className="font-semibold text-purple-800 mb-2">На основе 247 похожих случаев</h3>
-                  <div className="space-y-2 text-sm text-purple-700">
-                    <div className="flex items-start space-x-2">
-                      <Icon name="CircleCheck" size={16} className="mt-1" />
-                      <span>Успешность: 94% при аналогичной анатомии</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Clock" size={16} className="mt-1" />
-                      <span>Среднее время: 68 минут</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Wrench" size={16} className="mt-1" />
-                      <span>Рекомендуемые файлы: ProTaper Gold F3</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-green-50 rounded-xl p-3">
-                    <h4 className="font-semibold text-green-800 text-sm mb-1">Оптимальная последовательность</h4>
-                    <ul className="text-xs text-green-700 space-y-1">
-                      <li>1. Анестезия инфильтрационная</li>
-                      <li>2. Коффердам</li>
-                      <li>3. Доступ через старую пломбу</li>
-                      <li>4. Поиск устьев</li>
-                    </ul>
-                  </div>
-                  <div className="bg-blue-50 rounded-xl p-3">
-                    <h4 className="font-semibold text-blue-800 text-sm mb-1">Оборудование</h4>
-                    <ul className="text-xs text-blue-700 space-y-1">
-                      <li>• Апекслокатор</li>
-                      <li>• Эндомотор 5:1</li>
-                      <li>• Ультразвук</li>
-                      <li>• Оптика</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <TacticsReport tactics={!processing ? analysis?.tactics : null} />
 
             {/* Контроль препаратов */}
             <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
@@ -962,116 +925,10 @@ const YunaPage = () => {
             </div>
 
             {/* AI-предсказание осложнений */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-prediction-glow min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
-                <Icon name="Bot" size={20} className="text-purple-500 mr-2 inline" />
-                AI-предсказание осложнений
-              </h2>
-              <div className="space-y-4">
-                <div className="bg-red-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-red-800">Риск послеоперационных осложнений</span>
-                    <span className="font-bold text-red-600">18%</span>
-                  </div>
-                  <div className="text-sm text-red-700 space-y-1">
-                    <p>• Курение: +12% к риску</p>
-                    <p>• Возраст: +3% к риску</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ComplicationsReport complications={!processing ? analysis?.complications : null} />
 
             {/* AI-рекомендации по лечению */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-treatment-recommendation min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
-                <Icon name="Stethoscope" size={20} className="text-green-500 mr-2 inline" />
-                AI-рекомендации по лечению
-              </h2>
-
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border-2 border-green-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-bold text-green-800 text-lg">Рекомендуемое лечение</h3>
-                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">94% совпадение</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-start space-x-2">
-                      <Icon name="CircleCheck" size={16} className="text-green-500 mt-1" />
-                      <div>
-                        <p className="font-semibold text-gray-800">Эндодонтическое лечение 36 зуба</p>
-                        <p className="text-sm text-gray-600">Пульпит, ночная боль, реакция на холодное</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Syringe" size={16} className="text-blue-500 mt-1" />
-                      <div>
-                        <p className="font-semibold text-gray-800">Анестезия: Ультракаин DS</p>
-                        <p className="text-sm text-gray-600">Учитывая отсутствие аллергии на артикаин</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Clock" size={16} className="text-orange-500 mt-1" />
-                      <div>
-                        <p className="font-semibold text-gray-800">Время процедуры: 45-60 минут</p>
-                        <p className="text-sm text-gray-600">С учетом сложности доступа</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 rounded-xl p-4">
-                  <h4 className="font-semibold text-blue-800 mb-2">Альтернативные варианты</h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-blue-700">Экстракция с последующей имплантацией</span>
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs">78%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-blue-700">Временное пломбирование + наблюдение</span>
-                      <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs">65%</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 rounded-xl p-4">
-                  <h4 className="font-semibold text-purple-800 mb-2">Рекомендации после лечения</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Icon name="Pill" size={16} className="text-purple-500" />
-                        <span className="text-sm text-purple-700">Нимесил 3 дня</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Icon name="Utensils" size={16} className="text-purple-500" fallback="CircleAlert" />
-                        <span className="text-sm text-purple-700">Щадящая диета 5 дней</span>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Icon name="CigaretteOff" size={16} className="text-purple-500" fallback="CircleAlert" />
-                        <span className="text-sm text-purple-700">Отказ от курения 48ч</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Icon name="CalendarCheck" size={16} className="text-purple-500" fallback="CalendarPlus" />
-                        <span className="text-sm text-purple-700">Контроль через 7 дней</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
-                    <Icon name="CircleCheck" size={16} className="mr-2" />Принять
-                  </button>
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
-                    <Icon name="Pencil" size={16} className="mr-2" fallback="CircleAlert" />Изменить
-                  </button>
-                  <button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
-                    <Icon name="X" size={16} className="mr-2" fallback="CircleAlert" />Отклонить
-                  </button>
-                </div>
-              </div>
-            </div>
+            <TreatmentReport treatment={!processing ? analysis?.treatment : null} />
 
             {/* Авто-журналы */}
             <div
