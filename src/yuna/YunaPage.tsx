@@ -858,98 +858,17 @@ const YunaPage = () => {
             {!processing && analysis?.dental && analysis.dental.primary_diagnosis ? (
               <DentalReport dental={analysis.dental} />
             ) : (
-            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
+            <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                 <Icon name="Stethoscope" size={20} className="text-blue-500 mr-2 inline" />
                 Диагностика и обследования
               </h2>
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border-2 border-blue-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-bold text-blue-800 text-lg">Предварительный диагноз</h3>
-                    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">92% вероятность</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Stethoscope" size={16} className="text-blue-500 mt-1" />
-                      <div>
-                        <p className="font-semibold text-gray-800">Пульпит 36 зуба</p>
-                        <p className="text-sm text-gray-600">Острый очаговый пульпит</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="TriangleAlert" size={16} className="text-orange-500 mt-1" />
-                      <div>
-                        <p className="font-semibold text-gray-800">Дифференциальный диагноз</p>
-                        <p className="text-sm text-gray-600">Исключить: периодонтит, невралгию</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 rounded-xl p-4">
-                  <h4 className="font-semibold text-green-800 mb-3">Рекомендуемые обследования</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Icon name="ScanLine" size={16} className="text-green-600" fallback="CircleAlert" />
-                        <div>
-                          <p className="text-sm font-semibold text-green-800">Прицельный снимок</p>
-                          <p className="text-xs text-green-700">36 зуб, оценка кариозной полости</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Icon name="Stethoscope" size={16} className="text-green-600" />
-                        <div>
-                          <p className="text-sm font-semibold text-green-800">ЭОД</p>
-                          <p className="text-xs text-green-700">Электроодонтодиагностика пульпы</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Icon name="Thermometer" size={16} className="text-green-600" fallback="CircleAlert" />
-                        <div>
-                          <p className="text-sm font-semibold text-green-800">Термопроба</p>
-                          <p className="text-xs text-green-700">Реакция на холодное/горячее</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Icon name="Camera" size={16} className="text-green-600" />
-                        <div>
-                          <p className="text-sm font-semibold text-green-800">Интраоральная камера</p>
-                          <p className="text-xs text-green-700">Фотофиксация состояния</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 rounded-xl p-4">
-                  <h4 className="font-semibold text-purple-800 mb-2">План лечения</h4>
-                  <div className="space-y-2 text-sm text-purple-700">
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Syringe" size={16} className="mt-1" />
-                      <span>Анестезия инфильтрационная</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Shield" size={16} className="mt-1" />
-                      <span>Изоляция коффердамом</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Wrench" size={16} className="mt-1" />
-                      <span>Препарирование кариозной полости</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Search" size={16} className="mt-1" fallback="CircleAlert" />
-                      <span>Раскрытие устьев каналов</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <Icon name="Ruler" size={16} className="mt-1" fallback="CircleAlert" />
-                      <span>Определение рабочей длины</span>
-                    </div>
-                  </div>
-                </div>
+              <div className="flex flex-col items-center justify-center text-center py-10 text-gray-400">
+                <Icon name="Stethoscope" size={32} className="mb-3" />
+                <p className="text-sm font-medium text-gray-500">Диагностика появится после приёма</p>
+                <p className="text-xs mt-1 max-w-xs">
+                  Запишите приём — Юна сформирует предварительный диагноз, обследования и план лечения
+                </p>
               </div>
             </div>
             )}
