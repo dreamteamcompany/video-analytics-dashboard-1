@@ -1,111 +1,155 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { yunaApi, YunaItem } from './api';
+import { yunaApi, Utterance } from './api';
+import { useRecorder } from './useRecorder';
+import TranscriptView from './TranscriptView';
+
+const fmtTime = (s: number) => {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+};
 
 const YunaPage = () => {
-  const [items, setItems] = useState<YunaItem[]>([]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { state, seconds, error: recError, start, pause, resume, stop, cancel } = useRecorder();
+  const [processing, setProcessing] = useState(false);
+  const [utterances, setUtterances] = useState<Utterance[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const load = async () => {
-    setLoading(true);
+  const handleStop = async () => {
+    const result = await stop();
+    if (!result || !result.base64) {
+      setError('Запись пустая. Попробуйте ещё раз.');
+      return;
+    }
+    setProcessing(true);
+    setError(null);
+    setUtterances([]);
     try {
-      setItems(await yunaApi.list());
-      setError(null);
-    } catch {
-      setError('Не удалось загрузить записи');
+      const res = await yunaApi.transcribe(result.base64, result.format, result.durationSec);
+      setUtterances(res.utterances);
+      if (res.utterances.length === 0) {
+        setError('В записи не распознана речь. Говорите ближе к микрофону.');
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Не удалось обработать запись');
     } finally {
-      setLoading(false);
+      setProcessing(false);
     }
   };
 
-  useEffect(() => {
-    load();
-  }, []);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return;
-    setSaving(true);
-    try {
-      const item = await yunaApi.create(title.trim(), description.trim());
-      setItems((prev) => [item, ...prev]);
-      setTitle('');
-      setDescription('');
-      setError(null);
-    } catch {
-      setError('Не удалось сохранить запись');
-    } finally {
-      setSaving(false);
-    }
-  };
+  const recording = state !== 'idle';
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 py-10">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Icon name="Sparkles" size={22} className="text-primary" />
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        {/* header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Icon name="Sparkles" size={22} className="text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Юна</h1>
+              <p className="text-sm text-muted-foreground">Анализ приёма врач-пациент</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Юна</h1>
-            <p className="text-sm text-muted-foreground">Отдельное приложение</p>
-          </div>
+          <Link to="/">
+            <Button variant="ghost" size="sm" className="gap-1.5">
+              <Icon name="ArrowLeft" size={16} />
+              На главную
+            </Button>
+          </Link>
         </div>
 
-        <Card className="p-5 mb-8">
-          <form onSubmit={submit} className="space-y-3">
-            <Input
-              placeholder="Название записи"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={255}
-            />
-            <Textarea
-              placeholder="Описание (необязательно)"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-            />
-            <Button type="submit" disabled={saving || !title.trim()}>
-              {saving ? 'Сохраняю…' : 'Добавить'}
-            </Button>
-          </form>
+        {/* recorder */}
+        <Card className="p-6 mb-6">
+          <div className="flex flex-col items-center text-center">
+            <div
+              className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 transition-colors ${
+                state === 'recording'
+                  ? 'bg-red-100'
+                  : state === 'paused'
+                  ? 'bg-amber-100'
+                  : 'bg-primary/10'
+              }`}
+            >
+              <Icon
+                name={state === 'recording' ? 'Mic' : state === 'paused' ? 'Pause' : 'Mic'}
+                size={34}
+                className={
+                  state === 'recording'
+                    ? 'text-red-500 animate-pulse'
+                    : state === 'paused'
+                    ? 'text-amber-500'
+                    : 'text-primary'
+                }
+              />
+            </div>
+
+            {recording ? (
+              <>
+                <p className="text-3xl font-bold text-foreground tabular-nums mb-1">
+                  {fmtTime(seconds)}
+                </p>
+                <p className="text-sm text-muted-foreground mb-5">
+                  {state === 'recording' ? 'Идёт запись приёма…' : 'Пауза'}
+                </p>
+                <div className="flex items-center gap-3">
+                  {state === 'recording' ? (
+                    <Button variant="outline" onClick={pause} className="gap-1.5">
+                      <Icon name="Pause" size={16} /> Пауза
+                    </Button>
+                  ) : (
+                    <Button variant="outline" onClick={resume} className="gap-1.5">
+                      <Icon name="Play" size={16} /> Продолжить
+                    </Button>
+                  )}
+                  <Button onClick={handleStop} className="gap-1.5">
+                    <Icon name="Square" size={16} /> Завершить
+                  </Button>
+                  <Button variant="ghost" onClick={cancel} className="text-muted-foreground">
+                    Отмена
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-base font-medium text-foreground mb-1">Готов к записи</p>
+                <p className="text-sm text-muted-foreground mb-5 max-w-sm">
+                  Нажмите «Начать приём» и говорите. После завершения запись расшифруется
+                  и разделится на реплики врача и пациента.
+                </p>
+                <Button size="lg" onClick={start} disabled={processing} className="gap-2">
+                  <Icon name="Mic" size={18} /> Начать приём
+                </Button>
+              </>
+            )}
+          </div>
         </Card>
 
-        {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-            <p className="text-sm text-red-600">{error}</p>
+        {(recError || error) && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+            <p className="text-sm text-red-600">{recError || error}</p>
           </div>
         )}
 
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <Icon name="LoaderCircle" size={28} className="text-primary animate-spin" />
-          </div>
-        ) : items.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground text-sm">
-            Пока нет записей. Добавьте первую выше.
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {items.map((item) => (
-              <Card key={item.id} className="p-4">
-                <h3 className="font-medium text-foreground">{item.title}</h3>
-                {item.description && (
-                  <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
-                )}
-              </Card>
-            ))}
-          </div>
+        {processing && (
+          <Card className="p-6 mb-6">
+            <div className="flex flex-col items-center text-center">
+              <Icon name="LoaderCircle" size={28} className="text-primary animate-spin mb-3" />
+              <p className="text-sm font-medium text-foreground">Расшифровываем приём…</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                ИИ определяет реплики врача и пациента
+              </p>
+            </div>
+          </Card>
         )}
+
+        {!processing && <TranscriptView utterances={utterances} />}
       </div>
     </div>
   );

@@ -1,27 +1,56 @@
 const YUNA_API = 'https://functions.poehali.dev/b9775f41-cc5d-4f54-b6c3-00bb7477338f';
 
-export interface YunaItem {
+export type Speaker = 'doctor' | 'patient' | 'unknown';
+
+export interface Utterance {
+  speaker: Speaker;
+  text: string;
+}
+
+export interface YunaSession {
   id: number;
   title: string;
-  description: string;
+  status: string;
+  duration_sec: number;
   created_at: string;
 }
 
+export interface TranscribeResult {
+  session_id: number;
+  utterances: Utterance[];
+  transcript: string;
+}
+
 export const yunaApi = {
-  list: async (): Promise<YunaItem[]> => {
+  listSessions: async (): Promise<YunaSession[]> => {
     const res = await fetch(YUNA_API);
     if (!res.ok) throw new Error(`list ${res.status}`);
-    const data = (await res.json()) as { items: YunaItem[] };
-    return data.items;
+    const data = (await res.json()) as { sessions: YunaSession[] };
+    return data.sessions;
   },
-  create: async (title: string, description: string): Promise<YunaItem> => {
+
+  transcribe: async (
+    audioBase64: string,
+    format: string,
+    durationSec: number,
+  ): Promise<TranscribeResult> => {
     const res = await fetch(YUNA_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description }),
+      body: JSON.stringify({
+        audio_base64: audioBase64,
+        format,
+        duration_sec: durationSec,
+      }),
     });
-    if (!res.ok) throw new Error(`create ${res.status}`);
-    const data = (await res.json()) as { item: YunaItem };
-    return data.item;
+    if (!res.ok) {
+      let msg = `transcribe ${res.status}`;
+      try {
+        const err = (await res.json()) as { error?: string };
+        if (err.error) msg = err.error;
+      } catch { /* ignore */ }
+      throw new Error(msg);
+    }
+    return (await res.json()) as TranscribeResult;
   },
 };

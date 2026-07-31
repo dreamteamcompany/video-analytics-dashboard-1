@@ -7,25 +7,18 @@
       "expectedStatus": 200
     },
     {
-      "name": "GET returns items list",
+      "name": "GET returns sessions list",
       "method": "GET",
       "path": "/",
       "expectedStatus": 200
     },
     {
-      "name": "POST without title returns 400",
+      "name": "POST without audio returns 400",
       "method": "POST",
       "path": "/",
-      "body": {"description": "no title"},
+      "body": {"format": "webm"},
       "expectedStatus": 400,
       "bodyMatcher": "partial"
-    },
-    {
-      "name": "POST creates item",
-      "method": "POST",
-      "path": "/",
-      "body": {"title": "Тестовая запись", "description": "проверка"},
-      "expectedStatus": 201
     }
   ]
 }
