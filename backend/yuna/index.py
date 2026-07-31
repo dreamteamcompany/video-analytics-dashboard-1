@@ -6,7 +6,9 @@ POST { audio_base64, format, duration_sec } — обработка записи 
       1) Whisper (audio/transcriptions) переводит аудио в текст;
       2) gpt-4o разбивает текст на реплики врача (doctor) и пациента (patient);
       3) gpt-4o оценивает приём (эмпатия, доверие, состояние, качество,
-         коммуникация) + резюме, рекомендации, сильные и тревожные моменты.
+         коммуникация) + резюме, рекомендации, сильные и тревожные моменты,
+         а также стоматологическую диагностику (dental): предварительный
+         диагноз, дифдиагнозы, обследования, план лечения.
       Результат сохраняется в БД (колонка analysis).
 Изолирован от основного проекта: свои таблицы с префиксом yuna_.
 """
@@ -176,10 +178,24 @@ ANALYSIS_PROMPT = (
     "recommendations (массив из 2-4 конкретных рекомендаций врачу), "
     "strengths (массив из 1-3 сильных сторон врача), "
     "concerns (массив тревожных моментов: риски, конфликты, жалобы; пустой если их нет).\n"
+    "Это СТОМАТОЛОГИЧЕСКИЙ приём. Дополнительно сформируй объект dental — "
+    "клиническую диагностику по стоматологии на основе жалоб и слов из диалога:\n"
+    "- primary_diagnosis: {name (предварительный стоматологический диагноз, "
+    "например 'Пульпит 36 зуба', 'Хронический периодонтит', 'Кариес дентина'), "
+    "probability (0-100, уверенность), tooth (номер зуба по FDI если упомянут, иначе '')};\n"
+    "- differential: массив из 1-3 строк — дифференциальные диагнозы (что ещё исключить);\n"
+    "- examinations: массив из 1-4 объектов {name, reason} — рекомендуемые обследования "
+    "(рентген/прицельный снимок, КЛКТ/3D, ЭОД, термопроба, перкуссия и т.п.) с краткой причиной;\n"
+    "- plan: массив из 2-5 строк — план лечения по шагам.\n"
+    "Если данных в диалоге недостаточно — делай осторожные предположения с низкой "
+    "probability, но поля всё равно заполни осмысленно по контексту стоматологии.\n"
     "Верни СТРОГО JSON без markdown вида: "
     '{"empathy":int,"trust":int,"patient_state":int,"quality":int,'
     '"communication":int,"summary":str,"recommendations":[str],'
-    '"strengths":[str],"concerns":[str]}. Ничего кроме JSON.'
+    '"strengths":[str],"concerns":[str],'
+    '"dental":{"primary_diagnosis":{"name":str,"probability":int,"tooth":str},'
+    '"differential":[str],"examinations":[{"name":str,"reason":str}],"plan":[str]}}. '
+    "Ничего кроме JSON."
 )
 
 
@@ -237,6 +253,47 @@ def _analyze(transcript: str) -> dict:
         "recommendations": arr("recommendations"),
         "strengths": arr("strengths"),
         "concerns": arr("concerns"),
+        "dental": _parse_dental(p.get("dental")),
+    }
+
+
+def _parse_dental(d) -> dict:
+    """Разбор стоматологического блока диагностики."""
+    if not isinstance(d, dict):
+        return {}
+    pd = d.get("primary_diagnosis") or {}
+    if not isinstance(pd, dict):
+        pd = {}
+    primary = {
+        "name": str(pd.get("name") or "").strip(),
+        "probability": _clamp_score(pd.get("probability")),
+        "tooth": str(pd.get("tooth") or "").strip(),
+    }
+    differential = [
+        str(x).strip() for x in d.get("differential", [])
+        if isinstance(d.get("differential"), list) and str(x).strip()
+    ]
+    exams = []
+    ex_raw = d.get("examinations")
+    if isinstance(ex_raw, list):
+        for e in ex_raw:
+            if isinstance(e, dict):
+                name = str(e.get("name") or "").strip()
+                if name:
+                    exams.append({"name": name, "reason": str(e.get("reason") or "").strip()})
+            elif str(e).strip():
+                exams.append({"name": str(e).strip(), "reason": ""})
+    plan = [
+        str(x).strip() for x in d.get("plan", [])
+        if isinstance(d.get("plan"), list) and str(x).strip()
+    ]
+    if not primary["name"] and not differential and not exams and not plan:
+        return {}
+    return {
+        "primary_diagnosis": primary,
+        "differential": differential,
+        "examinations": exams,
+        "plan": plan,
     }
 
 

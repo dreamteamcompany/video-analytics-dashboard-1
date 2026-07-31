@@ -38,6 +38,22 @@ export interface SessionDetail {
   analysis: Analysis | null;
 }
 
+export interface DentalExam {
+  name: string;
+  reason: string;
+}
+
+export interface DentalDiagnosis {
+  primary_diagnosis: {
+    name: string;
+    probability: number;
+    tooth: string;
+  };
+  differential: string[];
+  examinations: DentalExam[];
+  plan: string[];
+}
+
 export interface Analysis {
   empathy: number;
   trust: number;
@@ -48,6 +64,7 @@ export interface Analysis {
   recommendations: string[];
   strengths: string[];
   concerns: string[];
+  dental?: DentalDiagnosis | null;
 }
 
 export interface TranscribeResult {

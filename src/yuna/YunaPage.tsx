@@ -8,6 +8,7 @@ import TranscriptView from './TranscriptView';
 import AnalysisReport from './AnalysisReport';
 import SessionHistory from './SessionHistory';
 import YunaDashboard from './YunaDashboard';
+import DentalReport from './DentalReport';
 
 const YunaPage = () => {
   const { state, seconds, level, silent, error: recError, start, pause, resume, stop, cancel } = useRecorder();
@@ -854,6 +855,9 @@ const YunaPage = () => {
             </div>
 
             {/* Диагностика и обследования */}
+            {!processing && analysis?.dental && analysis.dental.primary_diagnosis ? (
+              <DentalReport dental={analysis.dental} />
+            ) : (
             <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                 <Icon name="Stethoscope" size={20} className="text-blue-500 mr-2 inline" />
@@ -948,6 +952,7 @@ const YunaPage = () => {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Тактика лечения */}
             <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
