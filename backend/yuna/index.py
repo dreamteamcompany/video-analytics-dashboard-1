@@ -22,6 +22,7 @@ import uuid
 import urllib.request
 import urllib.error
 import psycopg2
+import boto3
 
 CHAT_URL = "https://routerai.ru/api/v1/chat/completions"
 TRANSCRIBE_URL = "https://routerai.ru/api/v1/audio/transcriptions"
@@ -57,6 +58,21 @@ SPLIT_PROMPT = (
 
 def _conn():
     return psycopg2.connect(os.environ["DATABASE_URL"])
+
+
+def _upload_audio(audio_bytes: bytes, fmt: str) -> str:
+    """Сохраняет запись приёма в S3 и возвращает публичный CDN-URL для прослушивания."""
+    ext = "webm" if fmt == "webm" else "mp4" if fmt in ("mp4", "m4a") else fmt
+    content_type = "audio/webm" if ext == "webm" else "audio/mp4"
+    key = f"yuna/recordings/{uuid.uuid4().hex}.{ext}"
+    s3 = boto3.client(
+        "s3",
+        endpoint_url="https://bucket.poehali.dev",
+        aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+    )
+    s3.put_object(Bucket="files", Key=key, Body=audio_bytes, ContentType=content_type)
+    return f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
 
 
 def _resp(status: int, body: dict) -> dict:
@@ -809,7 +825,7 @@ def _list_sessions() -> dict:
     try:
         cur = conn.cursor()
         cur.execute(
-            "SELECT id, title, status, duration_sec, created_at, analysis "
+            "SELECT id, title, status, duration_sec, created_at, analysis, audio_url "
             "FROM yuna_sessions ORDER BY created_at DESC LIMIT 200"
         )
         rows = cur.fetchall()
@@ -831,6 +847,7 @@ def _list_sessions() -> dict:
                 "id": r[0], "title": r[1], "status": r[2],
                 "duration_sec": r[3], "created_at": r[4],
                 "overall": overall, "metrics": metrics or None,
+                "audio_url": r[6] or "",
             })
         return _resp(200, {"sessions": sessions})
     finally:
@@ -842,7 +859,7 @@ def _get_session(session_id: int) -> dict:
     try:
         cur = conn.cursor()
         cur.execute(
-            "SELECT id, title, status, transcript, duration_sec, created_at, analysis "
+            "SELECT id, title, status, transcript, duration_sec, created_at, analysis, audio_url "
             "FROM yuna_sessions WHERE id = %s",
             (session_id,),
         )
@@ -859,6 +876,7 @@ def _get_session(session_id: int) -> dict:
             "session": {
                 "id": s[0], "title": s[1], "status": s[2],
                 "transcript": s[3], "duration_sec": s[4], "created_at": s[5],
+                "audio_url": s[7] or "",
             },
             "utterances": utterances,
             "analysis": s[6],
@@ -879,9 +897,15 @@ def _transcribe(body: dict) -> dict:
     if not audio_b64:
         return _resp(400, {"error": "Аудио не передано"})
     try:
-        base64.b64decode(audio_b64[:100])
+        audio_bytes = base64.b64decode(audio_b64)
     except Exception:
         return _resp(400, {"error": "Некорректное аудио"})
+
+    audio_url = ""
+    try:
+        audio_url = _upload_audio(audio_bytes, fmt)
+    except Exception as e:
+        print(f"[yuna] audio upload skipped: {e}")
 
     try:
         utterances = _call_routerai(audio_b64, fmt)
@@ -907,9 +931,9 @@ def _transcribe(body: dict) -> dict:
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO yuna_sessions (status, transcript, duration_sec, analysis, doctor_id) "
-            "VALUES ('analyzed', %s, %s, %s, %s) RETURNING id",
-            (transcript, duration_sec, json.dumps(analysis) if analysis else None, doctor_id),
+            "INSERT INTO yuna_sessions (status, transcript, duration_sec, analysis, doctor_id, audio_url) "
+            "VALUES ('analyzed', %s, %s, %s, %s, %s) RETURNING id",
+            (transcript, duration_sec, json.dumps(analysis) if analysis else None, doctor_id, audio_url),
         )
         session_id = cur.fetchone()[0]
         for i, u in enumerate(utterances):
@@ -936,6 +960,7 @@ def _transcribe(body: dict) -> dict:
         "utterances": utterances,
         "transcript": transcript,
         "analysis": analysis,
+        "audio_url": audio_url,
     })
 
 

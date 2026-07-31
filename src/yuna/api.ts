@@ -23,6 +23,7 @@ export interface YunaSession {
   created_at: string;
   overall: number | null;
   metrics: SessionMetrics | null;
+  audio_url?: string;
 }
 
 export interface SessionDetail {
@@ -33,6 +34,7 @@ export interface SessionDetail {
     transcript: string;
     duration_sec: number;
     created_at: string;
+    audio_url?: string;
   };
   utterances: Utterance[];
   analysis: Analysis | null;
@@ -185,6 +187,7 @@ export interface TranscribeResult {
   utterances: Utterance[];
   transcript: string;
   analysis: Analysis | null;
+  audio_url?: string;
 }
 
 export const yunaApi = {

@@ -1,0 +1,1 @@
+ALTER TABLE yuna_sessions ADD COLUMN IF NOT EXISTS audio_url TEXT DEFAULT '';

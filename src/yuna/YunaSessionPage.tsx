@@ -70,6 +70,17 @@ const YunaSessionPage = () => {
           </div>
         ) : data ? (
           <>
+            {data.session.audio_url && (
+              <Card className="p-5 mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icon name="Volume2" size={18} className="text-primary" />
+                  <h2 className="font-semibold text-foreground">Запись приёма</h2>
+                </div>
+                <audio src={data.session.audio_url} controls className="w-full">
+                  Ваш браузер не поддерживает воспроизведение аудио.
+                </audio>
+              </Card>
+            )}
             {data.analysis ? (
               <AnalysisReport analysis={data.analysis} />
             ) : (
