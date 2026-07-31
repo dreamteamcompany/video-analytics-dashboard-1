@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { yunaApi, Utterance, Analysis } from './api';
+import { yunaApi, Utterance, Analysis, YunaSession } from './api';
 import { useRecorder } from './useRecorder';
 import { fmtTime } from './utils';
 import TranscriptView from './TranscriptView';
 import AnalysisReport from './AnalysisReport';
 import SessionHistory from './SessionHistory';
+import YunaDashboard from './YunaDashboard';
 
 const YunaPage = () => {
   const { state, seconds, error: recError, start, pause, resume, stop, cancel } = useRecorder();
@@ -16,7 +17,22 @@ const YunaPage = () => {
   const [utterances, setUtterances] = useState<Utterance[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [sessions, setSessions] = useState<YunaSession[]>([]);
+  const [loadingSessions, setLoadingSessions] = useState(true);
+
+  const loadSessions = useCallback(async () => {
+    try {
+      setSessions(await yunaApi.listSessions());
+    } catch {
+      /* silent */
+    } finally {
+      setLoadingSessions(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
 
   const handleStop = async () => {
     const result = await stop();
@@ -35,7 +51,7 @@ const YunaPage = () => {
       if (res.utterances.length === 0) {
         setError('В записи не распознана речь. Говорите ближе к микрофону.');
       } else {
-        setRefreshKey((k) => k + 1);
+        loadSessions();
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось обработать запись');
@@ -48,7 +64,7 @@ const YunaPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8">
         {/* header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -67,6 +83,9 @@ const YunaPage = () => {
             </Button>
           </Link>
         </div>
+
+        {/* dashboard */}
+        {!loadingSessions && <YunaDashboard sessions={sessions} />}
 
         {/* recorder */}
         <Card className="p-6 mb-6">
@@ -159,7 +178,7 @@ const YunaPage = () => {
           </div>
         )}
 
-        <SessionHistory refreshKey={refreshKey} />
+        <SessionHistory sessions={sessions} loading={loadingSessions} />
       </div>
     </div>
   );

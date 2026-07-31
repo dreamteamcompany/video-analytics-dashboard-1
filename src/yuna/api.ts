@@ -7,6 +7,14 @@ export interface Utterance {
   text: string;
 }
 
+export interface SessionMetrics {
+  empathy: number | null;
+  trust: number | null;
+  patient_state: number | null;
+  quality: number | null;
+  communication: number | null;
+}
+
 export interface YunaSession {
   id: number;
   title: string;
@@ -14,6 +22,7 @@ export interface YunaSession {
   duration_sec: number;
   created_at: string;
   overall: number | null;
+  metrics: SessionMetrics | null;
 }
 
 export interface SessionDetail {

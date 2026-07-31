@@ -232,18 +232,24 @@ def _list_sessions() -> dict:
             "FROM yuna_sessions ORDER BY created_at DESC LIMIT 200"
         )
         rows = cur.fetchall()
+        metric_keys = ["empathy", "trust", "patient_state", "quality", "communication"]
         sessions = []
         for r in rows:
             a = r[5] or {}
+            metrics = {}
             overall = None
             if a:
-                keys = ["empathy", "trust", "quality", "communication"]
-                vals = [a.get(k) for k in keys if isinstance(a.get(k), (int, float))]
+                for k in metric_keys:
+                    v = a.get(k)
+                    metrics[k] = int(v) if isinstance(v, (int, float)) else None
+                ov = ["empathy", "trust", "quality", "communication"]
+                vals = [a.get(k) for k in ov if isinstance(a.get(k), (int, float))]
                 if vals:
                     overall = round(sum(vals) / len(vals))
             sessions.append({
                 "id": r[0], "title": r[1], "status": r[2],
-                "duration_sec": r[3], "created_at": r[4], "overall": overall,
+                "duration_sec": r[3], "created_at": r[4],
+                "overall": overall, "metrics": metrics or None,
             })
         return _resp(200, {"sessions": sessions})
     finally:

@@ -1,31 +1,17 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { yunaApi, YunaSession } from './api';
+import { YunaSession } from './api';
 import { fmtTime, fmtDate, scoreColor } from './utils';
 
-const SessionHistory = ({ refreshKey }: { refreshKey: number }) => {
+const SessionHistory = ({
+  sessions,
+  loading,
+}: {
+  sessions: YunaSession[];
+  loading: boolean;
+}) => {
   const navigate = useNavigate();
-  const [sessions, setSessions] = useState<YunaSession[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    yunaApi
-      .listSessions()
-      .then((s) => {
-        if (active) setSessions(s);
-      })
-      .catch(() => { /* silent */ })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [refreshKey]);
 
   return (
     <Card className="p-5">
