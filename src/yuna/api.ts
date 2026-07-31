@@ -13,6 +13,20 @@ export interface YunaSession {
   status: string;
   duration_sec: number;
   created_at: string;
+  overall: number | null;
+}
+
+export interface SessionDetail {
+  session: {
+    id: number;
+    title: string;
+    status: string;
+    transcript: string;
+    duration_sec: number;
+    created_at: string;
+  };
+  utterances: Utterance[];
+  analysis: Analysis | null;
 }
 
 export interface Analysis {
@@ -40,6 +54,12 @@ export const yunaApi = {
     if (!res.ok) throw new Error(`list ${res.status}`);
     const data = (await res.json()) as { sessions: YunaSession[] };
     return data.sessions;
+  },
+
+  getSession: async (id: number): Promise<SessionDetail> => {
+    const res = await fetch(`${YUNA_API}?session_id=${id}`);
+    if (!res.ok) throw new Error(`session ${res.status}`);
+    return (await res.json()) as SessionDetail;
   },
 
   transcribe: async (

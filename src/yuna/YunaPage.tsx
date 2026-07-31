@@ -5,14 +5,10 @@ import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { yunaApi, Utterance, Analysis } from './api';
 import { useRecorder } from './useRecorder';
+import { fmtTime } from './utils';
 import TranscriptView from './TranscriptView';
 import AnalysisReport from './AnalysisReport';
-
-const fmtTime = (s: number) => {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${m}:${sec.toString().padStart(2, '0')}`;
-};
+import SessionHistory from './SessionHistory';
 
 const YunaPage = () => {
   const { state, seconds, error: recError, start, pause, resume, stop, cancel } = useRecorder();
@@ -20,6 +16,7 @@ const YunaPage = () => {
   const [utterances, setUtterances] = useState<Utterance[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleStop = async () => {
     const result = await stop();
@@ -37,6 +34,8 @@ const YunaPage = () => {
       setAnalysis(res.analysis);
       if (res.utterances.length === 0) {
         setError('В записи не распознана речь. Говорите ближе к микрофону.');
+      } else {
+        setRefreshKey((k) => k + 1);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось обработать запись');
@@ -154,7 +153,13 @@ const YunaPage = () => {
         )}
 
         {!processing && analysis && <AnalysisReport analysis={analysis} />}
-        {!processing && <TranscriptView utterances={utterances} />}
+        {!processing && utterances.length > 0 && (
+          <div className="mb-6">
+            <TranscriptView utterances={utterances} />
+          </div>
+        )}
+
+        <SessionHistory refreshKey={refreshKey} />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Analysis } from './api';
+import { scoreColor } from './utils';
 
 const METRICS: { key: keyof Analysis; label: string; icon: string }[] = [
   { key: 'empathy', label: 'Эмпатия врача', icon: 'HeartHandshake' },
@@ -9,12 +10,6 @@ const METRICS: { key: keyof Analysis; label: string; icon: string }[] = [
   { key: 'quality', label: 'Качество и сервис', icon: 'BadgeCheck' },
   { key: 'communication', label: 'Коммуникация', icon: 'MessagesSquare' },
 ];
-
-const scoreColor = (v: number) => {
-  if (v >= 75) return { bar: 'bg-green-500', text: 'text-green-600' };
-  if (v >= 50) return { bar: 'bg-amber-500', text: 'text-amber-600' };
-  return { bar: 'bg-red-500', text: 'text-red-600' };
-};
 
 const ScoreBar = ({ label, icon, value }: { label: string; icon: string; value: number }) => {
   const c = scoreColor(value);

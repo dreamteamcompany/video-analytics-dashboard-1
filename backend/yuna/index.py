@@ -228,14 +228,23 @@ def _list_sessions() -> dict:
     try:
         cur = conn.cursor()
         cur.execute(
-            "SELECT id, title, status, duration_sec, created_at "
+            "SELECT id, title, status, duration_sec, created_at, analysis "
             "FROM yuna_sessions ORDER BY created_at DESC LIMIT 200"
         )
         rows = cur.fetchall()
-        sessions = [
-            {"id": r[0], "title": r[1], "status": r[2], "duration_sec": r[3], "created_at": r[4]}
-            for r in rows
-        ]
+        sessions = []
+        for r in rows:
+            a = r[5] or {}
+            overall = None
+            if a:
+                keys = ["empathy", "trust", "quality", "communication"]
+                vals = [a.get(k) for k in keys if isinstance(a.get(k), (int, float))]
+                if vals:
+                    overall = round(sum(vals) / len(vals))
+            sessions.append({
+                "id": r[0], "title": r[1], "status": r[2],
+                "duration_sec": r[3], "created_at": r[4], "overall": overall,
+            })
         return _resp(200, {"sessions": sessions})
     finally:
         conn.close()
