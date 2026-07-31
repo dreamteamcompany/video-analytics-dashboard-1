@@ -3,9 +3,10 @@
 GET                 — список приёмов (yuna_sessions).
 GET ?session_id=N   — реплики конкретного приёма.
 POST { audio_base64, format, duration_sec } — обработка записи тремя шагами:
-      1) Whisper (audio/transcriptions) переводит аудио в текст;
-      1.5) корректор исправляет искажённые стоматологические термины в тексте;
-      2) gpt-4o разбивает текст на реплики врача (doctor) и пациента (patient);
+      1) Whisper (audio/transcriptions) переводит аудио в текст + сегменты с таймингами;
+      2) гибридная диаризация: реплики режутся по паузам, модель проставляет роли
+         (doctor/patient); если сегментов нет — fallback на разбор текста по смыслу;
+      2.5) корректор исправляет искажённые стоматологические термины в репликах;
       3) gpt-4o оценивает приём (эмпатия, доверие, состояние, качество,
          коммуникация) + резюме, рекомендации, сильные и тревожные моменты,
          а также стоматологическую диагностику (dental): предварительный
@@ -66,8 +67,13 @@ def _resp(status: int, body: dict) -> dict:
     }
 
 
-def _transcribe_audio(audio_bytes: bytes, fmt: str) -> str:
-    """Шаг 1: аудио -> текст через Whisper (multipart/form-data)."""
+def _transcribe_audio(audio_bytes: bytes, fmt: str) -> tuple:
+    """Шаг 1: аудио -> текст + сегменты с таймингами через Whisper (multipart/form-data).
+
+    Возвращает (text, segments), где segments — список {start, end, text} для
+    гибридной диаризации по паузам. Если провайдер не вернул сегменты,
+    segments будет пустым списком.
+    """
     boundary = f"----YunaBoundary{uuid.uuid4().hex}"
     ext = "webm" if fmt == "webm" else "mp4"
     parts = []
@@ -80,6 +86,8 @@ def _transcribe_audio(audio_bytes: bytes, fmt: str) -> str:
     add_field("model", WHISPER_MODEL)
     add_field("language", "ru")
     add_field("temperature", "0")
+    add_field("response_format", "verbose_json")
+    add_field("timestamp_granularities[]", "segment")
     add_field(
         "prompt",
         "Медицинский приём: диалог врача и пациента на русском языке. "
@@ -112,7 +120,22 @@ def _transcribe_audio(audio_bytes: bytes, fmt: str) -> str:
     if text is None:
         print(f"[yuna] Whisper unexpected response: {raw[:800]}")
         raise RuntimeError("Whisper не вернул текст")
-    return text.strip()
+
+    segments = []
+    for s in data.get("segments") or []:
+        if not isinstance(s, dict):
+            continue
+        st = s.get("text")
+        if st is None or not str(st).strip():
+            continue
+        try:
+            start = float(s.get("start", 0.0))
+            end = float(s.get("end", start))
+        except (TypeError, ValueError):
+            start, end = 0.0, 0.0
+        segments.append({"start": start, "end": end, "text": str(st).strip()})
+
+    return text.strip(), segments
 
 
 def _split_speakers(transcript: str) -> list:
@@ -156,6 +179,102 @@ def _split_speakers(transcript: str) -> list:
         if text:
             out.append({"speaker": sp, "text": text})
     return out
+
+
+PAUSE_GAP = 0.7  # секунды тишины между сегментами -> вероятная смена говорящего
+
+ASSIGN_PROMPT = (
+    "Ты — эксперт по анализу медицинских диалогов. На вход приходит СТОМАТОЛОГИЧЕСКИЙ "
+    "приём, уже разбитый на пронумерованные реплики (границы определены по паузам в "
+    "речи). Твоя задача — для КАЖДОЙ реплики определить говорящего: doctor (врач) или "
+    "patient (пациент). Реплики НЕ переписывай, НЕ объединяй и НЕ дели — только "
+    "проставь роль каждой по её номеру.\n"
+    "Признаки врача: задаёт уточняющие вопросы о симптомах, собирает анамнез, "
+    "объясняет, ставит диагноз, назначает обследования, препараты, дозировки.\n"
+    "Признаки пациента: описывает жалобы, боль, самочувствие, отвечает на вопросы, "
+    "переспрашивает, выражает эмоции и опасения.\n"
+    "Учитывай чередование ролей (вопрос врача -> ответ пациента) как ориентир. "
+    "Если роль неочевидна — unknown.\n"
+    "Верни СТРОГО JSON без markdown вида: "
+    '{"roles":[{"i":номер,"speaker":"doctor|patient|unknown"}]} для всех номеров. '
+    "Ничего кроме JSON."
+)
+
+
+def _group_by_pauses(segments: list) -> list:
+    """Группирует сегменты в реплики-«ходы»: новая реплика при паузе >= PAUSE_GAP."""
+    turns = []
+    cur = None
+    for s in segments:
+        if cur is None:
+            cur = {"text": s["text"]}
+            prev_end = s["end"]
+            continue
+        gap = s["start"] - prev_end
+        if gap >= PAUSE_GAP:
+            turns.append(cur)
+            cur = {"text": s["text"]}
+        else:
+            cur["text"] = (cur["text"] + " " + s["text"]).strip()
+        prev_end = s["end"]
+    if cur is not None:
+        turns.append(cur)
+    return [t for t in turns if t["text"].strip()]
+
+
+def _assign_roles(turns: list) -> list:
+    """Проставляет роли на уже нарезанных по паузам репликах через chat-модель."""
+    numbered = "\n".join(f"[{i}] {t['text']}" for i, t in enumerate(turns))
+    payload = {
+        "model": CHAT_MODEL,
+        "messages": [
+            {"role": "system", "content": ASSIGN_PROMPT},
+            {"role": "user", "content": numbered},
+        ],
+        "response_format": {"type": "json_object"},
+    }
+    req = urllib.request.Request(
+        CHAT_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {os.environ['ROUTERAI_API_KEY']}",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        raw = r.read().decode("utf-8")
+    data = json.loads(raw)
+    if "choices" not in data:
+        print(f"[yuna] Assign unexpected response: {raw[:400]}")
+        raise RuntimeError("Модель разметки ролей не вернула результат")
+    content = data["choices"][0]["message"]["content"].strip()
+    if content.startswith("```"):
+        content = content.split("```")[1]
+        if content.startswith("json"):
+            content = content[4:]
+        content = content.strip()
+    parsed = json.loads(content)
+    roles = {}
+    for r in parsed.get("roles", []):
+        try:
+            idx = int(r.get("i"))
+        except (TypeError, ValueError):
+            continue
+        sp = r.get("speaker", "unknown")
+        roles[idx] = sp if sp in ("doctor", "patient") else "unknown"
+    out = []
+    for i, t in enumerate(turns):
+        out.append({"speaker": roles.get(i, "unknown"), "text": t["text"]})
+    return out
+
+
+def _diarize(segments: list) -> list:
+    """Гибридная диаризация: паузы задают границы реплик, модель проставляет роли."""
+    turns = _group_by_pauses(segments)
+    if not turns:
+        return []
+    return _assign_roles(turns)
 
 
 CORRECT_PROMPT = (
@@ -219,16 +338,53 @@ def _correct_terms(transcript: str) -> str:
     return fixed if fixed else transcript
 
 
+def _correct_utterances(utterances: list) -> list:
+    """Исправляет стоматологические термины в тексте каждой реплики (сохраняя разбивку)."""
+    joined = "\n".join(f"[{i}] {u['text']}" for i, u in enumerate(utterances))
+    fixed_text = _correct_terms(joined)
+    fixed_map = {}
+    for line in fixed_text.split("\n"):
+        line = line.strip()
+        if line.startswith("[") and "]" in line:
+            try:
+                idx = int(line[1:line.index("]")])
+            except ValueError:
+                continue
+            fixed_map[idx] = line[line.index("]") + 1:].strip()
+    if not fixed_map:
+        return utterances
+    out = []
+    for i, u in enumerate(utterances):
+        out.append({"speaker": u["speaker"], "text": fixed_map.get(i, u["text"]) or u["text"]})
+    return out
+
+
 def _call_routerai(audio_b64: str, fmt: str) -> list:
     audio_bytes = base64.b64decode(audio_b64)
-    transcript = _transcribe_audio(audio_bytes, fmt)
+    transcript, segments = _transcribe_audio(audio_bytes, fmt)
     if not transcript:
         return []
+
+    # Гибридная диаризация: если есть тайминги сегментов — режем по паузам и
+    # проставляем роли на готовых репликах; иначе — старый разбор текста моделью.
+    utterances = []
+    if segments:
+        try:
+            utterances = _diarize(segments)
+        except Exception as e:
+            print(f"[yuna] diarization failed, fallback to text split: {e}")
+    if not utterances:
+        try:
+            transcript = _correct_terms(transcript)
+        except Exception as e:
+            print(f"[yuna] term correction skipped: {e}")
+        return _split_speakers(transcript)
+
     try:
-        transcript = _correct_terms(transcript)
+        utterances = _correct_utterances(utterances)
     except Exception as e:
-        print(f"[yuna] term correction skipped: {e}")
-    return _split_speakers(transcript)
+        print(f"[yuna] term correction (utterances) skipped: {e}")
+    return utterances
 
 
 ANALYSIS_PROMPT = (
