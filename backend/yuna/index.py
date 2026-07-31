@@ -24,7 +24,7 @@ import psycopg2
 
 CHAT_URL = "https://routerai.ru/api/v1/chat/completions"
 TRANSCRIBE_URL = "https://routerai.ru/api/v1/audio/transcriptions"
-WHISPER_MODEL = "openai/gpt-4o-transcribe"
+WHISPER_MODEL = "openai/whisper-large-v3"
 CHAT_MODEL = "openai/gpt-5.1"
 
 CORS = {
