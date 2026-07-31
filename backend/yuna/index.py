@@ -67,6 +67,14 @@ def _transcribe_audio(audio_bytes: bytes, fmt: str) -> str:
 
     add_field("model", WHISPER_MODEL)
     add_field("language", "ru")
+    add_field("temperature", "0")
+    add_field(
+        "prompt",
+        "Медицинский приём: диалог врача и пациента на русском языке. "
+        "Пациент описывает жалобы, симптомы, боль, самочувствие. "
+        "Врач задаёт вопросы, ставит диагноз, назначает лечение, "
+        "анализы, препараты и дозировки.",
+    )
     parts.append(f"--{boundary}\r\n".encode())
     parts.append(
         f'Content-Disposition: form-data; name="file"; filename="audio.{ext}"\r\n'.encode()
