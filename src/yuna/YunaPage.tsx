@@ -372,7 +372,7 @@ const YunaPage = () => {
             </div>
 
             {/* Голосовые протоколы */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 yuna-protocol-glow">
+            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-protocol-glow min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 <Icon name="FileText" size={20} className="text-blue-500 mr-2 inline" />
                 Голосовые протоколы
@@ -406,7 +406,7 @@ const YunaPage = () => {
             </div>
 
             {/* Сложность случая */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 <Icon name="ChartBar" size={20} className="text-orange-500 mr-2 inline" />
                 Сложность случая
@@ -443,7 +443,7 @@ const YunaPage = () => {
             </div>
 
             {/* Расчет анестезии */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 yuna-anesthesia-calc">
+            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-anesthesia-calc min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 <Icon name="Calculator" size={20} className="text-green-500 mr-2 inline" />
                 Расчет анестезии
@@ -500,7 +500,7 @@ const YunaPage = () => {
             </div>
 
             {/* Рейтинг врачей */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-doctor-divider">Рейтинг врачей</h2>
 
               <div className="space-y-3">
@@ -560,7 +560,7 @@ const YunaPage = () => {
             </div>
 
             {/* Моё состояние + коучинг */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-doctor-divider">
                 <Icon name="Heart" size={20} className="text-red-500 mr-2 inline" />
                 Моё состояние
@@ -610,7 +610,7 @@ const YunaPage = () => {
             </div>
 
             {/* Голосовые шаблоны */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-doctor-divider">
                 <Icon name="MessageSquare" size={20} className="text-red-500 mr-2 inline" />
                 Голосовые шаблоны
@@ -655,7 +655,7 @@ const YunaPage = () => {
             </div>
 
             {/* Автоматически заполненные данные */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 yuna-auto-fill-glow">
+            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-auto-fill-glow min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                 <Icon name="Sparkles" size={20} className="text-green-500 mr-2 inline" />
                 Автоматически заполненные данные
@@ -702,7 +702,7 @@ const YunaPage = () => {
             {/* Верхняя часть раздела пациента */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               {/* Текущий пациент */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">Текущий пациент</h2>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
@@ -728,7 +728,7 @@ const YunaPage = () => {
               </div>
 
               {/* Психологическое состояние */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                   <Icon name="Brain" size={20} className="text-purple-500 mr-2 inline" />
                   Психологическое состояние
@@ -765,7 +765,7 @@ const YunaPage = () => {
               </div>
 
               {/* Лояльность пациента */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                   <Icon name="ChartLine" size={20} className="text-green-500 mr-2 inline" />
                   Лояльность пациента
@@ -806,7 +806,7 @@ const YunaPage = () => {
             {!processing && analysis && <AnalysisReport analysis={analysis} />}
 
             {/* Анализ речи для доп. услуг */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                 <Icon name="MessageSquare" size={20} className="text-yellow-500 mr-2 inline" />
                 Анализ речи для доп. услуг
@@ -854,7 +854,7 @@ const YunaPage = () => {
             </div>
 
             {/* Диагностика и обследования */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                 <Icon name="Stethoscope" size={20} className="text-blue-500 mr-2 inline" />
                 Диагностика и обследования
@@ -950,7 +950,7 @@ const YunaPage = () => {
             </div>
 
             {/* Тактика лечения */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 <Icon name="Grid3x3" size={20} className="text-purple-500 mr-2 inline" fallback="CircleAlert" />
                 Тактика лечения
@@ -998,7 +998,7 @@ const YunaPage = () => {
             </div>
 
             {/* Контроль препаратов */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 <Icon name="TriangleAlert" size={20} className="text-red-500 mr-2 inline" />
                 Контроль препаратов
@@ -1038,7 +1038,7 @@ const YunaPage = () => {
             </div>
 
             {/* AI-предсказание осложнений */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 yuna-prediction-glow">
+            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-prediction-glow min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                 <Icon name="Bot" size={20} className="text-purple-500 mr-2 inline" />
                 AI-предсказание осложнений
@@ -1058,7 +1058,7 @@ const YunaPage = () => {
             </div>
 
             {/* AI-рекомендации по лечению */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 yuna-treatment-recommendation">
+            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-treatment-recommendation min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                 <Icon name="Stethoscope" size={20} className="text-green-500 mr-2 inline" />
                 AI-рекомендации по лечению
@@ -1151,8 +1151,8 @@ const YunaPage = () => {
 
             {/* Авто-журналы */}
             <div
-              className="rounded-2xl shadow-lg p-6"
-              style={{ background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)' }}
+              className="rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible"
+              style={{ background: '#000' }}
             >
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 <Icon name="BookOpen" size={20} className="text-green-500 mr-2 inline" />
@@ -1190,7 +1190,7 @@ const YunaPage = () => {
             </div>
 
             {/* KPI качества */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 <Icon name="ChartLine" size={20} className="text-indigo-500 mr-2 inline" />
                 KPI качества
@@ -1229,7 +1229,7 @@ const YunaPage = () => {
             </div>
 
             {/* Персональное обучение */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 yuna-training-rec">
+            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-training-rec min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 <Icon name="GraduationCap" size={20} className="text-purple-500 mr-2 inline" />
                 Персональное обучение
@@ -1264,7 +1264,7 @@ const YunaPage = () => {
             </div>
 
             {/* Уведомления для врача */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
               <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
                 <Icon name="Bell" size={20} className="text-yellow-500 mr-2 inline" />
                 Уведомления для врача
