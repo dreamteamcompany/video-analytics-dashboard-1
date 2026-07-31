@@ -2,20 +2,25 @@
 Подпроект «Юна»: анализ приёма врач-пациент.
 GET                 — список приёмов (yuna_sessions).
 GET ?session_id=N   — реплики конкретного приёма.
-POST { audio_base64, format, duration_sec } — расшифровка записи через RouterAI
-      (модель gpt-audio) с разделением на роли doctor/patient, сохранение в БД.
+POST { audio_base64, format, duration_sec } — расшифровка записи двумя шагами:
+      1) Whisper (audio/transcriptions) переводит аудио в текст;
+      2) gpt-4o разбивает текст на реплики врача (doctor) и пациента (patient).
+      Результат сохраняется в БД.
 Изолирован от основного проекта: свои таблицы с префиксом yuna_.
 """
 
 import json
 import os
 import base64
+import uuid
 import urllib.request
 import urllib.error
 import psycopg2
 
-ROUTERAI_URL = "https://routerai.ru/api/v1/chat/completions"
-MODEL = "openai/gpt-audio"
+CHAT_URL = "https://routerai.ru/api/v1/chat/completions"
+TRANSCRIBE_URL = "https://routerai.ru/api/v1/audio/transcriptions"
+WHISPER_MODEL = "openai/whisper-large-v3"
+CHAT_MODEL = "openai/gpt-4o"
 
 CORS = {
     "Access-Control-Allow-Origin": "*",
@@ -23,14 +28,14 @@ CORS = {
     "Access-Control-Allow-Headers": "Content-Type",
 }
 
-SYSTEM_PROMPT = (
-    "Ты — ассистент, расшифровывающий аудиозапись медицинского приёма на русском языке. "
-    "Определи реплики врача (doctor) и пациента (patient) по смыслу и контексту. "
-    "Врач задаёт клинические вопросы, ставит диагноз, назначает лечение; "
+SPLIT_PROMPT = (
+    "Ты анализируешь расшифровку медицинского приёма на русском языке. "
+    "Раздели текст на реплики врача (doctor) и пациента (patient) по смыслу: "
+    "врач задаёт клинические вопросы, ставит диагноз, назначает лечение; "
     "пациент описывает жалобы и симптомы. "
-    "Верни СТРОГО JSON-объект без markdown вида: "
+    "Верни СТРОГО JSON без markdown вида: "
     '{"utterances":[{"speaker":"doctor|patient","text":"реплика"}]} '
-    "в хронологическом порядке. Не добавляй ничего кроме JSON."
+    "в хронологическом порядке. Ничего кроме JSON."
 )
 
 
@@ -47,23 +52,59 @@ def _resp(status: int, body: dict) -> dict:
     }
 
 
-def _call_routerai(audio_b64: str, fmt: str) -> list:
+def _transcribe_audio(audio_bytes: bytes, fmt: str) -> str:
+    """Шаг 1: аудио -> текст через Whisper (multipart/form-data)."""
+    boundary = f"----YunaBoundary{uuid.uuid4().hex}"
+    ext = "webm" if fmt == "webm" else "mp4"
+    parts = []
+
+    def add_field(name, value):
+        parts.append(f"--{boundary}\r\n".encode())
+        parts.append(f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode())
+        parts.append(f"{value}\r\n".encode())
+
+    add_field("model", WHISPER_MODEL)
+    add_field("language", "ru")
+    parts.append(f"--{boundary}\r\n".encode())
+    parts.append(
+        f'Content-Disposition: form-data; name="file"; filename="audio.{ext}"\r\n'.encode()
+    )
+    parts.append(f"Content-Type: audio/{fmt}\r\n\r\n".encode())
+    parts.append(audio_bytes)
+    parts.append(f"\r\n--{boundary}--\r\n".encode())
+    body = b"".join(parts)
+
+    req = urllib.request.Request(
+        TRANSCRIBE_URL,
+        data=body,
+        headers={
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Authorization": f"Bearer {os.environ['ROUTERAI_API_KEY']}",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        raw = r.read().decode("utf-8")
+    data = json.loads(raw)
+    text = data.get("text")
+    if text is None:
+        print(f"[yuna] Whisper unexpected response: {raw[:800]}")
+        raise RuntimeError("Whisper не вернул текст")
+    return text.strip()
+
+
+def _split_speakers(transcript: str) -> list:
+    """Шаг 2: текст -> реплики с ролями через gpt-4o."""
     payload = {
-        "model": MODEL,
-        "modalities": ["text"],
+        "model": CHAT_MODEL,
         "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": "Расшифруй запись приёма и раздели по ролям."},
-                    {"type": "input_audio", "input_audio": {"data": audio_b64, "format": fmt}},
-                ],
-            },
+            {"role": "system", "content": SPLIT_PROMPT},
+            {"role": "user", "content": transcript},
         ],
+        "temperature": 0.2,
     }
     req = urllib.request.Request(
-        ROUTERAI_URL,
+        CHAT_URL,
         data=json.dumps(payload).encode("utf-8"),
         headers={
             "Content-Type": "application/json",
@@ -72,7 +113,11 @@ def _call_routerai(audio_b64: str, fmt: str) -> list:
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=120) as r:
-        data = json.loads(r.read().decode("utf-8"))
+        raw = r.read().decode("utf-8")
+    data = json.loads(raw)
+    if "choices" not in data:
+        print(f"[yuna] Chat unexpected response: {raw[:800]}")
+        raise RuntimeError("Модель разбора не вернула результат")
     content = data["choices"][0]["message"]["content"].strip()
     if content.startswith("```"):
         content = content.split("```")[1]
@@ -89,6 +134,14 @@ def _call_routerai(audio_b64: str, fmt: str) -> list:
         if text:
             out.append({"speaker": sp, "text": text})
     return out
+
+
+def _call_routerai(audio_b64: str, fmt: str) -> list:
+    audio_bytes = base64.b64decode(audio_b64)
+    transcript = _transcribe_audio(audio_bytes, fmt)
+    if not transcript:
+        return []
+    return _split_speakers(transcript)
 
 
 def _list_sessions() -> dict:
