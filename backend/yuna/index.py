@@ -4,6 +4,7 @@ GET                 — список приёмов (yuna_sessions).
 GET ?session_id=N   — реплики конкретного приёма.
 POST { audio_base64, format, duration_sec } — обработка записи тремя шагами:
       1) Whisper (audio/transcriptions) переводит аудио в текст;
+      1.5) корректор исправляет искажённые стоматологические термины в тексте;
       2) gpt-4o разбивает текст на реплики врача (doctor) и пациента (patient);
       3) gpt-4o оценивает приём (эмпатия, доверие, состояние, качество,
          коммуникация) + резюме, рекомендации, сильные и тревожные моменты,
@@ -157,11 +158,76 @@ def _split_speakers(transcript: str) -> list:
     return out
 
 
+CORRECT_PROMPT = (
+    "Ты — редактор-корректор расшифровок СТОМАТОЛОГИЧЕСКОГО приёма. На вход "
+    "приходит сырой текст, полученный распознаванием речи (возможны ошибки из-за "
+    "шума кабинета и бормашины). Твоя задача — исправить ТОЛЬКО искажённые "
+    "медицинские и стоматологические термины, вернув корректный текст.\n"
+    "Что исправлять:\n"
+    "- названия зубов и их нумерацию (например 'тридцать шестой зуб', '36 зуб', "
+    "правильные названия: моляр, премоляр, клык, резец);\n"
+    "- названия препаратов и анестетиков (Ультракаин, Убистезин, Артикаин, "
+    "Лидокаин, Септанест, амоксициллин и т.п.) — восстанови верное написание;\n"
+    "- диагнозы и состояния (пульпит, периодонтит, кариес, гингивит, пародонтит, "
+    "периимплантит и т.п.);\n"
+    "- процедуры, материалы и инструменты (эндодонтия, коффердам, апекслокатор, "
+    "гуттаперча, коронка, имплантат, композит, ProTaper и т.п.);\n"
+    "- очевидные опечатки в числах, дозировках и единицах (мл, мг, %).\n"
+    "СТРОГИЕ правила: НЕ меняй смысл; НЕ добавляй и НЕ удаляй информацию; "
+    "сохраняй разговорные слова и жалобы пациента как есть; если слово не является "
+    "искажённым термином — оставь без изменений; не размечай говорящих.\n"
+    "Верни СТРОГО JSON без markdown: {\"text\":\"исправленный текст\"}. Ничего кроме JSON."
+)
+
+
+def _correct_terms(transcript: str) -> str:
+    """Шаг-корректор: исправляет искажённые стоматологические термины после Whisper."""
+    payload = {
+        "model": CHAT_MODEL,
+        "messages": [
+            {"role": "system", "content": CORRECT_PROMPT},
+            {"role": "user", "content": transcript},
+        ],
+        "response_format": {"type": "json_object"},
+    }
+    req = urllib.request.Request(
+        CHAT_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {os.environ['ROUTERAI_API_KEY']}",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        raw = r.read().decode("utf-8")
+    data = json.loads(raw)
+    if "choices" not in data:
+        print(f"[yuna] Correct unexpected response: {raw[:400]}")
+        return transcript
+    content = data["choices"][0]["message"]["content"].strip()
+    if content.startswith("```"):
+        content = content.split("```")[1]
+        if content.startswith("json"):
+            content = content[4:]
+        content = content.strip()
+    try:
+        fixed = json.loads(content).get("text")
+    except Exception:
+        return transcript
+    fixed = (fixed or "").strip()
+    return fixed if fixed else transcript
+
+
 def _call_routerai(audio_b64: str, fmt: str) -> list:
     audio_bytes = base64.b64decode(audio_b64)
     transcript = _transcribe_audio(audio_bytes, fmt)
     if not transcript:
         return []
+    try:
+        transcript = _correct_terms(transcript)
+    except Exception as e:
+        print(f"[yuna] term correction skipped: {e}")
     return _split_speakers(transcript)
 
 
