@@ -12,7 +12,7 @@ import SessionHistory from './SessionHistory';
 import YunaDashboard from './YunaDashboard';
 
 const YunaPage = () => {
-  const { state, seconds, level, error: recError, start, pause, resume, stop, cancel } = useRecorder();
+  const { state, seconds, level, silent, error: recError, start, pause, resume, stop, cancel } = useRecorder();
   const [processing, setProcessing] = useState(false);
   const [utterances, setUtterances] = useState<Utterance[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
@@ -144,6 +144,15 @@ const YunaPage = () => {
                     );
                   })}
                 </div>
+
+                {state === 'recording' && silent && (
+                  <div className="flex items-center gap-2 mb-5 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200">
+                    <Icon name="MicOff" size={16} className="text-amber-600 flex-shrink-0" />
+                    <span className="text-sm text-amber-700 text-left">
+                      Звук слишком тихий — говорите громче или ближе к микрофону
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-3">
                   {state === 'recording' ? (

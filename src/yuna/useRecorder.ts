@@ -12,6 +12,7 @@ export function useRecorder() {
   const [state, setState] = useState<RecorderState>('idle');
   const [seconds, setSeconds] = useState(0);
   const [level, setLevel] = useState(0);
+  const [silent, setSilent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const mediaRef = useRef<MediaRecorder | null>(null);
@@ -22,6 +23,10 @@ export function useRecorder() {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const rafRef = useRef<number | null>(null);
+  const silentSinceRef = useRef<number | null>(null);
+
+  const SILENCE_LEVEL = 0.04;
+  const SILENCE_MS = 3000;
 
   const stopMeter = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -29,7 +34,9 @@ export function useRecorder() {
     audioCtxRef.current?.close().catch(() => {});
     audioCtxRef.current = null;
     analyserRef.current = null;
+    silentSinceRef.current = null;
     setLevel(0);
+    setSilent(false);
   }, []);
 
   const startMeter = useCallback((stream: MediaStream) => {
@@ -52,7 +59,18 @@ export function useRecorder() {
         sum += v * v;
       }
       const rms = Math.sqrt(sum / data.length);
-      setLevel(Math.min(1, rms * 3));
+      const lvl = Math.min(1, rms * 3);
+      setLevel(lvl);
+
+      const now = performance.now();
+      if (lvl < SILENCE_LEVEL) {
+        if (silentSinceRef.current === null) silentSinceRef.current = now;
+        if (now - silentSinceRef.current >= SILENCE_MS) setSilent(true);
+      } else {
+        silentSinceRef.current = null;
+        setSilent(false);
+      }
+
       rafRef.current = requestAnimationFrame(loop);
     };
     loop();
@@ -165,5 +183,5 @@ export function useRecorder() {
     setSeconds(0);
   }, [stopTick, stopMeter]);
 
-  return { state, seconds, level, error, start, pause, resume, stop, cancel };
+  return { state, seconds, level, silent, error, start, pause, resume, stop, cancel };
 }
