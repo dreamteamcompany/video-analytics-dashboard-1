@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { yunaApi, Utterance } from './api';
+import { yunaApi, Utterance, Analysis } from './api';
 import { useRecorder } from './useRecorder';
 import TranscriptView from './TranscriptView';
+import AnalysisReport from './AnalysisReport';
 
 const fmtTime = (s: number) => {
   const m = Math.floor(s / 60);
@@ -17,6 +18,7 @@ const YunaPage = () => {
   const { state, seconds, error: recError, start, pause, resume, stop, cancel } = useRecorder();
   const [processing, setProcessing] = useState(false);
   const [utterances, setUtterances] = useState<Utterance[]>([]);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleStop = async () => {
@@ -28,9 +30,11 @@ const YunaPage = () => {
     setProcessing(true);
     setError(null);
     setUtterances([]);
+    setAnalysis(null);
     try {
       const res = await yunaApi.transcribe(result.base64, result.format, result.durationSec);
       setUtterances(res.utterances);
+      setAnalysis(res.analysis);
       if (res.utterances.length === 0) {
         setError('В записи не распознана речь. Говорите ближе к микрофону.');
       }
@@ -141,14 +145,15 @@ const YunaPage = () => {
           <Card className="p-6 mb-6">
             <div className="flex flex-col items-center text-center">
               <Icon name="LoaderCircle" size={28} className="text-primary animate-spin mb-3" />
-              <p className="text-sm font-medium text-foreground">Расшифровываем приём…</p>
+              <p className="text-sm font-medium text-foreground">Обрабатываем приём…</p>
               <p className="text-xs text-muted-foreground mt-1">
-                ИИ определяет реплики врача и пациента
+                ИИ расшифровывает речь, разделяет реплики и оценивает приём
               </p>
             </div>
           </Card>
         )}
 
+        {!processing && analysis && <AnalysisReport analysis={analysis} />}
         {!processing && <TranscriptView utterances={utterances} />}
       </div>
     </div>

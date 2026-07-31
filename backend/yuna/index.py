@@ -2,10 +2,12 @@
 Подпроект «Юна»: анализ приёма врач-пациент.
 GET                 — список приёмов (yuna_sessions).
 GET ?session_id=N   — реплики конкретного приёма.
-POST { audio_base64, format, duration_sec } — расшифровка записи двумя шагами:
+POST { audio_base64, format, duration_sec } — обработка записи тремя шагами:
       1) Whisper (audio/transcriptions) переводит аудио в текст;
-      2) gpt-4o разбивает текст на реплики врача (doctor) и пациента (patient).
-      Результат сохраняется в БД.
+      2) gpt-4o разбивает текст на реплики врача (doctor) и пациента (patient);
+      3) gpt-4o оценивает приём (эмпатия, доверие, состояние, качество,
+         коммуникация) + резюме, рекомендации, сильные и тревожные моменты.
+      Результат сохраняется в БД (колонка analysis).
 Изолирован от основного проекта: свои таблицы с префиксом yuna_.
 """
 
@@ -144,6 +146,83 @@ def _call_routerai(audio_b64: str, fmt: str) -> list:
     return _split_speakers(transcript)
 
 
+ANALYSIS_PROMPT = (
+    "Ты — эксперт по качеству медицинских приёмов. Проанализируй расшифровку "
+    "диалога врача и пациента на русском языке. Оцени по шкале 0-100 пять метрик:\n"
+    "- empathy — эмпатия врача (внимательность, чуткость);\n"
+    "- trust — доверие пациента (открытость, доверие к врачу);\n"
+    "- patient_state — психологическое состояние пациента "
+    "(100 = спокоен и уверен, 0 = сильная тревога/стресс);\n"
+    "- quality — качество и сервис (профессионализм, ясность, вежливость);\n"
+    "- communication — коммуникация (ясность объяснений, умение слушать).\n"
+    "Также дай: summary (краткое резюме приёма, 2-3 предложения), "
+    "recommendations (массив из 2-4 конкретных рекомендаций врачу), "
+    "strengths (массив из 1-3 сильных сторон врача), "
+    "concerns (массив тревожных моментов: риски, конфликты, жалобы; пустой если их нет).\n"
+    "Верни СТРОГО JSON без markdown вида: "
+    '{"empathy":int,"trust":int,"patient_state":int,"quality":int,'
+    '"communication":int,"summary":str,"recommendations":[str],'
+    '"strengths":[str],"concerns":[str]}. Ничего кроме JSON.'
+)
+
+
+def _clamp_score(v) -> int:
+    try:
+        n = int(round(float(v)))
+    except Exception:
+        return 0
+    return max(0, min(100, n))
+
+
+def _analyze(transcript: str) -> dict:
+    payload = {
+        "model": CHAT_MODEL,
+        "messages": [
+            {"role": "system", "content": ANALYSIS_PROMPT},
+            {"role": "user", "content": transcript},
+        ],
+        "temperature": 0.3,
+    }
+    req = urllib.request.Request(
+        CHAT_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {os.environ['ROUTERAI_API_KEY']}",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        raw = r.read().decode("utf-8")
+    data = json.loads(raw)
+    if "choices" not in data:
+        print(f"[yuna] Analysis unexpected response: {raw[:800]}")
+        raise RuntimeError("Модель анализа не вернула результат")
+    content = data["choices"][0]["message"]["content"].strip()
+    if content.startswith("```"):
+        content = content.split("```")[1]
+        if content.startswith("json"):
+            content = content[4:]
+        content = content.strip()
+    p = json.loads(content)
+
+    def arr(key):
+        v = p.get(key, [])
+        return [str(x).strip() for x in v if str(x).strip()] if isinstance(v, list) else []
+
+    return {
+        "empathy": _clamp_score(p.get("empathy")),
+        "trust": _clamp_score(p.get("trust")),
+        "patient_state": _clamp_score(p.get("patient_state")),
+        "quality": _clamp_score(p.get("quality")),
+        "communication": _clamp_score(p.get("communication")),
+        "summary": str(p.get("summary") or "").strip(),
+        "recommendations": arr("recommendations"),
+        "strengths": arr("strengths"),
+        "concerns": arr("concerns"),
+    }
+
+
 def _list_sessions() -> dict:
     conn = _conn()
     try:
@@ -167,7 +246,7 @@ def _get_session(session_id: int) -> dict:
     try:
         cur = conn.cursor()
         cur.execute(
-            "SELECT id, title, status, transcript, duration_sec, created_at "
+            "SELECT id, title, status, transcript, duration_sec, created_at, analysis "
             "FROM yuna_sessions WHERE id = %s",
             (session_id,),
         )
@@ -186,6 +265,7 @@ def _get_session(session_id: int) -> dict:
                 "transcript": s[3], "duration_sec": s[4], "created_at": s[5],
             },
             "utterances": utterances,
+            "analysis": s[6],
         })
     finally:
         conn.close()
@@ -216,13 +296,20 @@ def _transcribe(body: dict) -> dict:
 
     transcript = "\n".join(f"{label(u['speaker'])}: {u['text']}" for u in utterances)
 
+    analysis = None
+    if transcript:
+        try:
+            analysis = _analyze(transcript)
+        except Exception as e:
+            print(f"[yuna] analysis failed: {e}")
+
     conn = _conn()
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO yuna_sessions (status, transcript, duration_sec) "
-            "VALUES ('transcribed', %s, %s) RETURNING id",
-            (transcript, duration_sec),
+            "INSERT INTO yuna_sessions (status, transcript, duration_sec, analysis) "
+            "VALUES ('analyzed', %s, %s, %s) RETURNING id",
+            (transcript, duration_sec, json.dumps(analysis) if analysis else None),
         )
         session_id = cur.fetchone()[0]
         for i, u in enumerate(utterances):
@@ -235,7 +322,12 @@ def _transcribe(body: dict) -> dict:
     finally:
         conn.close()
 
-    return _resp(200, {"session_id": session_id, "utterances": utterances, "transcript": transcript})
+    return _resp(200, {
+        "session_id": session_id,
+        "utterances": utterances,
+        "transcript": transcript,
+        "analysis": analysis,
+    })
 
 
 def handler(event: dict, context) -> dict:

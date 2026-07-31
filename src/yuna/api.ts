@@ -15,10 +15,23 @@ export interface YunaSession {
   created_at: string;
 }
 
+export interface Analysis {
+  empathy: number;
+  trust: number;
+  patient_state: number;
+  quality: number;
+  communication: number;
+  summary: string;
+  recommendations: string[];
+  strengths: string[];
+  concerns: string[];
+}
+
 export interface TranscribeResult {
   session_id: number;
   utterances: Utterance[];
   transcript: string;
+  analysis: Analysis | null;
 }
 
 export const yunaApi = {
