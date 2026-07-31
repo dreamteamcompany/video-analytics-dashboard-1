@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "GET returns items list",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "POST without title returns 400",
+      "method": "POST",
+      "path": "/",
+      "body": {"description": "no title"},
+      "expectedStatus": 400,
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "POST creates item",
+      "method": "POST",
+      "path": "/",
+      "body": {"title": "Тестовая запись", "description": "проверка"},
+      "expectedStatus": 201
+    }
+  ]
+}
