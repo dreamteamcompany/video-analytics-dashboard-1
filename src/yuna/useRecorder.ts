@@ -11,6 +11,7 @@ type RecorderState = 'idle' | 'recording' | 'paused';
 export function useRecorder() {
   const [state, setState] = useState<RecorderState>('idle');
   const [seconds, setSeconds] = useState(0);
+  const [level, setLevel] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const mediaRef = useRef<MediaRecorder | null>(null);
@@ -18,6 +19,44 @@ export function useRecorder() {
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedAtRef = useRef(0);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const rafRef = useRef<number | null>(null);
+
+  const stopMeter = useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+    audioCtxRef.current?.close().catch(() => {});
+    audioCtxRef.current = null;
+    analyserRef.current = null;
+    setLevel(0);
+  }, []);
+
+  const startMeter = useCallback((stream: MediaStream) => {
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const ctx = new AudioCtx();
+    const source = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 512;
+    source.connect(analyser);
+    audioCtxRef.current = ctx;
+    analyserRef.current = analyser;
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    const loop = () => {
+      analyser.getByteTimeDomainData(data);
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) {
+        const v = (data[i] - 128) / 128;
+        sum += v * v;
+      }
+      const rms = Math.sqrt(sum / data.length);
+      setLevel(Math.min(1, rms * 3));
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    loop();
+  }, []);
 
   const tick = useCallback(() => {
     timerRef.current = setInterval(() => {
@@ -64,26 +103,29 @@ export function useRecorder() {
       setSeconds(0);
       setState('recording');
       tick();
+      startMeter(stream);
     } catch {
       setError('Не удалось получить доступ к микрофону. Разрешите доступ в браузере.');
     }
-  }, [tick]);
+  }, [tick, startMeter]);
 
   const pause = useCallback(() => {
     if (mediaRef.current?.state === 'recording') {
       mediaRef.current.pause();
       stopTick();
+      stopMeter();
       setState('paused');
     }
-  }, [stopTick]);
+  }, [stopTick, stopMeter]);
 
   const resume = useCallback(() => {
     if (mediaRef.current?.state === 'paused') {
       mediaRef.current.resume();
       tick();
+      if (streamRef.current) startMeter(streamRef.current);
       setState('recording');
     }
-  }, [tick]);
+  }, [tick, startMeter]);
 
   const stop = useCallback((): Promise<RecordingResult | null> => {
     return new Promise((resolve) => {
@@ -95,6 +137,7 @@ export function useRecorder() {
       const durationSec = Math.round((Date.now() - startedAtRef.current) / 1000);
       rec.onstop = () => {
         stopTick();
+        stopMeter();
         streamRef.current?.getTracks().forEach((t) => t.stop());
         const blob = new Blob(chunksRef.current, { type: rec.mimeType });
         const reader = new FileReader();
@@ -110,16 +153,17 @@ export function useRecorder() {
       };
       rec.stop();
     });
-  }, [stopTick]);
+  }, [stopTick, stopMeter]);
 
   const cancel = useCallback(() => {
     stopTick();
+    stopMeter();
     mediaRef.current?.stop();
     streamRef.current?.getTracks().forEach((t) => t.stop());
     chunksRef.current = [];
     setState('idle');
     setSeconds(0);
-  }, [stopTick]);
+  }, [stopTick, stopMeter]);
 
-  return { state, seconds, error, start, pause, resume, stop, cancel };
+  return { state, seconds, level, error, start, pause, resume, stop, cancel };
 }

@@ -12,7 +12,7 @@ import SessionHistory from './SessionHistory';
 import YunaDashboard from './YunaDashboard';
 
 const YunaPage = () => {
-  const { state, seconds, error: recError, start, pause, resume, stop, cancel } = useRecorder();
+  const { state, seconds, level, error: recError, start, pause, resume, stop, cancel } = useRecorder();
   const [processing, setProcessing] = useState(false);
   const [utterances, setUtterances] = useState<Utterance[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
@@ -114,12 +114,37 @@ const YunaPage = () => {
 
             {recording ? (
               <>
+                {state === 'recording' && (
+                  <div className="flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full bg-red-100">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-xs font-semibold text-red-600 tracking-wide">REC</span>
+                  </div>
+                )}
                 <p className="text-3xl font-bold text-foreground tabular-nums mb-1">
                   {fmtTime(seconds)}
                 </p>
-                <p className="text-sm text-muted-foreground mb-5">
-                  {state === 'recording' ? 'Идёт запись приёма…' : 'Пауза'}
+                <p className="text-sm text-muted-foreground mb-4">
+                  {state === 'recording' ? 'Идёт запись приёма…' : 'На паузе'}
                 </p>
+
+                {/* индикатор уровня звука */}
+                <div className="flex items-end justify-center gap-1 h-10 mb-5 w-full max-w-xs">
+                  {Array.from({ length: 24 }).map((_, i) => {
+                    const threshold = (i + 1) / 24;
+                    const active = state === 'recording' && level >= threshold * 0.9;
+                    const h = 20 + threshold * 80;
+                    return (
+                      <span
+                        key={i}
+                        className={`flex-1 rounded-full transition-all duration-75 ${
+                          active ? 'bg-primary' : 'bg-secondary'
+                        }`}
+                        style={{ height: active ? `${h}%` : '20%' }}
+                      />
+                    );
+                  })}
+                </div>
+
                 <div className="flex items-center gap-3">
                   {state === 'recording' ? (
                     <Button variant="outline" onClick={pause} className="gap-1.5">

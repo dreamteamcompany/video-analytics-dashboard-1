@@ -21,8 +21,8 @@ import psycopg2
 
 CHAT_URL = "https://routerai.ru/api/v1/chat/completions"
 TRANSCRIBE_URL = "https://routerai.ru/api/v1/audio/transcriptions"
-WHISPER_MODEL = "openai/whisper-large-v3"
-CHAT_MODEL = "openai/gpt-4o"
+WHISPER_MODEL = "openai/gpt-4o-transcribe"
+CHAT_MODEL = "openai/gpt-5.1"
 
 CORS = {
     "Access-Control-Allow-Origin": "*",
@@ -31,12 +31,21 @@ CORS = {
 }
 
 SPLIT_PROMPT = (
-    "Ты анализируешь расшифровку медицинского приёма на русском языке. "
-    "Раздели текст на реплики врача (doctor) и пациента (patient) по смыслу: "
-    "врач задаёт клинические вопросы, ставит диагноз, назначает лечение; "
-    "пациент описывает жалобы и симптомы. "
+    "Ты — эксперт по анализу медицинских диалогов. На вход приходит сплошная "
+    "расшифровка приёма на русском языке без разметки говорящих. "
+    "Твоя задача — восстановить диалог: разбей текст на отдельные реплики и "
+    "определи говорящего для каждой (doctor — врач, patient — пациент).\n"
+    "Признаки врача: задаёт уточняющие вопросы о симптомах, собирает анамнез, "
+    "объясняет, ставит диагноз, назначает обследования, препараты, дозировки, "
+    "даёт рекомендации, говорит на профессиональном языке.\n"
+    "Признаки пациента: описывает жалобы, боль, самочувствие, отвечает на вопросы, "
+    "переспрашивает, выражает эмоции и опасения.\n"
+    "Правила: сохраняй исходные слова дословно, не переписывай и не сокращай; "
+    "объединяй подряд идущие фразы одного говорящего в одну реплику; "
+    "чередование ролей типично для диалога (вопрос врача → ответ пациента). "
+    "Если говорящего определить невозможно — используй unknown.\n"
     "Верни СТРОГО JSON без markdown вида: "
-    '{"utterances":[{"speaker":"doctor|patient","text":"реплика"}]} '
+    '{"utterances":[{"speaker":"doctor|patient|unknown","text":"реплика"}]} '
     "в хронологическом порядке. Ничего кроме JSON."
 )
 
@@ -104,14 +113,14 @@ def _transcribe_audio(audio_bytes: bytes, fmt: str) -> str:
 
 
 def _split_speakers(transcript: str) -> list:
-    """Шаг 2: текст -> реплики с ролями через gpt-4o."""
+    """Шаг 2: текст -> реплики с ролями через chat-модель."""
     payload = {
         "model": CHAT_MODEL,
         "messages": [
             {"role": "system", "content": SPLIT_PROMPT},
             {"role": "user", "content": transcript},
         ],
-        "temperature": 0.2,
+        "response_format": {"type": "json_object"},
     }
     req = urllib.request.Request(
         CHAT_URL,
@@ -189,7 +198,7 @@ def _analyze(transcript: str) -> dict:
             {"role": "system", "content": ANALYSIS_PROMPT},
             {"role": "user", "content": transcript},
         ],
-        "temperature": 0.3,
+        "response_format": {"type": "json_object"},
     }
     req = urllib.request.Request(
         CHAT_URL,
