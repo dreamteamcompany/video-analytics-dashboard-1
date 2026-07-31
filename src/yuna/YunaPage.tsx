@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
-import { yunaApi, Utterance, Analysis, YunaSession } from './api';
+import { yunaApi, Utterance, Analysis, YunaSession, Doctor, YunaStats } from './api';
 import { useRecorder } from './useRecorder';
 import { fmtTime } from './utils';
 import TranscriptView from './TranscriptView';
@@ -10,6 +10,16 @@ import SessionHistory from './SessionHistory';
 import YunaDashboard from './YunaDashboard';
 import DentalReport from './DentalReport';
 import { TacticsReport, ComplicationsReport, TreatmentReport } from './PatientReports';
+import {
+  AnesthesiaBlock,
+  AutoFillBlock,
+  CurrentPatientBlock,
+  LoyaltyBlock,
+  UpsellBlock,
+  DrugControlBlock,
+  DoctorStateBlock,
+} from './LiveBlocks';
+import { RatingBlock, AutoJournalsBlock, KpiBlock, LearningBlock } from './DoctorBlocks';
 
 const YunaPage = () => {
   const { state, seconds, level, silent, error: recError, start, pause, resume, stop, cancel } = useRecorder();
@@ -19,6 +29,10 @@ const YunaPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<YunaSession[]>([]);
   const [loadingSessions, setLoadingSessions] = useState(true);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctorId, setDoctorId] = useState<number | null>(null);
+  const [stats, setStats] = useState<YunaStats | null>(null);
+  const [ratingKey, setRatingKey] = useState(0);
 
   const loadSessions = useCallback(async () => {
     try {
@@ -30,9 +44,31 @@ const YunaPage = () => {
     }
   }, []);
 
+  const loadStats = useCallback(async () => {
+    try {
+      setStats(await yunaApi.stats());
+    } catch {
+      /* silent */
+    }
+  }, []);
+
+  const loadDoctors = useCallback(async () => {
+    try {
+      const list = await yunaApi.listDoctors();
+      setDoctors(list);
+      setDoctorId((prev) => prev ?? (list.find((d) => d.is_active)?.id ?? list[0]?.id ?? null));
+    } catch {
+      /* silent */
+    }
+  }, []);
+
   useEffect(() => {
     loadSessions();
-  }, [loadSessions]);
+    loadStats();
+    loadDoctors();
+  }, [loadSessions, loadStats, loadDoctors]);
+
+  const currentDoctor = doctors.find((d) => d.id === doctorId) || null;
 
   const handleStop = async () => {
     const result = await stop();
@@ -45,13 +81,15 @@ const YunaPage = () => {
     setUtterances([]);
     setAnalysis(null);
     try {
-      const res = await yunaApi.transcribe(result.base64, result.format, result.durationSec);
+      const res = await yunaApi.transcribe(result.base64, result.format, result.durationSec, doctorId);
       setUtterances(res.utterances);
       setAnalysis(res.analysis);
       if (res.utterances.length === 0) {
         setError('В записи не распознана речь. Говорите ближе к микрофону.');
       } else {
         loadSessions();
+        loadStats();
+        setRatingKey((k) => k + 1);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось обработать запись');
@@ -119,19 +157,34 @@ const YunaPage = () => {
               </div>
             </div>
 
-            {/* Вся информация о враче вместе */}
+            {/* Информация о враче (реальные учётные записи) */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 lg:gap-6">
               <div className="sm:text-right">
-                <p className="font-semibold text-lg">Доктор Иванов А.С.</p>
-                <p className="text-white/70">Стоматолог-хирург • Опыт 12 лет</p>
-                <div className="flex items-center gap-2 mt-1 sm:justify-end">
-                  <div className="bg-yellow-400 px-2 py-1 rounded-full text-xs font-bold text-gray-800">
-                    ⭐ 245 баллов
+                {doctors.length > 0 ? (
+                  <select
+                    value={doctorId ?? ''}
+                    onChange={(e) => setDoctorId(Number(e.target.value))}
+                    className="bg-white/20 text-white font-semibold text-lg rounded-lg px-2 py-1 backdrop-blur-sm focus:outline-none cursor-pointer [&>option]:text-gray-800"
+                  >
+                    {doctors.map((d) => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="font-semibold text-lg">Врач не выбран</p>
+                )}
+                <p className="text-white/70">
+                  {currentDoctor
+                    ? [currentDoctor.specialty, currentDoctor.experience_years ? `Опыт ${currentDoctor.experience_years} лет` : null].filter(Boolean).join(' • ')
+                    : 'Добавьте врача в настройках'}
+                </p>
+                {currentDoctor && (
+                  <div className="flex items-center gap-2 mt-1 sm:justify-end">
+                    <div className="bg-yellow-400 px-2 py-1 rounded-full text-xs font-bold text-gray-800">
+                      ⭐ {currentDoctor.points} баллов
+                    </div>
                   </div>
-                  <div className="bg-purple-500 px-2 py-1 rounded-full text-xs font-bold text-white">
-                    🏆 3 место в рейтинге
-                  </div>
-                </div>
+                )}
               </div>
               <div className="flex flex-wrap gap-3 items-center">
                 <div className="bg-white/20 rounded-xl p-3 backdrop-blur-sm">
@@ -140,24 +193,13 @@ const YunaPage = () => {
                     <span className="text-sm">Юна онлайн</span>
                   </div>
                 </div>
-                <div className="bg-white/20 rounded-xl p-3 backdrop-blur-sm">
-                  <div className="flex items-center space-x-2">
-                    <Icon name="BatteryMedium" size={16} className="text-green-400" />
-                    <span className="text-sm">87%</span>
-                  </div>
-                </div>
-                <div className="bg-white/20 rounded-xl p-3 backdrop-blur-sm">
-                  <div className="flex items-center space-x-2">
-                    <Icon name="Volume2" size={16} className="text-blue-400" />
-                    <div className="flex space-x-1 items-end h-5">
-                      <div className="w-1 h-3 bg-white rounded yuna-voice-level-indicator" style={{ animationDelay: '0s' }} />
-                      <div className="w-1 h-4 bg-white rounded yuna-voice-level-indicator" style={{ animationDelay: '0.1s' }} />
-                      <div className="w-1 h-5 bg-white rounded yuna-voice-level-indicator" style={{ animationDelay: '0.2s' }} />
-                      <div className="w-1 h-3 bg-white rounded yuna-voice-level-indicator" style={{ animationDelay: '0.3s' }} />
-                    </div>
-                    <span className="text-sm">42 дБ</span>
-                  </div>
-                </div>
+                <Link
+                  to="/yuna/settings"
+                  className="bg-white/20 hover:bg-white/30 rounded-xl px-3 py-3 backdrop-blur-sm flex items-center gap-2 text-sm transition-colors"
+                >
+                  <Icon name="Settings" size={16} />
+                  Настройки
+                </Link>
                 <Link
                   to="/"
                   className="bg-white/20 hover:bg-white/30 rounded-xl px-3 py-3 backdrop-blur-sm flex items-center gap-2 text-sm transition-colors"
@@ -444,172 +486,14 @@ const YunaPage = () => {
               </div>
             </div>
 
-            {/* Расчет анестезии */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-anesthesia-calc min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                <Icon name="Calculator" size={20} className="text-green-500 mr-2 inline" />
-                Расчет анестезии
-              </h2>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-green-50 rounded-lg p-3 text-center">
-                    <p className="text-lg font-bold text-green-600">1.7ml</p>
-                    <p className="text-xs text-green-700">Ультракаин DS</p>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-3 text-center">
-                    <p className="text-lg font-bold text-blue-600">0.5ml</p>
-                    <p className="text-xs text-blue-700">Резерв</p>
-                  </div>
-                </div>
+            {/* Расчет анестезии (реальные данные) */}
+            <AnesthesiaBlock a={analysis?.anesthesia} />
 
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Возраст пациента:</span>
-                    <span className="font-semibold">42 года</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Вес:</span>
-                    <span className="font-semibold">78 кг</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Макс. доза:</span>
-                    <span className="font-semibold text-green-600">3.5ml</span>
-                  </div>
-                </div>
+            {/* Моё состояние — стресс врача по речи */}
+            <DoctorStateBlock s={analysis?.doctor_state} />
 
-                <div className="bg-purple-50 rounded-xl p-3">
-                  <h4 className="font-semibold text-purple-800 text-sm mb-2">Аналоги по противопоказаниям</h4>
-                  <div className="space-y-1 text-xs text-purple-700">
-                    <div className="flex justify-between">
-                      <span>Септанест:</span>
-                      <span className="font-semibold">1.8ml</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Артикаин:</span>
-                      <span className="font-semibold">1.6ml</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Лидокаин:</span>
-                      <span className="font-semibold">2.0ml</span>
-                    </div>
-                  </div>
-                </div>
-
-                <button className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
-                  <Icon name="RefreshCw" size={16} className="mr-2" />Пересчитать
-                </button>
-              </div>
-            </div>
-
-            {/* Рейтинг врачей */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-doctor-divider">Рейтинг врачей</h2>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-2 bg-yellow-50 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
-                    <img
-                      src="https://optim.tildacdn.com/stor6430-6161-4137-a436-656339373339/-/cover/372x495/center/center/-/format/webp/36865053.jpg.webp"
-                      alt="Доктор Садеи Г.Р."
-                      className="w-10 h-10 rounded-full object-cover border-2 border-white shadow"
-                    />
-                    <div>
-                      <span className="text-sm font-semibold">Доктор Садеи Г.Р.</span>
-                      <p className="text-xs text-gray-600">Врач стоматолог • 2 года опыта</p>
-                    </div>
-                  </div>
-                  <span className="text-sm font-bold text-yellow-600">320</span>
-                </div>
-
-                <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
-                    <img
-                      src="https://optim.tildacdn.com/stor3661-6630-4034-a334-656230363239/-/cover/372x495/center/center/-/format/webp/68706041.png.webp"
-                      alt="Доктор Мурадян Г.С."
-                      className="w-10 h-10 rounded-full object-cover border-2 border-white shadow"
-                    />
-                    <div>
-                      <span className="text-sm font-semibold">Доктор Мурадян Г.С.</span>
-                      <p className="text-xs text-gray-600">Стоматолог-хирург • 17 лет опыта</p>
-                    </div>
-                  </div>
-                  <span className="text-sm font-bold text-gray-600">285</span>
-                </div>
-
-                <div className="flex items-center justify-between p-2 bg-orange-50 rounded-lg border border-orange-200">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
-                    <img
-                      src="https://optim.tildacdn.com/stor3239-6139-4664-b038-663762646539/-/cover/372x495/center/center/-/format/webp/63340173.png.webp"
-                      alt="Доктор Яссин М.Г."
-                      className="w-10 h-10 rounded-full object-cover border-2 border-white shadow"
-                    />
-                    <div>
-                      <span className="text-sm font-semibold">Доктор Яссин М.Г.</span>
-                      <p className="text-xs text-gray-600">Стоматолог-ортопед • 12 лет опыта</p>
-                    </div>
-                  </div>
-                  <span className="text-sm font-bold text-orange-600">245</span>
-                </div>
-              </div>
-
-              <div className="mt-4 p-3 bg-blue-50 rounded-xl text-center">
-                <p className="text-sm font-semibold text-blue-800">Приз недели</p>
-                <p className="text-xs text-blue-700">Сертификат в ресторан</p>
-              </div>
-            </div>
-
-            {/* Моё состояние + коучинг */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-doctor-divider">
-                <Icon name="Heart" size={20} className="text-red-500 mr-2 inline" />
-                Моё состояние
-              </h2>
-
-              <div className="yuna-stress-pulse bg-red-50 border-2 border-red-200 rounded-2xl p-6 mb-4">
-                <div className="flex items-center space-x-3 mb-3">
-                  <Icon name="TriangleAlert" size={22} className="text-red-500" />
-                  <div>
-                    <h3 className="font-semibold text-red-800">Повышенное напряжение</h3>
-                    <p className="text-sm text-red-700">Обнаружены признаки стресса</p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Учащенная речь:</span>
-                    <span className="font-semibold text-red-600">+35%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Тональность:</span>
-                    <span className="font-semibold text-red-600">Повышенная</span>
-                  </div>
-                </div>
-                <button className="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg mt-4 transition-colors flex items-center justify-center">
-                  <Icon name="Wind" size={16} className="mr-2" fallback="CircleAlert" />Дыхательные упражнения
-                </button>
-              </div>
-
-              <div className="yuna-coaching-glow bg-purple-50 rounded-xl p-4">
-                <h4 className="font-semibold text-purple-800 mb-1">Коучинг-тренировка</h4>
-                <p className="text-sm text-purple-700">"Активное слушание пациента"</p>
-                <p className="text-xs text-purple-600 mt-1">Длительность: 15 минут</p>
-
-                <div className="mt-3 bg-yellow-50 rounded-lg p-3">
-                  <h5 className="font-semibold text-yellow-800 text-xs mb-1">Требует улучшения:</h5>
-                  <ul className="text-xs text-yellow-700 space-y-1">
-                    <li>• Время объяснения процедуры: -23%</li>
-                    <li>• Эмпатические ответы: -15%</li>
-                    <li>• Работа с возражениями: -18%</li>
-                  </ul>
-                </div>
-
-                <button className="w-full bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm mt-2 transition-colors flex items-center justify-center">
-                  <Icon name="Play" size={14} className="mr-1" />Начать тренировку
-                </button>
-              </div>
-            </div>
+            {/* Рейтинг врачей (реальные учётные записи) */}
+            <RatingBlock refreshKey={ratingKey} />
 
             {/* Голосовые шаблоны */}
             <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
@@ -656,78 +540,13 @@ const YunaPage = () => {
               </h2>
             </div>
 
-            {/* Автоматически заполненные данные */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-auto-fill-glow min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
-                <Icon name="Sparkles" size={20} className="text-green-500 mr-2 inline" />
-                Автоматически заполненные данные
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-green-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-green-800">Основная информация</span>
-                    <Icon name="CircleCheck" size={18} className="text-green-500" />
-                  </div>
-                  <div className="text-sm text-green-700 space-y-1">
-                    <p>• ФИО: Петров Алексей Викторович</p>
-                    <p>• Возраст: 42 года</p>
-                    <p>• Пол: Мужской</p>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-blue-800">Медицинские данные</span>
-                    <Icon name="CircleCheck" size={18} className="text-blue-500" />
-                  </div>
-                  <div className="text-sm text-blue-700 space-y-1">
-                    <p>• <span className="font-bold text-red-600">Аллергия: Пенициллин</span></p>
-                    <p>• Хронические: Нет</p>
-                    <p>• Курение: 10 сигарет/день</p>
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-purple-800">Симптомы и жалобы</span>
-                    <Icon name="Activity" size={18} className="text-purple-500" fallback="CircleAlert" />
-                  </div>
-                  <div className="text-sm text-purple-700 space-y-1">
-                    <p>• Боль: Ноющая, ночью</p>
-                    <p>• Реакция: На холодное</p>
-                    <p>• Локализация: 36 зуб</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Автоматически заполненные данные (карта пациента из диалога) */}
+            <AutoFillBlock p={analysis?.patient} />
 
             {/* Верхняя часть раздела пациента */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               {/* Текущий пациент */}
-              <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-                <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">Текущий пациент</h2>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <Icon name="User" size={22} className="text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800">Петров Алексей Викторович</h3>
-                      <p className="text-sm text-gray-600">42 года • Мужчина • IT-специалист</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-red-50 rounded-xl p-3 border border-red-200">
-                    <div className="flex items-center space-x-2">
-                      <Icon name="TriangleAlert" size={18} className="text-red-500" />
-                      <div>
-                        <p className="text-sm font-semibold text-red-800">Аллергия на пенициллин!</p>
-                        <p className="text-xs text-red-700">Следующий: Козлова И.С. в 12:30</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <CurrentPatientBlock p={analysis?.patient} />
 
               {/* Психологическое состояние */}
               <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -774,93 +593,14 @@ const YunaPage = () => {
               </div>
 
               {/* Лояльность пациента */}
-              <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-                <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
-                  <Icon name="ChartLine" size={20} className="text-green-500 mr-2 inline" />
-                  Лояльность пациента
-                </h2>
-                <div className="space-y-3">
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-xs text-gray-600">Вероятность повторного визита</span>
-                      <span className="text-xs font-semibold text-green-600">92%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '92%' }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-xs text-gray-600">NPS пациента</span>
-                      <span className="text-xs font-semibold text-purple-600">9/10</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-purple-500 h-2 rounded-full" style={{ width: '90%' }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-xs text-gray-600">Готовность к рекомендациям</span>
-                      <span className="text-xs font-semibold text-blue-600">88%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: '88%' }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <LoyaltyBlock l={analysis?.loyalty} />
             </div>
 
             {/* Реальный отчёт анализа приёма */}
             {!processing && analysis && <AnalysisReport analysis={analysis} />}
 
             {/* Анализ речи для доп. услуг */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-patient-divider">
-                <Icon name="MessageSquare" size={20} className="text-yellow-500 mr-2 inline" />
-                Анализ речи для доп. услуг
-              </h2>
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-4 border-2 border-yellow-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-yellow-800">Потенциал доп. продаж</h3>
-                    <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold">Высокий</span>
-                  </div>
-                  <div className="text-sm text-yellow-700">
-                    <p>Пациент интересуется эстетикой и готов к премиальным услугам</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="yuna-upsell-analysis bg-green-50 rounded-xl p-4">
-                    <h4 className="font-semibold text-green-800 text-base mb-2">Рекомендуемые услуги</h4>
-                    <div className="space-y-2 text-sm text-green-700">
-                      <div className="flex justify-between">
-                        <span>Проф. отбеливание</span>
-                        <span className="font-semibold">78%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Керамические виниры</span>
-                        <span className="font-semibold">65%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Гигиенический пакет</span>
-                        <span className="font-semibold">85%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-blue-50 rounded-xl p-3">
-                    <h4 className="font-semibold text-blue-800 text-sm mb-2">Ключевые фразы</h4>
-                    <div className="space-y-1 text-xs text-blue-700">
-                      <p>• "Хочу белые зубы"</p>
-                      <p>• "Готов платить за качество"</p>
-                      <p>• "Важна красивая улыбка"</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <UpsellBlock u={analysis?.upsell} />
 
             {/* Диагностика и обследования */}
             {!processing && analysis?.dental && analysis.dental.primary_diagnosis ? (
@@ -885,44 +625,7 @@ const YunaPage = () => {
             <TacticsReport tactics={!processing ? analysis?.tactics : null} />
 
             {/* Контроль препаратов */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                <Icon name="TriangleAlert" size={20} className="text-red-500 mr-2 inline" />
-                Контроль препаратов
-              </h2>
-              <div className="space-y-3">
-                <div className="yuna-contraindication-alert border border-red-200 rounded-xl p-4">
-                  <div className="flex items-center space-x-3">
-                    <Icon name="Ban" size={22} className="text-red-500" fallback="CircleAlert" />
-                    <div>
-                      <h3 className="font-semibold text-red-800">Противопоказание!</h3>
-                      <p className="text-sm text-red-700">Аллергия на пенициллин - избегать амоксициллин</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                  <div className="flex items-center space-x-3">
-                    <Icon name="Info" size={18} className="text-yellow-600" fallback="CircleAlert" />
-                    <div>
-                      <h3 className="font-semibold text-yellow-800">Взаимодействие</h3>
-                      <p className="text-sm text-yellow-700">Пациент принимает варфарин - контроль МНО</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-green-50 rounded-lg p-3 text-center">
-                    <p className="text-sm font-semibold text-green-800">Разрешено</p>
-                    <p className="text-xs text-green-700">Кларитромицин</p>
-                  </div>
-                  <div className="bg-green-50 rounded-lg p-3 text-center">
-                    <p className="text-sm font-semibold text-green-800">Разрешено</p>
-                    <p className="text-xs text-green-700">Метронидазол</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <DrugControlBlock d={analysis?.drug_control} />
 
             {/* AI-предсказание осложнений */}
             <ComplicationsReport complications={!processing ? analysis?.complications : null} />
@@ -930,119 +633,14 @@ const YunaPage = () => {
             {/* AI-рекомендации по лечению */}
             <TreatmentReport treatment={!processing ? analysis?.treatment : null} />
 
-            {/* Авто-журналы */}
-            <div
-              className="rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible"
-              style={{ background: '#000' }}
-            >
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                <Icon name="BookOpen" size={20} className="text-green-500 mr-2 inline" />
-                Авто-журналы
-              </h2>
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-white border border-green-200 rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-green-600">8</p>
-                    <p className="text-xs text-green-700">Сегодня</p>
-                  </div>
-                  <div className="bg-white border border-blue-200 rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-blue-600">42</p>
-                    <p className="text-xs text-blue-700">За неделю</p>
-                  </div>
-                  <div className="bg-white border border-purple-200 rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-purple-600">167</p>
-                    <p className="text-xs text-purple-700">За месяц</p>
-                  </div>
-                </div>
+            {/* Авто-журналы (реальная статистика) */}
+            <AutoJournalsBlock stats={stats} />
 
-                <div className="bg-blue-50 rounded-xl p-4">
-                  <h4 className="font-semibold text-blue-800 mb-2">Автоматически сгенерировано:</h4>
-                  <ul className="text-sm text-blue-700 space-y-1">
-                    <li>• Отчет по расходным материалам</li>
-                    <li>• Статистика эффективности</li>
-                    <li>• Журнал контроля качества</li>
-                  </ul>
-                </div>
+            {/* KPI качества (реальные метрики) */}
+            <KpiBlock stats={stats} />
 
-                <button className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
-                  <Icon name="Download" size={16} className="mr-2" fallback="CircleAlert" />Экспорт отчетов
-                </button>
-              </div>
-            </div>
-
-            {/* KPI качества */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                <Icon name="ChartLine" size={20} className="text-indigo-500 mr-2 inline" />
-                KPI качества
-              </h2>
-              <div className="space-y-4">
-                <div className="yuna-quality-metric bg-indigo-50 rounded-xl p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-indigo-800">Успешность лечения</span>
-                    <span className="text-lg font-bold text-indigo-600">96%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-indigo-500 h-2 rounded-full" style={{ width: '96%' }} />
-                  </div>
-                </div>
-
-                <div className="yuna-quality-metric bg-green-50 rounded-xl p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-green-800">Среднее время приема</span>
-                    <span className="text-lg font-bold text-green-600">38 мин</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '85%' }} />
-                  </div>
-                </div>
-
-                <div className="yuna-quality-metric bg-blue-50 rounded-xl p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-blue-800">Удовлетворенность пациентов</span>
-                    <span className="text-lg font-bold text-blue-600">4.8/5</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '96%' }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Персональное обучение */}
-            <div className="bg-black rounded-2xl shadow-lg p-6 yuna-training-rec min-h-[120px] [&>*]:invisible">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                <Icon name="GraduationCap" size={20} className="text-purple-500 mr-2 inline" />
-                Персональное обучение
-              </h2>
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
-                  <h3 className="font-semibold text-purple-800 mb-2">Рекомендуется для вас</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-purple-700">Сложная эндодонтия</span>
-                      <span className="bg-purple-500 text-white px-2 py-1 rounded text-xs">87% релевантности</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-purple-700">Работа с микроскопом</span>
-                      <span className="bg-purple-500 text-white px-2 py-1 rounded text-xs">92% релевантности</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-yellow-50 rounded-xl p-3">
-                  <h4 className="font-semibold text-yellow-800 text-sm mb-1">Ближайшие мероприятия</h4>
-                  <ul className="text-xs text-yellow-700 space-y-1">
-                    <li>• 15.12 - Мастер-класс "Современная эндодонтия"</li>
-                    <li>• 20.12 - Вебинар "Диагностика сложных случаев"</li>
-                  </ul>
-                </div>
-
-                <button className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center">
-                  <Icon name="Play" size={16} className="mr-2" />Начать обучение
-                </button>
-              </div>
-            </div>
+            {/* Персональное обучение (поиск в интернете) */}
+            <LearningBlock />
 
             {/* Уведомления для врача */}
             <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">

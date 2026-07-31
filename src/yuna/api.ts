@@ -73,6 +73,54 @@ export interface Treatment {
   aftercare: string[];
 }
 
+export interface PatientCard {
+  name: string;
+  age: number | null;
+  sex: string;
+  weight_kg: number | null;
+  allergies: string[];
+  chronic: string[];
+  smoking: string;
+  complaints: string[];
+  localization: string;
+}
+
+export interface Anesthesia {
+  drug: string;
+  dose_ml: number | null;
+  reserve_ml: number | null;
+  max_ml: number | null;
+  basis: string;
+  alternatives: { name: string; dose_ml: number | null }[];
+}
+
+export interface DrugControl {
+  contraindications: { drug: string; reason: string }[];
+  interactions: { drug: string; note: string }[];
+  safe: string[];
+}
+
+export interface Upsell {
+  potential: string;
+  services: { name: string; score: number }[];
+  phrases: string[];
+}
+
+export interface Loyalty {
+  repeat: number;
+  nps: number | null;
+  recommend: number;
+}
+
+export interface DoctorState {
+  status: string;
+  stress: number;
+  speech_rate: string;
+  tone: string;
+  improve: { area: string; delta: string }[];
+  coaching: string;
+}
+
 export interface Analysis {
   empathy: number;
   trust: number;
@@ -87,6 +135,49 @@ export interface Analysis {
   tactics?: Tactics | null;
   complications?: Complications | null;
   treatment?: Treatment | null;
+  patient?: PatientCard | null;
+  anesthesia?: Anesthesia | null;
+  drug_control?: DrugControl | null;
+  upsell?: Upsell | null;
+  loyalty?: Loyalty | null;
+  doctor_state?: DoctorState | null;
+}
+
+export interface Doctor {
+  id: number;
+  name: string;
+  specialty: string;
+  experience_years: number;
+  avatar_url: string;
+  points: number;
+  is_active: boolean;
+}
+
+export interface RatingEntry {
+  place: number;
+  id: number;
+  name: string;
+  specialty: string;
+  experience_years: number;
+  avatar_url: string;
+  points: number;
+  sessions_week: number;
+}
+
+export interface YunaStats {
+  counts: { today: number; week: number; month: number; total: number };
+  kpi: {
+    quality: number | null;
+    communication: number | null;
+    avg_minutes: number | null;
+    satisfaction: number | null;
+  };
+}
+
+export interface Learning {
+  recommended: { topic: string; relevance: number; why: string }[];
+  events: { title: string; date: string; format: string; url: string }[];
+  focus: string;
 }
 
 export interface TranscribeResult {
@@ -114,6 +205,7 @@ export const yunaApi = {
     audioBase64: string,
     format: string,
     durationSec: number,
+    doctorId?: number | null,
   ): Promise<TranscribeResult> => {
     const res = await fetch(YUNA_API, {
       method: 'POST',
@@ -122,6 +214,7 @@ export const yunaApi = {
         audio_base64: audioBase64,
         format,
         duration_sec: durationSec,
+        doctor_id: doctorId ?? null,
       }),
     });
     if (!res.ok) {
@@ -133,5 +226,58 @@ export const yunaApi = {
       throw new Error(msg);
     }
     return (await res.json()) as TranscribeResult;
+  },
+
+  listDoctors: async (): Promise<Doctor[]> => {
+    const res = await fetch(`${YUNA_API}?resource=doctors`);
+    if (!res.ok) throw new Error(`doctors ${res.status}`);
+    return ((await res.json()) as { doctors: Doctor[] }).doctors;
+  },
+
+  createDoctor: async (d: Partial<Doctor>): Promise<Doctor> => {
+    const res = await fetch(`${YUNA_API}?resource=doctors`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(d),
+    });
+    if (!res.ok) {
+      let msg = `create ${res.status}`;
+      try { const e = (await res.json()) as { error?: string }; if (e.error) msg = e.error; } catch { /* ignore */ }
+      throw new Error(msg);
+    }
+    return ((await res.json()) as { doctor: Doctor }).doctor;
+  },
+
+  updateDoctor: async (id: number, d: Partial<Doctor>): Promise<Doctor> => {
+    const res = await fetch(`${YUNA_API}?resource=doctors&id=${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(d),
+    });
+    if (!res.ok) throw new Error(`update ${res.status}`);
+    return ((await res.json()) as { doctor: Doctor }).doctor;
+  },
+
+  deleteDoctor: async (id: number): Promise<void> => {
+    const res = await fetch(`${YUNA_API}?resource=doctors&id=${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error(`delete ${res.status}`);
+  },
+
+  rating: async (): Promise<RatingEntry[]> => {
+    const res = await fetch(`${YUNA_API}?resource=rating`);
+    if (!res.ok) throw new Error(`rating ${res.status}`);
+    return ((await res.json()) as { rating: RatingEntry[] }).rating;
+  },
+
+  stats: async (): Promise<YunaStats> => {
+    const res = await fetch(`${YUNA_API}?resource=stats`);
+    if (!res.ok) throw new Error(`stats ${res.status}`);
+    return (await res.json()) as YunaStats;
+  },
+
+  learning: async (): Promise<Learning> => {
+    const res = await fetch(`${YUNA_API}?resource=learning`);
+    if (!res.ok) throw new Error(`learning ${res.status}`);
+    return (await res.json()) as Learning;
   },
 };

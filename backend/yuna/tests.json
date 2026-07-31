@@ -19,6 +19,32 @@
       "body": {"format": "webm"},
       "expectedStatus": 400,
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "GET doctors list",
+      "method": "GET",
+      "path": "/?resource=doctors",
+      "expectedStatus": 200
+    },
+    {
+      "name": "GET doctors rating",
+      "method": "GET",
+      "path": "/?resource=rating",
+      "expectedStatus": 200
+    },
+    {
+      "name": "GET stats",
+      "method": "GET",
+      "path": "/?resource=stats",
+      "expectedStatus": 200
+    },
+    {
+      "name": "POST doctor without name returns 400",
+      "method": "POST",
+      "path": "/?resource=doctors",
+      "body": {"specialty": "Стоматолог"},
+      "expectedStatus": 400,
+      "bodyMatcher": "partial"
     }
   ]
 }

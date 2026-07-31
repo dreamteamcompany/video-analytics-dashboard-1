@@ -27,10 +27,11 @@ CHAT_URL = "https://routerai.ru/api/v1/chat/completions"
 TRANSCRIBE_URL = "https://routerai.ru/api/v1/audio/transcriptions"
 WHISPER_MODEL = "openai/whisper-large-v3"
 CHAT_MODEL = "openai/gpt-5.1"
+SEARCH_MODEL = "perplexity/sonar"
 
 CORS = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
 }
 
@@ -424,6 +425,44 @@ ANALYSIS_PROMPT = (
     "- match: int 0-100, уверенность в рекомендации;\n"
     "- alternatives: массив из 0-3 объектов {name, score} (score int 0-100) — альтернативы;\n"
     "- aftercare: массив из 0-5 строк — рекомендации после лечения.\n"
+    "Дополнительно сформируй patient — карту пациента по тому, что прозвучало в диалоге:\n"
+    "- name: ФИО или имя, если названо, иначе '';\n"
+    "- age: возраст числом (int) если назван, иначе null;\n"
+    "- sex: 'Мужской'/'Женский' если ясно, иначе '';\n"
+    "- weight_kg: вес в кг (int) если назван, иначе null;\n"
+    "- allergies: массив аллергий (например ['Пенициллин']), пустой если нет;\n"
+    "- chronic: массив хронических заболеваний, пустой если нет;\n"
+    "- smoking: строка про курение (например '10 сигарет/день') или '';\n"
+    "- complaints: массив жалоб/симптомов пациента из диалога (боль, реакция и т.п.);\n"
+    "- localization: локализация проблемы (например '36 зуб') или ''.\n"
+    "Дополнительно сформируй anesthesia — расчёт анестезии:\n"
+    "- drug: рекомендуемый анестетик (например 'Ультракаин DS'), '' если не определить;\n"
+    "- dose_ml: рекомендуемая доза в мл (число, например 1.7);\n"
+    "- reserve_ml: резерв в мл (число);\n"
+    "- max_ml: максимально допустимая доза в мл (число) с учётом веса/возраста;\n"
+    "- basis: краткое обоснование расчёта (учтён вес/возраст/анамнез) строкой;\n"
+    "- alternatives: массив 0-3 объектов {name, dose_ml} — аналоги препаратов.\n"
+    "Дополнительно сформируй drug_control — фармакологический контроль:\n"
+    "- contraindications: массив 0-4 объектов {drug, reason} — что избегать и почему "
+    "(на основе аллергий/анамнеза, например {drug:'Амоксициллин', reason:'аллергия на пенициллин'});\n"
+    "- interactions: массив 0-3 объектов {drug, note} — лекарственные взаимодействия;\n"
+    "- safe: массив 0-5 строк — разрешённые/безопасные препараты.\n"
+    "Дополнительно сформируй upsell — потенциал доп. услуг по словам пациента:\n"
+    "- potential: 'Высокий'/'Средний'/'Низкий';\n"
+    "- services: массив 0-4 объектов {name, score} (score int 0-100) — рекомендуемые доп. услуги;\n"
+    "- phrases: массив 0-4 ключевых фраз пациента, указывающих на готовность (дословно из диалога).\n"
+    "Дополнительно сформируй loyalty — прогноз лояльности пациента:\n"
+    "- repeat: int 0-100 — вероятность повторного визита;\n"
+    "- nps: int 0-10 — ожидаемый NPS пациента;\n"
+    "- recommend: int 0-100 — готовность рекомендовать клинику.\n"
+    "Дополнительно сформируй doctor_state — состояние врача по его речи в диалоге:\n"
+    "- status: краткий статус (например 'Спокоен и уверен' или 'Повышенное напряжение');\n"
+    "- stress: int 0-100 — уровень стресса/напряжения врача;\n"
+    "- speech_rate: строка про темп речи (например 'В норме' или 'Учащённая, +35%');\n"
+    "- tone: строка про тональность (например 'Ровная' или 'Повышенная');\n"
+    "- improve: массив 0-4 объектов {area, delta} — что улучшить и оценка "
+    "(например {area:'Эмпатические ответы', delta:'-15%'});\n"
+    "- coaching: строка — рекомендуемая мини-тренировка (например 'Активное слушание пациента').\n"
     "Если данных в диалоге недостаточно — делай осторожные предположения с низкой "
     "probability/match, но поля всё равно заполни осмысленно по контексту стоматологии.\n"
     "Верни СТРОГО JSON без markdown вида: "
@@ -435,7 +474,17 @@ ANALYSIS_PROMPT = (
     '"tactics":{"approach":str,"sequence":[str],"equipment":[str],"notes":[str]},'
     '"complications":{"risk":int,"factors":[{"name":str,"impact":str}]},'
     '"treatment":{"recommended":[{"title":str,"detail":str}],"match":int,'
-    '"alternatives":[{"name":str,"score":int}],"aftercare":[str]}}. '
+    '"alternatives":[{"name":str,"score":int}],"aftercare":[str]},'
+    '"patient":{"name":str,"age":int|null,"sex":str,"weight_kg":int|null,'
+    '"allergies":[str],"chronic":[str],"smoking":str,"complaints":[str],"localization":str},'
+    '"anesthesia":{"drug":str,"dose_ml":number,"reserve_ml":number,"max_ml":number,'
+    '"basis":str,"alternatives":[{"name":str,"dose_ml":number}]},'
+    '"drug_control":{"contraindications":[{"drug":str,"reason":str}],'
+    '"interactions":[{"drug":str,"note":str}],"safe":[str]},'
+    '"upsell":{"potential":str,"services":[{"name":str,"score":int}],"phrases":[str]},'
+    '"loyalty":{"repeat":int,"nps":int,"recommend":int},'
+    '"doctor_state":{"status":str,"stress":int,"speech_rate":str,"tone":str,'
+    '"improve":[{"area":str,"delta":str}],"coaching":str}}. '
     "Ничего кроме JSON."
 )
 
@@ -498,11 +547,155 @@ def _analyze(transcript: str) -> dict:
         "tactics": _parse_tactics(p.get("tactics")),
         "complications": _parse_complications(p.get("complications")),
         "treatment": _parse_treatment(p.get("treatment")),
+        "patient": _parse_patient(p.get("patient")),
+        "anesthesia": _parse_anesthesia(p.get("anesthesia")),
+        "drug_control": _parse_drug_control(p.get("drug_control")),
+        "upsell": _parse_upsell(p.get("upsell")),
+        "loyalty": _parse_loyalty(p.get("loyalty")),
+        "doctor_state": _parse_doctor_state(p.get("doctor_state")),
     }
 
 
 def _str_list(v) -> list:
     return [str(x).strip() for x in v if str(x).strip()] if isinstance(v, list) else []
+
+
+def _num(v):
+    try:
+        n = float(v)
+        return int(n) if n == int(n) else round(n, 2)
+    except (TypeError, ValueError):
+        return None
+
+
+def _int_or_none(v):
+    try:
+        return int(round(float(v)))
+    except (TypeError, ValueError):
+        return None
+
+
+def _parse_patient(p) -> dict:
+    """Карта пациента из диалога."""
+    if not isinstance(p, dict):
+        return {}
+    out = {
+        "name": str(p.get("name") or "").strip(),
+        "age": _int_or_none(p.get("age")),
+        "sex": str(p.get("sex") or "").strip(),
+        "weight_kg": _int_or_none(p.get("weight_kg")),
+        "allergies": _str_list(p.get("allergies")),
+        "chronic": _str_list(p.get("chronic")),
+        "smoking": str(p.get("smoking") or "").strip(),
+        "complaints": _str_list(p.get("complaints")),
+        "localization": str(p.get("localization") or "").strip(),
+    }
+    if not any([out["name"], out["age"], out["allergies"], out["chronic"],
+                out["smoking"], out["complaints"], out["localization"]]):
+        return {}
+    return out
+
+
+def _parse_anesthesia(a) -> dict:
+    """Расчёт анестезии."""
+    if not isinstance(a, dict):
+        return {}
+    alts = []
+    raw = a.get("alternatives")
+    if isinstance(raw, list):
+        for x in raw:
+            if isinstance(x, dict):
+                name = str(x.get("name") or "").strip()
+                if name:
+                    alts.append({"name": name, "dose_ml": _num(x.get("dose_ml"))})
+    out = {
+        "drug": str(a.get("drug") or "").strip(),
+        "dose_ml": _num(a.get("dose_ml")),
+        "reserve_ml": _num(a.get("reserve_ml")),
+        "max_ml": _num(a.get("max_ml")),
+        "basis": str(a.get("basis") or "").strip(),
+        "alternatives": alts,
+    }
+    if not out["drug"] and out["dose_ml"] is None and not alts:
+        return {}
+    return out
+
+
+def _parse_drug_control(d) -> dict:
+    """Фармакологический контроль: противопоказания, взаимодействия, безопасные."""
+    if not isinstance(d, dict):
+        return {}
+    contra = []
+    for x in d.get("contraindications") or []:
+        if isinstance(x, dict):
+            drug = str(x.get("drug") or "").strip()
+            if drug:
+                contra.append({"drug": drug, "reason": str(x.get("reason") or "").strip()})
+    inter = []
+    for x in d.get("interactions") or []:
+        if isinstance(x, dict):
+            drug = str(x.get("drug") or "").strip()
+            if drug:
+                inter.append({"drug": drug, "note": str(x.get("note") or "").strip()})
+    safe = _str_list(d.get("safe"))
+    if not contra and not inter and not safe:
+        return {}
+    return {"contraindications": contra, "interactions": inter, "safe": safe}
+
+
+def _parse_upsell(u) -> dict:
+    """Потенциал доп. услуг."""
+    if not isinstance(u, dict):
+        return {}
+    services = []
+    for x in u.get("services") or []:
+        if isinstance(x, dict):
+            name = str(x.get("name") or "").strip()
+            if name:
+                services.append({"name": name, "score": _clamp_score(x.get("score"))})
+    phrases = _str_list(u.get("phrases"))
+    potential = str(u.get("potential") or "").strip()
+    if not services and not phrases and not potential:
+        return {}
+    return {"potential": potential, "services": services, "phrases": phrases}
+
+
+def _parse_loyalty(l) -> dict:
+    """Прогноз лояльности пациента."""
+    if not isinstance(l, dict):
+        return {}
+    has = any(isinstance(l.get(k), (int, float)) for k in ("repeat", "nps", "recommend"))
+    if not has:
+        return {}
+    nps = _int_or_none(l.get("nps"))
+    return {
+        "repeat": _clamp_score(l.get("repeat")),
+        "nps": max(0, min(10, nps)) if nps is not None else None,
+        "recommend": _clamp_score(l.get("recommend")),
+    }
+
+
+def _parse_doctor_state(d) -> dict:
+    """Состояние врача по речи."""
+    if not isinstance(d, dict):
+        return {}
+    improve = []
+    for x in d.get("improve") or []:
+        if isinstance(x, dict):
+            area = str(x.get("area") or "").strip()
+            if area:
+                improve.append({"area": area, "delta": str(x.get("delta") or "").strip()})
+    out = {
+        "status": str(d.get("status") or "").strip(),
+        "stress": _clamp_score(d.get("stress")),
+        "speech_rate": str(d.get("speech_rate") or "").strip(),
+        "tone": str(d.get("tone") or "").strip(),
+        "improve": improve,
+        "coaching": str(d.get("coaching") or "").strip(),
+    }
+    if not out["status"] and not out["speech_rate"] and not improve and not out["coaching"]:
+        return {}
+    return out
 
 
 def _parse_tactics(t) -> dict:
@@ -678,6 +871,10 @@ def _transcribe(body: dict) -> dict:
     audio_b64 = body.get("audio_base64", "")
     fmt = (body.get("format") or "webm").lower()
     duration_sec = int(body.get("duration_sec") or 0)
+    try:
+        doctor_id = int(body.get("doctor_id")) if body.get("doctor_id") else None
+    except (TypeError, ValueError):
+        doctor_id = None
 
     if not audio_b64:
         return _resp(400, {"error": "Аудио не передано"})
@@ -710,9 +907,9 @@ def _transcribe(body: dict) -> dict:
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO yuna_sessions (status, transcript, duration_sec, analysis) "
-            "VALUES ('analyzed', %s, %s, %s) RETURNING id",
-            (transcript, duration_sec, json.dumps(analysis) if analysis else None),
+            "INSERT INTO yuna_sessions (status, transcript, duration_sec, analysis, doctor_id) "
+            "VALUES ('analyzed', %s, %s, %s, %s) RETURNING id",
+            (transcript, duration_sec, json.dumps(analysis) if analysis else None, doctor_id),
         )
         session_id = cur.fetchone()[0]
         for i, u in enumerate(utterances):
@@ -720,6 +917,15 @@ def _transcribe(body: dict) -> dict:
                 "INSERT INTO yuna_utterances (session_id, speaker, text, ord) "
                 "VALUES (%s, %s, %s, %s)",
                 (session_id, u["speaker"], u["text"], i),
+            )
+        # Начисляем врачу баллы за приём: базовые 5 + бонус за качество
+        if doctor_id and analysis:
+            ov = ["empathy", "trust", "quality", "communication"]
+            vals = [analysis.get(k) for k in ov if isinstance(analysis.get(k), (int, float))]
+            bonus = round(sum(vals) / len(vals) / 10) if vals else 0
+            cur.execute(
+                "UPDATE yuna_doctors SET points = points + %s WHERE id = %s",
+                (5 + bonus, doctor_id),
             )
         conn.commit()
     finally:
@@ -733,14 +939,277 @@ def _transcribe(body: dict) -> dict:
     })
 
 
+def _doctor_row(r) -> dict:
+    return {
+        "id": r[0], "name": r[1], "specialty": r[2],
+        "experience_years": r[3], "avatar_url": r[4],
+        "points": r[5], "is_active": r[6],
+    }
+
+
+def _list_doctors() -> dict:
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, name, specialty, experience_years, avatar_url, points, is_active "
+            "FROM yuna_doctors ORDER BY points DESC, id ASC"
+        )
+        return _resp(200, {"doctors": [_doctor_row(r) for r in cur.fetchall()]})
+    finally:
+        conn.close()
+
+
+def _create_doctor(body: dict) -> dict:
+    name = str(body.get("name") or "").strip()
+    if not name:
+        return _resp(400, {"error": "Имя обязательно"})
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO yuna_doctors (name, specialty, experience_years, avatar_url, points) "
+            "VALUES (%s, %s, %s, %s, %s) "
+            "RETURNING id, name, specialty, experience_years, avatar_url, points, is_active",
+            (
+                name,
+                str(body.get("specialty") or "").strip(),
+                int(body.get("experience_years") or 0),
+                str(body.get("avatar_url") or "").strip(),
+                int(body.get("points") or 0),
+            ),
+        )
+        row = cur.fetchone()
+        conn.commit()
+        return _resp(200, {"doctor": _doctor_row(row)})
+    finally:
+        conn.close()
+
+
+def _update_doctor(doctor_id: int, body: dict) -> dict:
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE yuna_doctors SET name=%s, specialty=%s, experience_years=%s, "
+            "avatar_url=%s, is_active=%s WHERE id=%s "
+            "RETURNING id, name, specialty, experience_years, avatar_url, points, is_active",
+            (
+                str(body.get("name") or "").strip(),
+                str(body.get("specialty") or "").strip(),
+                int(body.get("experience_years") or 0),
+                str(body.get("avatar_url") or "").strip(),
+                bool(body.get("is_active", True)),
+                doctor_id,
+            ),
+        )
+        row = cur.fetchone()
+        if not row:
+            return _resp(404, {"error": "Врач не найден"})
+        conn.commit()
+        return _resp(200, {"doctor": _doctor_row(row)})
+    finally:
+        conn.close()
+
+
+def _delete_doctor(doctor_id: int) -> dict:
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE yuna_sessions SET doctor_id = NULL WHERE doctor_id = %s", (doctor_id,))
+        cur.execute("DELETE FROM yuna_doctors WHERE id = %s", (doctor_id,))
+        conn.commit()
+        return _resp(200, {"deleted": doctor_id})
+    finally:
+        conn.close()
+
+
+def _doctors_rating() -> dict:
+    """Рейтинг врачей по баллам + число приёмов за неделю."""
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT d.id, d.name, d.specialty, d.experience_years, d.avatar_url, d.points, "
+            "COUNT(s.id) FILTER (WHERE s.created_at >= NOW() - INTERVAL '7 days') "
+            "FROM yuna_doctors d LEFT JOIN yuna_sessions s ON s.doctor_id = d.id "
+            "WHERE d.is_active = TRUE "
+            "GROUP BY d.id ORDER BY d.points DESC, d.id ASC LIMIT 20"
+        )
+        rating = []
+        for i, r in enumerate(cur.fetchall()):
+            rating.append({
+                "place": i + 1, "id": r[0], "name": r[1], "specialty": r[2],
+                "experience_years": r[3], "avatar_url": r[4], "points": r[5],
+                "sessions_week": r[6],
+            })
+        return _resp(200, {"rating": rating})
+    finally:
+        conn.close()
+
+
+def _stats() -> dict:
+    """Авто-журналы (п.7) и KPI (п.7): агрегаты по приёмам."""
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT "
+            "COUNT(*) FILTER (WHERE created_at::date = CURRENT_DATE), "
+            "COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days'), "
+            "COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days'), "
+            "COUNT(*), "
+            "AVG(duration_sec) FILTER (WHERE duration_sec > 0) "
+            "FROM yuna_sessions"
+        )
+        row = cur.fetchone()
+        today, week, month, total, avg_dur = row[0], row[1], row[2], row[3], row[4]
+
+        # KPI по метрикам анализа
+        cur.execute("SELECT analysis FROM yuna_sessions WHERE analysis IS NOT NULL")
+        quals, comms, loyals = [], [], []
+        for (a,) in cur.fetchall():
+            if not a:
+                continue
+            if isinstance(a.get("quality"), (int, float)):
+                quals.append(a["quality"])
+            if isinstance(a.get("communication"), (int, float)):
+                comms.append(a["communication"])
+            loy = a.get("loyalty") or {}
+            if isinstance(loy.get("nps"), (int, float)):
+                loyals.append(loy["nps"])
+
+        def avg(lst):
+            return round(sum(lst) / len(lst)) if lst else None
+
+        satisfaction = None
+        if loyals:
+            satisfaction = round(sum(loyals) / len(loyals) / 2, 1)  # nps 0-10 -> 0-5
+
+        return _resp(200, {
+            "counts": {"today": today, "week": week, "month": month, "total": total},
+            "kpi": {
+                "quality": avg(quals),
+                "communication": avg(comms),
+                "avg_minutes": round(avg_dur / 60) if avg_dur else None,
+                "satisfaction": satisfaction,
+            },
+        })
+    finally:
+        conn.close()
+
+
+def _learning() -> dict:
+    """Персональное обучение (п.12): ищет актуальные курсы/мероприятия в интернете.
+
+    Определяет слабые темы врача по последним приёмам (dental-диагнозы, зоны роста
+    из doctor_state) и ищет реальные курсы/вебинары по стоматологии через
+    web-search модель (perplexity sonar).
+    """
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT analysis FROM yuna_sessions WHERE analysis IS NOT NULL "
+            "ORDER BY created_at DESC LIMIT 10"
+        )
+        topics = set()
+        improve = set()
+        for (a,) in cur.fetchall():
+            if not a:
+                continue
+            dental = a.get("dental") or {}
+            pd = dental.get("primary_diagnosis") or {}
+            if pd.get("name"):
+                topics.add(pd["name"])
+            ds = a.get("doctor_state") or {}
+            for im in ds.get("improve") or []:
+                if isinstance(im, dict) and im.get("area"):
+                    improve.add(im["area"])
+    finally:
+        conn.close()
+
+    focus = ", ".join(list(topics)[:5]) or "современная стоматология, эндодонтия, диагностика"
+    growth = ", ".join(list(improve)[:4]) or "коммуникация с пациентом, эмпатия"
+
+    prompt = (
+        "Ты помогаешь стоматологу с профессиональным развитием. Найди в интернете "
+        f"АКТУАЛЬНЫЕ (2025-2026) курсы, мастер-классы и вебинары по темам: {focus}. "
+        f"Также учти зоны роста врача: {growth}. "
+        "Верни СТРОГО JSON без markdown вида: "
+        '{"recommended":[{"topic":str,"relevance":int(0-100),"why":str}],'
+        '"events":[{"title":str,"date":str,"format":str,"url":str}]}. '
+        "Дай 2-3 темы в recommended и 2-4 реальных мероприятия в events с ссылками. "
+        "Ничего кроме JSON."
+    )
+    payload = {
+        "model": SEARCH_MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    req = urllib.request.Request(
+        CHAT_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {os.environ['ROUTERAI_API_KEY']}",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        content = data["choices"][0]["message"]["content"].strip()
+        if content.startswith("```"):
+            content = content.split("```")[1]
+            if content.startswith("json"):
+                content = content[4:]
+            content = content.strip()
+        # perplexity иногда добавляет текст до/после JSON — вырезаем скобки
+        if "{" in content and "}" in content:
+            content = content[content.index("{"):content.rindex("}") + 1]
+        p = json.loads(content)
+    except Exception as e:
+        print(f"[yuna] learning failed: {e}")
+        return _resp(200, {"recommended": [], "events": [], "focus": focus})
+
+    rec = []
+    for x in p.get("recommended") or []:
+        if isinstance(x, dict) and x.get("topic"):
+            rec.append({
+                "topic": str(x["topic"]).strip(),
+                "relevance": _clamp_score(x.get("relevance")),
+                "why": str(x.get("why") or "").strip(),
+            })
+    events = []
+    for x in p.get("events") or []:
+        if isinstance(x, dict) and x.get("title"):
+            events.append({
+                "title": str(x["title"]).strip(),
+                "date": str(x.get("date") or "").strip(),
+                "format": str(x.get("format") or "").strip(),
+                "url": str(x.get("url") or "").strip(),
+            })
+    return _resp(200, {"recommended": rec, "events": events, "focus": focus})
+
+
 def handler(event: dict, context) -> dict:
     method = event.get("httpMethod", "GET")
 
     if method == "OPTIONS":
         return {"statusCode": 200, "headers": CORS, "isBase64Encoded": False, "body": ""}
 
+    qs = event.get("queryStringParameters") or {}
+    resource = qs.get("resource")
+
     if method == "GET":
-        qs = event.get("queryStringParameters") or {}
+        if resource == "doctors":
+            return _list_doctors()
+        if resource == "rating":
+            return _doctors_rating()
+        if resource == "stats":
+            return _stats()
+        if resource == "learning":
+            return _learning()
         sid = qs.get("session_id")
         if sid:
             try:
@@ -751,6 +1220,25 @@ def handler(event: dict, context) -> dict:
 
     if method == "POST":
         body = json.loads(event.get("body") or "{}")
+        if resource == "doctors":
+            return _create_doctor(body)
         return _transcribe(body)
+
+    if method == "PUT":
+        body = json.loads(event.get("body") or "{}")
+        if resource == "doctors":
+            try:
+                return _update_doctor(int(qs.get("id")), body)
+            except (TypeError, ValueError):
+                return _resp(400, {"error": "Неверный id"})
+        return _resp(400, {"error": "Неизвестный ресурс"})
+
+    if method == "DELETE":
+        if resource == "doctors":
+            try:
+                return _delete_doctor(int(qs.get("id")))
+            except (TypeError, ValueError):
+                return _resp(400, {"error": "Неверный id"})
+        return _resp(400, {"error": "Неизвестный ресурс"})
 
     return _resp(405, {"error": "Метод не поддерживается"})
