@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { yunaApi, Doctor } from './api';
 
-const emptyForm = { name: '', specialty: '', experience_years: 0, avatar_url: '', is_active: true };
+const emptyForm = { name: '', specialty: '', experience_years: 0, avatar_url: '', is_active: true, login: '', password: '' };
 
 const YunaSettingsPage = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -28,13 +28,15 @@ const YunaSettingsPage = () => {
 
   const startNew = () => { setForm(emptyForm); setEditing('new'); setError(null); };
   const startEdit = (d: Doctor) => {
-    setForm({ name: d.name, specialty: d.specialty, experience_years: d.experience_years, avatar_url: d.avatar_url, is_active: d.is_active });
+    setForm({ name: d.name, specialty: d.specialty, experience_years: d.experience_years, avatar_url: d.avatar_url, is_active: d.is_active, login: d.login || '', password: '' });
     setEditing(d.id);
     setError(null);
   };
 
   const save = async () => {
     if (!form.name.trim()) { setError('Введите имя врача'); return; }
+    if (!form.login.trim()) { setError('Введите логин'); return; }
+    if (editing === 'new' && form.password.length < 4) { setError('Пароль должен быть не короче 4 символов'); return; }
     setSaving(true);
     setError(null);
     try {
@@ -110,6 +112,20 @@ const YunaSettingsPage = () => {
                   className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="https://…" />
               </label>
+              <label className="block">
+                <span className="text-sm text-gray-600">Логин *</span>
+                <input value={form.login} onChange={(e) => setForm({ ...form, login: e.target.value })}
+                  autoComplete="off"
+                  className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="ivanov" />
+              </label>
+              <label className="block">
+                <span className="text-sm text-gray-600">{editing === 'new' ? 'Пароль *' : 'Новый пароль'}</span>
+                <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  autoComplete="new-password"
+                  className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder={editing === 'new' ? 'Мин. 4 символа' : 'Оставьте пустым, чтобы не менять'} />
+              </label>
             </div>
             <label className="flex items-center space-x-2 mt-4">
               <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
@@ -151,6 +167,7 @@ const YunaSettingsPage = () => {
                       <p className="text-xs text-gray-600">
                         {[d.specialty, d.experience_years ? `${d.experience_years} лет` : null].filter(Boolean).join(' • ')} • ⭐ {d.points} баллов
                       </p>
+                      {d.login && <p className="text-xs text-gray-400">Логин: {d.login}</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

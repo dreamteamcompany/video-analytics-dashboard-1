@@ -19,6 +19,8 @@ import json
 import os
 import base64
 import uuid
+import hashlib
+import secrets
 import urllib.request
 import urllib.error
 import psycopg2
@@ -33,7 +35,7 @@ SEARCH_MODEL = "perplexity/sonar"
 CORS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Authorization",
 }
 
 SPLIT_PROMPT = (
@@ -58,6 +60,35 @@ SPLIT_PROMPT = (
 
 def _conn():
     return psycopg2.connect(os.environ["DATABASE_URL"])
+
+
+def _hash_password(password: str) -> str:
+    """Хеширует пароль со случайной солью. Формат: salt$hex_hash."""
+    salt = secrets.token_hex(4)
+    h = hashlib.sha256((salt + ":" + password).encode()).hexdigest()
+    return f"{salt}${h}"
+
+
+def _check_password(password: str, stored: str) -> bool:
+    if not stored or "$" not in stored:
+        return False
+    salt, h = stored.split("$", 1)
+    calc = hashlib.sha256((salt + ":" + password).encode()).hexdigest()
+    return secrets.compare_digest(calc, h)
+
+
+def _doctor_by_token(token: str):
+    """Возвращает id врача по токену авторизации или None."""
+    if not token:
+        return None
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT doctor_id FROM yuna_auth_tokens WHERE token = %s", (token,))
+        r = cur.fetchone()
+        return r[0] if r else None
+    finally:
+        conn.close()
 
 
 def _upload_audio(audio_bytes: bytes, fmt: str) -> str:
@@ -969,6 +1000,7 @@ def _doctor_row(r) -> dict:
         "id": r[0], "name": r[1], "specialty": r[2],
         "experience_years": r[3], "avatar_url": r[4],
         "points": r[5], "is_active": r[6],
+        "login": r[7] if len(r) > 7 else "",
     }
 
 
@@ -977,7 +1009,7 @@ def _list_doctors() -> dict:
     try:
         cur = conn.cursor()
         cur.execute(
-            "SELECT id, name, specialty, experience_years, avatar_url, points, is_active "
+            "SELECT id, name, specialty, experience_years, avatar_url, points, is_active, login "
             "FROM yuna_doctors ORDER BY points DESC, id ASC"
         )
         return _resp(200, {"doctors": [_doctor_row(r) for r in cur.fetchall()]})
@@ -989,19 +1021,30 @@ def _create_doctor(body: dict) -> dict:
     name = str(body.get("name") or "").strip()
     if not name:
         return _resp(400, {"error": "Имя обязательно"})
+    login = str(body.get("login") or "").strip().lower()
+    password = str(body.get("password") or "")
+    if not login:
+        return _resp(400, {"error": "Логин обязателен"})
+    if len(password) < 4:
+        return _resp(400, {"error": "Пароль должен быть не короче 4 символов"})
     conn = _conn()
     try:
         cur = conn.cursor()
+        cur.execute("SELECT 1 FROM yuna_doctors WHERE LOWER(login) = %s", (login,))
+        if cur.fetchone():
+            return _resp(409, {"error": "Такой логин уже занят"})
         cur.execute(
-            "INSERT INTO yuna_doctors (name, specialty, experience_years, avatar_url, points) "
-            "VALUES (%s, %s, %s, %s, %s) "
-            "RETURNING id, name, specialty, experience_years, avatar_url, points, is_active",
+            "INSERT INTO yuna_doctors (name, specialty, experience_years, avatar_url, points, login, password_hash) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s) "
+            "RETURNING id, name, specialty, experience_years, avatar_url, points, is_active, login",
             (
                 name,
                 str(body.get("specialty") or "").strip(),
                 int(body.get("experience_years") or 0),
                 str(body.get("avatar_url") or "").strip(),
                 int(body.get("points") or 0),
+                login,
+                _hash_password(password),
             ),
         )
         row = cur.fetchone()
@@ -1012,25 +1055,44 @@ def _create_doctor(body: dict) -> dict:
 
 
 def _update_doctor(doctor_id: int, body: dict) -> dict:
+    login = str(body.get("login") or "").strip().lower()
+    password = str(body.get("password") or "")
     conn = _conn()
     try:
         cur = conn.cursor()
+        if login:
+            cur.execute(
+                "SELECT 1 FROM yuna_doctors WHERE LOWER(login) = %s AND id <> %s",
+                (login, doctor_id),
+            )
+            if cur.fetchone():
+                return _resp(409, {"error": "Такой логин уже занят"})
         cur.execute(
             "UPDATE yuna_doctors SET name=%s, specialty=%s, experience_years=%s, "
-            "avatar_url=%s, is_active=%s WHERE id=%s "
-            "RETURNING id, name, specialty, experience_years, avatar_url, points, is_active",
+            "avatar_url=%s, is_active=%s, "
+            "login=COALESCE(NULLIF(%s, ''), login) "
+            "WHERE id=%s "
+            "RETURNING id, name, specialty, experience_years, avatar_url, points, is_active, login",
             (
                 str(body.get("name") or "").strip(),
                 str(body.get("specialty") or "").strip(),
                 int(body.get("experience_years") or 0),
                 str(body.get("avatar_url") or "").strip(),
                 bool(body.get("is_active", True)),
+                login,
                 doctor_id,
             ),
         )
         row = cur.fetchone()
         if not row:
             return _resp(404, {"error": "Врач не найден"})
+        if password:
+            if len(password) < 4:
+                return _resp(400, {"error": "Пароль должен быть не короче 4 символов"})
+            cur.execute(
+                "UPDATE yuna_doctors SET password_hash=%s WHERE id=%s",
+                (_hash_password(password), doctor_id),
+            )
         conn.commit()
         return _resp(200, {"doctor": _doctor_row(row)})
     finally:
@@ -1045,6 +1107,69 @@ def _delete_doctor(doctor_id: int) -> dict:
         cur.execute("DELETE FROM yuna_doctors WHERE id = %s", (doctor_id,))
         conn.commit()
         return _resp(200, {"deleted": doctor_id})
+    finally:
+        conn.close()
+
+
+def _login(body: dict) -> dict:
+    """Проверяет логин/пароль врача и выдаёт токен авторизации."""
+    login = str(body.get("login") or "").strip().lower()
+    password = str(body.get("password") or "")
+    if not login or not password:
+        return _resp(400, {"error": "Укажите логин и пароль"})
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, name, specialty, experience_years, avatar_url, points, is_active, login, password_hash "
+            "FROM yuna_doctors WHERE LOWER(login) = %s",
+            (login,),
+        )
+        row = cur.fetchone()
+        if not row or not _check_password(password, row[8]):
+            return _resp(401, {"error": "Неверный логин или пароль"})
+        if not row[6]:
+            return _resp(403, {"error": "Учётная запись деактивирована"})
+        token = secrets.token_hex(32)
+        cur.execute(
+            "INSERT INTO yuna_auth_tokens (token, doctor_id) VALUES (%s, %s)",
+            (token, row[0]),
+        )
+        conn.commit()
+        return _resp(200, {"token": token, "doctor": _doctor_row(row[:8])})
+    finally:
+        conn.close()
+
+
+def _logout(token: str) -> dict:
+    if token:
+        conn = _conn()
+        try:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM yuna_auth_tokens WHERE token = %s", (token,))
+            conn.commit()
+        finally:
+            conn.close()
+    return _resp(200, {"ok": True})
+
+
+def _me(token: str) -> dict:
+    """Возвращает данные врача по токену (проверка сессии на фронте)."""
+    doctor_id = _doctor_by_token(token)
+    if not doctor_id:
+        return _resp(401, {"error": "Не авторизован"})
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, name, specialty, experience_years, avatar_url, points, is_active, login "
+            "FROM yuna_doctors WHERE id = %s",
+            (doctor_id,),
+        )
+        row = cur.fetchone()
+        if not row:
+            return _resp(401, {"error": "Не авторизован"})
+        return _resp(200, {"doctor": _doctor_row(row)})
     finally:
         conn.close()
 
@@ -1225,8 +1350,12 @@ def handler(event: dict, context) -> dict:
 
     qs = event.get("queryStringParameters") or {}
     resource = qs.get("resource")
+    headers = event.get("headers") or {}
+    token = headers.get("X-Authorization") or headers.get("x-authorization") or ""
 
     if method == "GET":
+        if resource == "me":
+            return _me(token)
         if resource == "doctors":
             return _list_doctors()
         if resource == "rating":
@@ -1245,6 +1374,10 @@ def handler(event: dict, context) -> dict:
 
     if method == "POST":
         body = json.loads(event.get("body") or "{}")
+        if resource == "login":
+            return _login(body)
+        if resource == "logout":
+            return _logout(token)
         if resource == "doctors":
             return _create_doctor(body)
         return _transcribe(body)

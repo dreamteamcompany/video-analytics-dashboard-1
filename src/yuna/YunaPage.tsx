@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
-import { yunaApi, Utterance, Analysis, YunaSession, Doctor, YunaStats } from './api';
+import { yunaApi, Utterance, Analysis, YunaSession, YunaStats } from './api';
+import { useAuth } from './useAuth';
 import { useRecorder } from './useRecorder';
 import { fmtTime } from './utils';
 import TranscriptView from './TranscriptView';
@@ -22,6 +23,8 @@ import {
 import { RatingBlock, AutoJournalsBlock, KpiBlock, LearningBlock } from './DoctorBlocks';
 
 const YunaPage = () => {
+  const navigate = useNavigate();
+  const { doctor: currentDoctor, logout } = useAuth();
   const { state, seconds, level, silent, error: recError, start, pause, resume, stop, cancel } = useRecorder();
   const [processing, setProcessing] = useState(false);
   const [utterances, setUtterances] = useState<Utterance[]>([]);
@@ -29,10 +32,14 @@ const YunaPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<YunaSession[]>([]);
   const [loadingSessions, setLoadingSessions] = useState(true);
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [doctorId, setDoctorId] = useState<number | null>(null);
   const [stats, setStats] = useState<YunaStats | null>(null);
   const [ratingKey, setRatingKey] = useState(0);
+  const doctorId = currentDoctor?.id ?? null;
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/yuna/login', { replace: true });
+  };
 
   const loadSessions = useCallback(async () => {
     try {
@@ -52,23 +59,10 @@ const YunaPage = () => {
     }
   }, []);
 
-  const loadDoctors = useCallback(async () => {
-    try {
-      const list = await yunaApi.listDoctors();
-      setDoctors(list);
-      setDoctorId((prev) => prev ?? (list.find((d) => d.is_active)?.id ?? list[0]?.id ?? null));
-    } catch {
-      /* silent */
-    }
-  }, []);
-
   useEffect(() => {
     loadSessions();
     loadStats();
-    loadDoctors();
-  }, [loadSessions, loadStats, loadDoctors]);
-
-  const currentDoctor = doctors.find((d) => d.id === doctorId) || null;
+  }, [loadSessions, loadStats]);
 
   const handleStop = async () => {
     const result = await stop();
@@ -157,26 +151,14 @@ const YunaPage = () => {
               </div>
             </div>
 
-            {/* Информация о враче (реальные учётные записи) */}
+            {/* Информация о вошедшем враче */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 lg:gap-6">
               <div className="sm:text-right">
-                {doctors.length > 0 ? (
-                  <select
-                    value={doctorId ?? ''}
-                    onChange={(e) => setDoctorId(Number(e.target.value))}
-                    className="bg-white/20 text-white font-semibold text-lg rounded-lg px-2 py-1 backdrop-blur-sm focus:outline-none cursor-pointer [&>option]:text-gray-800"
-                  >
-                    {doctors.map((d) => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <p className="font-semibold text-lg">Врач не выбран</p>
-                )}
+                <p className="font-semibold text-lg">{currentDoctor?.name || 'Врач'}</p>
                 <p className="text-white/70">
                   {currentDoctor
                     ? [currentDoctor.specialty, currentDoctor.experience_years ? `Опыт ${currentDoctor.experience_years} лет` : null].filter(Boolean).join(' • ')
-                    : 'Добавьте врача в настройках'}
+                    : ''}
                 </p>
                 {currentDoctor && (
                   <div className="flex items-center gap-2 mt-1 sm:justify-end">
@@ -200,13 +182,13 @@ const YunaPage = () => {
                   <Icon name="Settings" size={16} />
                   Настройки
                 </Link>
-                <Link
-                  to="/"
+                <button
+                  onClick={handleLogout}
                   className="bg-white/20 hover:bg-white/30 rounded-xl px-3 py-3 backdrop-blur-sm flex items-center gap-2 text-sm transition-colors"
                 >
-                  <Icon name="ArrowLeft" size={16} />
-                  На главную
-                </Link>
+                  <Icon name="LogOut" size={16} />
+                  Выйти
+                </button>
               </div>
             </div>
           </div>

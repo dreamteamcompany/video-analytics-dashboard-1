@@ -153,7 +153,21 @@ export interface Doctor {
   avatar_url: string;
   points: number;
   is_active: boolean;
+  login?: string;
 }
+
+const TOKEN_KEY = 'yuna_token';
+
+export const authStore = {
+  get: (): string => localStorage.getItem(TOKEN_KEY) || '',
+  set: (t: string) => localStorage.setItem(TOKEN_KEY, t),
+  clear: () => localStorage.removeItem(TOKEN_KEY),
+};
+
+const authHeaders = (): Record<string, string> => {
+  const t = authStore.get();
+  return t ? { Authorization: t } : {};
+};
 
 export interface RatingEntry {
   place: number;
@@ -237,10 +251,10 @@ export const yunaApi = {
     return ((await res.json()) as { doctors: Doctor[] }).doctors;
   },
 
-  createDoctor: async (d: Partial<Doctor>): Promise<Doctor> => {
+  createDoctor: async (d: Partial<Doctor> & { login?: string; password?: string }): Promise<Doctor> => {
     const res = await fetch(`${YUNA_API}?resource=doctors`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify(d),
     });
     if (!res.ok) {
@@ -251,19 +265,59 @@ export const yunaApi = {
     return ((await res.json()) as { doctor: Doctor }).doctor;
   },
 
-  updateDoctor: async (id: number, d: Partial<Doctor>): Promise<Doctor> => {
+  updateDoctor: async (id: number, d: Partial<Doctor> & { login?: string; password?: string }): Promise<Doctor> => {
     const res = await fetch(`${YUNA_API}?resource=doctors&id=${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify(d),
     });
-    if (!res.ok) throw new Error(`update ${res.status}`);
+    if (!res.ok) {
+      let msg = `update ${res.status}`;
+      try { const e = (await res.json()) as { error?: string }; if (e.error) msg = e.error; } catch { /* ignore */ }
+      throw new Error(msg);
+    }
     return ((await res.json()) as { doctor: Doctor }).doctor;
   },
 
   deleteDoctor: async (id: number): Promise<void> => {
-    const res = await fetch(`${YUNA_API}?resource=doctors&id=${id}`, { method: 'DELETE' });
+    const res = await fetch(`${YUNA_API}?resource=doctors&id=${id}`, {
+      method: 'DELETE',
+      headers: { ...authHeaders() },
+    });
     if (!res.ok) throw new Error(`delete ${res.status}`);
+  },
+
+  login: async (login: string, password: string): Promise<Doctor> => {
+    const res = await fetch(`${YUNA_API}?resource=login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login, password }),
+    });
+    if (!res.ok) {
+      let msg = 'Неверный логин или пароль';
+      try { const e = (await res.json()) as { error?: string }; if (e.error) msg = e.error; } catch { /* ignore */ }
+      throw new Error(msg);
+    }
+    const data = (await res.json()) as { token: string; doctor: Doctor };
+    authStore.set(data.token);
+    return data.doctor;
+  },
+
+  logout: async (): Promise<void> => {
+    try {
+      await fetch(`${YUNA_API}?resource=logout`, { method: 'POST', headers: { ...authHeaders() } });
+    } catch { /* ignore */ }
+    authStore.clear();
+  },
+
+  me: async (): Promise<Doctor | null> => {
+    if (!authStore.get()) return null;
+    const res = await fetch(`${YUNA_API}?resource=me`, { headers: { ...authHeaders() } });
+    if (!res.ok) {
+      authStore.clear();
+      return null;
+    }
+    return ((await res.json()) as { doctor: Doctor }).doctor;
   },
 
   rating: async (): Promise<RatingEntry[]> => {
