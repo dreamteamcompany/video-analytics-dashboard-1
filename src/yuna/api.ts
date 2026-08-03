@@ -205,8 +205,9 @@ export interface TranscribeResult {
 }
 
 export const yunaApi = {
-  listSessions: async (): Promise<YunaSession[]> => {
-    const res = await fetch(YUNA_API);
+  listSessions: async (doctorId?: number | null): Promise<YunaSession[]> => {
+    const url = doctorId ? `${YUNA_API}?doctor_id=${doctorId}` : YUNA_API;
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`list ${res.status}`);
     const data = (await res.json()) as { sessions: YunaSession[] };
     return data.sessions;
@@ -326,8 +327,9 @@ export const yunaApi = {
     return ((await res.json()) as { rating: RatingEntry[] }).rating;
   },
 
-  stats: async (): Promise<YunaStats> => {
-    const res = await fetch(`${YUNA_API}?resource=stats`);
+  stats: async (doctorId?: number | null): Promise<YunaStats> => {
+    const url = doctorId ? `${YUNA_API}?resource=stats&doctor_id=${doctorId}` : `${YUNA_API}?resource=stats`;
+    const res = await fetch(url);
     if (!res.ok) throw new Error(`stats ${res.status}`);
     return (await res.json()) as YunaStats;
   },

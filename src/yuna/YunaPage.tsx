@@ -43,26 +43,27 @@ const YunaPage = () => {
 
   const loadSessions = useCallback(async () => {
     try {
-      setSessions(await yunaApi.listSessions());
+      setSessions(await yunaApi.listSessions(doctorId));
     } catch {
       /* silent */
     } finally {
       setLoadingSessions(false);
     }
-  }, []);
+  }, [doctorId]);
 
   const loadStats = useCallback(async () => {
     try {
-      setStats(await yunaApi.stats());
+      setStats(await yunaApi.stats(doctorId));
     } catch {
       /* silent */
     }
-  }, []);
+  }, [doctorId]);
 
   useEffect(() => {
+    if (doctorId == null) return;
     loadSessions();
     loadStats();
-  }, [loadSessions, loadStats]);
+  }, [doctorId, loadSessions, loadStats]);
 
   const handleStop = async () => {
     const result = await stop();
@@ -175,6 +176,13 @@ const YunaPage = () => {
                     <span className="text-sm">Юна онлайн</span>
                   </div>
                 </div>
+                <Link
+                  to="/yuna"
+                  className="bg-white/20 hover:bg-white/30 rounded-xl px-3 py-3 backdrop-blur-sm flex items-center gap-2 text-sm transition-colors"
+                >
+                  <Icon name="LayoutDashboard" size={16} />
+                  Дашборд
+                </Link>
                 <Link
                   to="/yuna/settings"
                   className="bg-white/20 hover:bg-white/30 rounded-xl px-3 py-3 backdrop-blur-sm flex items-center gap-2 text-sm transition-colors"

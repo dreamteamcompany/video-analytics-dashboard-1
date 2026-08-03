@@ -851,14 +851,21 @@ def _parse_dental(d) -> dict:
     }
 
 
-def _list_sessions() -> dict:
+def _list_sessions(doctor_id=None) -> dict:
     conn = _conn()
     try:
         cur = conn.cursor()
-        cur.execute(
-            "SELECT id, title, status, duration_sec, created_at, analysis, audio_url "
-            "FROM yuna_sessions ORDER BY created_at DESC LIMIT 200"
-        )
+        if doctor_id is not None:
+            cur.execute(
+                "SELECT id, title, status, duration_sec, created_at, analysis, audio_url "
+                "FROM yuna_sessions WHERE doctor_id = %s ORDER BY created_at DESC LIMIT 200",
+                (doctor_id,),
+            )
+        else:
+            cur.execute(
+                "SELECT id, title, status, duration_sec, created_at, analysis, audio_url "
+                "FROM yuna_sessions ORDER BY created_at DESC LIMIT 200"
+            )
         rows = cur.fetchall()
         metric_keys = ["empathy", "trust", "patient_state", "quality", "communication"]
         sessions = []
@@ -1198,8 +1205,10 @@ def _doctors_rating() -> dict:
         conn.close()
 
 
-def _stats() -> dict:
+def _stats(doctor_id=None) -> dict:
     """Авто-журналы (п.7) и KPI (п.7): агрегаты по приёмам."""
+    where = "WHERE doctor_id = %s" if doctor_id is not None else ""
+    params = (doctor_id,) if doctor_id is not None else ()
     conn = _conn()
     try:
         cur = conn.cursor()
@@ -1210,13 +1219,15 @@ def _stats() -> dict:
             "COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days'), "
             "COUNT(*), "
             "AVG(duration_sec) FILTER (WHERE duration_sec > 0) "
-            "FROM yuna_sessions"
+            f"FROM yuna_sessions {where}",
+            params,
         )
         row = cur.fetchone()
         today, week, month, total, avg_dur = row[0], row[1], row[2], row[3], row[4]
 
         # KPI по метрикам анализа
-        cur.execute("SELECT analysis FROM yuna_sessions WHERE analysis IS NOT NULL")
+        kpi_where = "WHERE analysis IS NOT NULL" + (" AND doctor_id = %s" if doctor_id is not None else "")
+        cur.execute(f"SELECT analysis FROM yuna_sessions {kpi_where}", params)
         quals, comms, loyals = [], [], []
         for (a,) in cur.fetchall():
             if not a:
@@ -1354,6 +1365,11 @@ def handler(event: dict, context) -> dict:
     token = headers.get("X-Authorization") or headers.get("x-authorization") or ""
 
     if method == "GET":
+        did_raw = qs.get("doctor_id")
+        try:
+            did = int(did_raw) if did_raw else None
+        except ValueError:
+            did = None
         if resource == "me":
             return _me(token)
         if resource == "doctors":
@@ -1361,7 +1377,7 @@ def handler(event: dict, context) -> dict:
         if resource == "rating":
             return _doctors_rating()
         if resource == "stats":
-            return _stats()
+            return _stats(did)
         if resource == "learning":
             return _learning()
         sid = qs.get("session_id")
@@ -1370,7 +1386,7 @@ def handler(event: dict, context) -> dict:
                 return _get_session(int(sid))
             except ValueError:
                 return _resp(400, {"error": "Неверный session_id"})
-        return _list_sessions()
+        return _list_sessions(did)
 
     if method == "POST":
         body = json.loads(event.get("body") or "{}")
