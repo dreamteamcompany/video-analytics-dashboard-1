@@ -51,13 +51,13 @@ const ProgressRing = ({
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold text-gray-800">
+          <span className="font-bold text-gray-800" style={{ fontSize: size * 0.26 }}>
             {displayValue ?? Math.round(clamped)}
-            <span className="text-xs text-gray-400">{suffix}</span>
+            <span className="text-gray-400" style={{ fontSize: size * 0.14 }}>{suffix}</span>
           </span>
         </div>
       </div>
-      {label && <span className="text-xs text-gray-500 mt-1.5 text-center leading-tight">{label}</span>}
+      {label && <span className="text-sm text-gray-500 mt-2 text-center leading-tight">{label}</span>}
     </div>
   );
 };

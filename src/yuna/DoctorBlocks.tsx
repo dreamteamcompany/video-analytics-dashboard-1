@@ -21,38 +21,38 @@ export const RatingBlock = ({ refreshKey }: { refreshKey?: number }) => {
   }, [refreshKey]);
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-4 yuna-section-divider yuna-doctor-divider">Рейтинг врачей</h2>
+    <div className="bg-white rounded-2xl shadow-lg p-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 yuna-section-divider yuna-doctor-divider">Рейтинг врачей</h2>
       {loading ? (
-        <p className="text-sm text-gray-400 text-center py-4">Загрузка…</p>
+        <p className="text-base text-gray-400 text-center py-6">Загрузка…</p>
       ) : rating.length === 0 ? (
-        <p className="text-sm text-gray-500 text-center py-4">Добавьте врачей в разделе «Настройки»</p>
+        <p className="text-base text-gray-500 text-center py-6">Добавьте врачей в разделе «Настройки»</p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {(() => {
             const maxPts = Math.max(...rating.map((d) => d.points), 1);
             return rating.map((d, i) => (
-              <div key={d.id} className={`p-2.5 rounded-xl ${placeBg[i] || 'bg-gray-50'}`}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-6 h-6 ${placeColors[i] || 'bg-blue-300'} rounded-full flex items-center justify-center text-xs font-bold text-white`}>{d.place}</div>
+              <div key={d.id} className={`p-4 rounded-2xl ${placeBg[i] || 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between mb-2.5">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-8 h-8 ${placeColors[i] || 'bg-blue-300'} rounded-full flex items-center justify-center text-sm font-bold text-white`}>{d.place}</div>
                     {d.avatar_url ? (
-                      <img src={d.avatar_url} alt={d.name} className="w-9 h-9 rounded-full object-cover border-2 border-white shadow" />
+                      <img src={d.avatar_url} alt={d.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center border-2 border-white shadow">
-                        <Icon name="User" size={16} className="text-blue-500" />
+                      <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center border-2 border-white shadow">
+                        <Icon name="User" size={22} className="text-blue-500" />
                       </div>
                     )}
                     <div>
-                      <span className="text-sm font-semibold">{d.name}</span>
-                      <p className="text-xs text-gray-500">
+                      <span className="text-base font-semibold">{d.name}</span>
+                      <p className="text-sm text-gray-500">
                         {[d.specialty, d.experience_years ? `${d.experience_years} лет` : null].filter(Boolean).join(' • ')}
                       </p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-indigo-600">{d.points}</span>
+                  <span className="text-xl font-bold text-indigo-600">{d.points}</span>
                 </div>
-                <div className="h-2 rounded-full bg-white/70 overflow-hidden">
+                <div className="h-3 rounded-full bg-white/70 overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{
@@ -104,15 +104,15 @@ export const AutoJournalsBlock = ({ stats, sessions }: { stats: YunaStats | null
   const hasData = weekData.some((d) => d.value > 0);
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">
-        <Icon name="FileText" size={20} className="text-blue-500 mr-2 inline" />
+    <div className="bg-white rounded-2xl shadow-lg p-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <Icon name="FileText" size={24} className="text-blue-500 mr-2 inline" />
         Авто-журналы
       </h2>
 
-      <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-3 mb-4">
-        <p className="text-xs text-gray-500 mb-1 px-1">Приёмы за 7 дней</p>
-        <div className="h-32">
+      <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-5 mb-6">
+        <p className="text-sm text-gray-500 mb-2 px-1">Приёмы за 7 дней</p>
+        <div className="h-56">
           {hasData ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weekData} margin={{ top: 8, right: 4, left: 4, bottom: 0 }} barCategoryGap="28%">
@@ -122,9 +122,9 @@ export const AutoJournalsBlock = ({ stats, sessions }: { stats: YunaStats | null
                     <stop offset="100%" stopColor="#2563eb" />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 13, fill: '#6b7280' }} />
                 <Tooltip cursor={{ fill: 'rgba(79,70,229,0.06)' }} content={<JournalTooltip />} />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                <Bar dataKey="value" radius={[8, 8, 0, 0]}>
                   {weekData.map((_, i) => (
                     <Cell key={i} fill="url(#barFill)" />
                   ))}
@@ -133,24 +133,24 @@ export const AutoJournalsBlock = ({ stats, sessions }: { stats: YunaStats | null
             </ResponsiveContainer>
           ) : (
             <div className="h-full flex items-center justify-center">
-              <p className="text-xs text-gray-400">За неделю приёмов пока нет</p>
+              <p className="text-sm text-gray-400">За неделю приёмов пока нет</p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        <div className="bg-blue-50 rounded-xl p-3 text-center">
-          <p className="text-xl font-bold text-blue-600">{stats?.counts.today ?? '—'}</p>
-          <p className="text-xs text-blue-700">Сегодня</p>
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-blue-50 rounded-2xl p-5 text-center">
+          <p className="text-4xl font-bold text-blue-600">{stats?.counts.today ?? '—'}</p>
+          <p className="text-sm text-blue-700 mt-1">Сегодня</p>
         </div>
-        <div className="bg-purple-50 rounded-xl p-3 text-center">
-          <p className="text-xl font-bold text-purple-600">{stats?.counts.week ?? '—'}</p>
-          <p className="text-xs text-purple-700">Неделя</p>
+        <div className="bg-purple-50 rounded-2xl p-5 text-center">
+          <p className="text-4xl font-bold text-purple-600">{stats?.counts.week ?? '—'}</p>
+          <p className="text-sm text-purple-700 mt-1">Неделя</p>
         </div>
-        <div className="bg-green-50 rounded-xl p-3 text-center">
-          <p className="text-xl font-bold text-green-600">{stats?.counts.total ?? '—'}</p>
-          <p className="text-xs text-green-700">Всего</p>
+        <div className="bg-green-50 rounded-2xl p-5 text-center">
+          <p className="text-4xl font-bold text-green-600">{stats?.counts.total ?? '—'}</p>
+          <p className="text-sm text-green-700 mt-1">Всего</p>
         </div>
       </div>
     </div>
@@ -160,14 +160,16 @@ export const AutoJournalsBlock = ({ stats, sessions }: { stats: YunaStats | null
 export const KpiBlock = ({ stats }: { stats: YunaStats | null }) => {
   const k = stats?.kpi;
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">
-        <Icon name="Target" size={20} className="text-green-500 mr-2 inline" />
+    <div className="bg-white rounded-2xl shadow-lg p-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-8">
+        <Icon name="Target" size={24} className="text-green-500 mr-2 inline" />
         KPI качества
       </h2>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-10 place-items-center">
         <ProgressRing
           gradientId="kpiQuality"
+          size={140}
+          stroke={13}
           value={k?.quality ?? 0}
           from="#22c55e"
           to="#16a34a"
@@ -175,6 +177,8 @@ export const KpiBlock = ({ stats }: { stats: YunaStats | null }) => {
         />
         <ProgressRing
           gradientId="kpiComm"
+          size={140}
+          stroke={13}
           value={k?.communication ?? 0}
           from="#3b82f6"
           to="#2563eb"
@@ -182,6 +186,8 @@ export const KpiBlock = ({ stats }: { stats: YunaStats | null }) => {
         />
         <ProgressRing
           gradientId="kpiSat"
+          size={140}
+          stroke={13}
           value={k?.satisfaction != null ? (k.satisfaction / 5) * 100 : 0}
           from="#f59e0b"
           to="#d97706"
@@ -190,14 +196,14 @@ export const KpiBlock = ({ stats }: { stats: YunaStats | null }) => {
           label="Удовлетворённость"
         />
         <div className="flex flex-col items-center justify-center">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-50 to-indigo-50 flex flex-col items-center justify-center">
-            <Icon name="Clock" size={20} className="text-purple-500 mb-0.5" />
-            <span className="text-lg font-bold text-gray-800">
+          <div className="w-[140px] h-[140px] rounded-full bg-gradient-to-br from-purple-50 to-indigo-50 flex flex-col items-center justify-center">
+            <Icon name="Clock" size={30} className="text-purple-500 mb-1" />
+            <span className="text-3xl font-bold text-gray-800">
               {k?.avg_minutes != null ? k.avg_minutes : '—'}
-              <span className="text-xs text-gray-400"> мин</span>
+              <span className="text-base text-gray-400"> мин</span>
             </span>
           </div>
-          <span className="text-xs text-gray-500 mt-1.5 text-center leading-tight">Среднее время</span>
+          <span className="text-sm text-gray-500 mt-2 text-center leading-tight">Среднее время</span>
         </div>
       </div>
     </div>
