@@ -1,12 +1,29 @@
 import { useMemo } from 'react';
 import {
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer,
-  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
 } from 'recharts';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { YunaSession } from './api';
 import { scoreColor } from './utils';
+
+const BRAND = '#4f46e5';
+const BRAND2 = '#2563eb';
+
+const ChartTooltip = ({ active, payload, label }: {
+  active?: boolean;
+  payload?: { value?: number | string }[];
+  label?: string | number;
+}) => {
+  if (!active || !payload || !payload.length) return null;
+  return (
+    <div className="rounded-xl bg-white/95 backdrop-blur shadow-lg border border-indigo-100 px-3 py-2">
+      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-sm font-bold text-indigo-600">{payload[0].value} / 100</p>
+    </div>
+  );
+};
 
 const METRICS = [
   { key: 'empathy', label: 'Эмпатия', short: 'Эмпатия', icon: 'HeartHandshake' },
@@ -78,8 +95,6 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
     );
   }
 
-  const oc = scoreColor(overallAvg);
-
   return (
     <Card className="p-6 mb-6">
       <div className="flex items-center justify-between mb-6">
@@ -91,26 +106,33 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
       </div>
 
       {/* Общий балл + тренд */}
-      <div className="flex items-center gap-6 mb-6 flex-wrap">
-        <div className="flex items-end gap-2">
-          <span className={`text-5xl font-bold leading-none ${oc.text}`}>{overallAvg}</span>
-          <span className="text-sm text-muted-foreground mb-1">/ 100</span>
+      <div className="flex items-center gap-5 mb-6 flex-wrap">
+        <div
+          className="relative w-24 h-24 rounded-full flex items-center justify-center shadow-lg"
+          style={{
+            background: `conic-gradient(${BRAND} ${overallAvg * 3.6}deg, #e0e7ff ${overallAvg * 3.6}deg)`,
+          }}
+        >
+          <div className="w-[76px] h-[76px] rounded-full bg-white flex flex-col items-center justify-center">
+            <span className="text-3xl font-bold leading-none text-indigo-600">{overallAvg}</span>
+            <span className="text-[10px] text-gray-400">из 100</span>
+          </div>
         </div>
         <div className="flex flex-col">
-          <span className="text-xs text-muted-foreground">Средняя оценка приёмов</span>
-          <div className="flex items-center gap-1 mt-0.5">
-            <Icon
-              name={trend > 0 ? 'TrendingUp' : trend < 0 ? 'TrendingDown' : 'Minus'}
-              size={16}
-              className={trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-500' : 'text-muted-foreground'}
-            />
-            <span
-              className={`text-sm font-medium ${
-                trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-500' : 'text-muted-foreground'
+          <span className="text-sm text-gray-500">Средняя оценка приёмов</span>
+          <div className="flex items-center gap-1.5 mt-1">
+            <div
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold ${
+                trend > 0 ? 'bg-green-50 text-green-600' : trend < 0 ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-500'
               }`}
             >
-              {trend > 0 ? `+${trend}` : trend} к прошлым
-            </span>
+              <Icon
+                name={trend > 0 ? 'TrendingUp' : trend < 0 ? 'TrendingDown' : 'Minus'}
+                size={15}
+              />
+              {trend > 0 ? `+${trend}` : trend}
+            </div>
+            <span className="text-xs text-gray-400">к прошлым приёмам</span>
           </div>
         </div>
       </div>
@@ -132,58 +154,80 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Радар */}
-        <div>
-          <p className="text-sm font-medium text-foreground mb-2">Баланс качества</p>
+        <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 p-4">
+          <p className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+            <Icon name="Radar" size={15} className="text-indigo-500" />
+            Баланс качества
+          </p>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData} outerRadius="70%">
-                <PolarGrid stroke="hsl(var(--border))" />
+              <RadarChart data={radarData} outerRadius="72%">
+                <defs>
+                  <radialGradient id="radarFill" cx="50%" cy="50%" r="75%">
+                    <stop offset="0%" stopColor={BRAND2} stopOpacity={0.55} />
+                    <stop offset="100%" stopColor={BRAND} stopOpacity={0.15} />
+                  </radialGradient>
+                </defs>
+                <PolarGrid stroke="#c7d2fe" />
                 <PolarAngleAxis
                   dataKey="metric"
-                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 11, fill: '#4b5563', fontWeight: 500 }}
                 />
+                <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                 <Radar
                   dataKey="value"
-                  stroke="hsl(var(--primary))"
-                  fill="hsl(var(--primary))"
-                  fillOpacity={0.3}
+                  stroke={BRAND}
+                  strokeWidth={2}
+                  fill="url(#radarFill)"
+                  fillOpacity={1}
+                  dot={{ r: 3, fill: BRAND, strokeWidth: 0 }}
                 />
+                <Tooltip content={<ChartTooltip />} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Динамика */}
-        <div>
-          <p className="text-sm font-medium text-foreground mb-2">Динамика оценок</p>
+        <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+          <p className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+            <Icon name="TrendingUp" size={15} className="text-blue-500" />
+            Динамика оценок
+          </p>
           <div className="h-56">
             {lineData.length < 2 ? (
               <div className="h-full flex items-center justify-center text-center px-4">
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-500">
                   График появится после второго приёма
                 </p>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={lineData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                  <Tooltip
-                    contentStyle={{
-                      borderRadius: 12,
-                      border: '1px solid hsl(var(--border))',
-                      fontSize: 12,
-                    }}
-                  />
-                  <Line
+                <AreaChart data={lineData} margin={{ top: 5, right: 12, left: -18, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={BRAND2} stopOpacity={0.35} />
+                      <stop offset="100%" stopColor={BRAND2} stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="lineStroke" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={BRAND2} />
+                      <stop offset="100%" stopColor={BRAND} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="4 4" stroke="#e0e7ff" vertical={false} />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
+                  <YAxis domain={[0, 100]} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
+                  <Tooltip content={<ChartTooltip />} />
+                  <Area
                     type="monotone"
                     dataKey="Общий"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2.5}
-                    dot={{ r: 3 }}
+                    stroke="url(#lineStroke)"
+                    strokeWidth={3}
+                    fill="url(#areaFill)"
+                    dot={{ r: 3, fill: '#fff', stroke: BRAND, strokeWidth: 2 }}
+                    activeDot={{ r: 5, fill: BRAND, stroke: '#fff', strokeWidth: 2 }}
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             )}
           </div>
