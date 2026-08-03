@@ -115,16 +115,24 @@ export const AutoJournalsBlock = ({ stats, sessions }: { stats: YunaStats | null
         <div className="h-56">
           {hasData ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weekData} margin={{ top: 8, right: 4, left: 4, bottom: 0 }} barCategoryGap="28%">
+              <BarChart data={weekData} margin={{ top: 12, right: 4, left: 4, bottom: 0 }} barCategoryGap="26%">
                 <defs>
                   <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#4f46e5" />
+                    <stop offset="0%" stopColor="#818cf8" />
+                    <stop offset="55%" stopColor="#4f46e5" />
                     <stop offset="100%" stopColor="#2563eb" />
                   </linearGradient>
+                  <filter id="barGlow" x="-40%" y="-20%" width="180%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="b" />
+                    <feMerge>
+                      <feMergeNode in="b" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
                 </defs>
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 13, fill: '#6b7280' }} />
                 <Tooltip cursor={{ fill: 'rgba(79,70,229,0.06)' }} content={<JournalTooltip />} />
-                <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                <Bar dataKey="value" radius={[10, 10, 4, 4]} filter="url(#barGlow)" isAnimationActive animationDuration={900}>
                   {weekData.map((_, i) => (
                     <Cell key={i} fill="url(#barFill)" />
                   ))}

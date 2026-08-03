@@ -95,8 +95,14 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
     );
   }
 
+  const ringSize = 150;
+  const ringStroke = 14;
+  const ringR = (ringSize - ringStroke) / 2;
+  const ringCirc = 2 * Math.PI * ringR;
+  const ringOffset = ringCirc - (overallAvg / 100) * ringCirc;
+
   return (
-    <Card className="p-6 mb-6">
+    <Card className="p-6 mb-6 overflow-hidden chart-card">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Icon name="LayoutDashboard" size={18} className="text-primary" />
@@ -105,31 +111,62 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
         <span className="text-xs text-muted-foreground">{analyzed.length} приёмов</span>
       </div>
 
-      {/* Общий балл + тренд */}
-      <div className="flex items-center gap-5 mb-6 flex-wrap">
-        <div
-          className="relative w-24 h-24 rounded-full flex items-center justify-center shadow-lg"
-          style={{
-            background: `conic-gradient(${BRAND} ${overallAvg * 3.6}deg, #e0e7ff ${overallAvg * 3.6}deg)`,
-          }}
-        >
-          <div className="w-[76px] h-[76px] rounded-full bg-white flex flex-col items-center justify-center">
-            <span className="text-3xl font-bold leading-none text-indigo-600">{overallAvg}</span>
-            <span className="text-[10px] text-gray-400">из 100</span>
+      {/* Общий балл + тренд — герой-кольцо со свечением */}
+      <div
+        className="relative flex items-center gap-7 mb-7 flex-wrap rounded-3xl p-6 overflow-hidden"
+        style={{ background: 'radial-gradient(120% 140% at 0% 0%, #eef2ff 0%, #e0e7ff 45%, #dbeafe 100%)' }}
+      >
+        {/* декоративные блики */}
+        <div className="pointer-events-none absolute -top-10 -right-6 w-40 h-40 rounded-full blur-3xl opacity-40" style={{ background: BRAND }} />
+        <div className="pointer-events-none absolute -bottom-12 left-24 w-40 h-40 rounded-full blur-3xl opacity-30" style={{ background: BRAND2 }} />
+
+        <div className="relative" style={{ width: ringSize, height: ringSize }}>
+          <svg width={ringSize} height={ringSize} className="-rotate-90">
+            <defs>
+              <linearGradient id="heroRing" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#60a5fa" />
+                <stop offset="55%" stopColor={BRAND2} />
+                <stop offset="100%" stopColor={BRAND} />
+              </linearGradient>
+              <filter id="heroGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <circle cx={ringSize / 2} cy={ringSize / 2} r={ringR} fill="none" stroke="#ffffff" strokeWidth={ringStroke} strokeOpacity={0.6} />
+            <circle
+              className="ring-anim"
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={ringR}
+              fill="none"
+              stroke="url(#heroRing)"
+              strokeWidth={ringStroke}
+              strokeLinecap="round"
+              strokeDasharray={ringCirc}
+              filter="url(#heroGlow)"
+              style={{ ['--ring-circ' as string]: `${ringCirc}`, ['--ring-offset' as string]: `${ringOffset}`, strokeDashoffset: ringOffset }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center count-pop">
+            <span className="text-5xl font-extrabold leading-none bg-gradient-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">{overallAvg}</span>
+            <span className="text-xs text-gray-400 mt-0.5">из 100</span>
           </div>
         </div>
-        <div className="flex flex-col">
-          <span className="text-sm text-gray-500">Средняя оценка приёмов</span>
-          <div className="flex items-center gap-1.5 mt-1">
+
+        <div className="relative flex flex-col gap-1">
+          <span className="text-xs uppercase tracking-wider text-indigo-400 font-semibold">Средняя оценка</span>
+          <span className="text-lg font-bold text-gray-700">Качество приёмов</span>
+          <div className="flex items-center gap-2 mt-1">
             <div
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold ${
-                trend > 0 ? 'bg-green-50 text-green-600' : trend < 0 ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-500'
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-bold shadow-sm ${
+                trend > 0 ? 'bg-green-100 text-green-600' : trend < 0 ? 'bg-red-100 text-red-500' : 'bg-white text-gray-500'
               }`}
             >
-              <Icon
-                name={trend > 0 ? 'TrendingUp' : trend < 0 ? 'TrendingDown' : 'Minus'}
-                size={15}
-              />
+              <Icon name={trend > 0 ? 'TrendingUp' : trend < 0 ? 'TrendingDown' : 'Minus'} size={15} />
               {trend > 0 ? `+${trend}` : trend}
             </div>
             <span className="text-xs text-gray-400">к прошлым приёмам</span>
@@ -137,16 +174,24 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
         </div>
       </div>
 
-      {/* Карточки метрик */}
+      {/* Карточки метрик — стеклянные с акцентной полосой */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
-        {METRICS.map((m) => {
+        {METRICS.map((m, idx) => {
           const v = averages[m.key];
           const c = scoreColor(v);
           return (
-            <div key={m.key} className={`rounded-xl p-3 ${c.bg}`}>
-              <Icon name={m.icon} size={16} className={c.text} />
-              <p className={`text-2xl font-bold mt-1.5 ${c.text}`}>{v}</p>
+            <div
+              key={m.key}
+              className={`relative rounded-2xl p-4 ${c.bg} overflow-hidden chart-card shadow-sm hover:shadow-md transition-shadow`}
+              style={{ animationDelay: `${0.1 + idx * 0.07}s` }}
+            >
+              <div className={`absolute top-0 left-0 h-full w-1.5 ${c.bar}`} />
+              <Icon name={m.icon} size={18} className={c.text} />
+              <p className={`text-3xl font-extrabold mt-2 ${c.text}`}>{v}</p>
               <p className="text-xs text-muted-foreground leading-tight mt-0.5">{m.label}</p>
+              <div className="mt-2 h-1.5 rounded-full bg-white/60 overflow-hidden">
+                <div className={`h-full rounded-full ${c.bar}`} style={{ width: `${v}%` }} />
+              </div>
             </div>
           );
         })}
@@ -154,33 +199,45 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Радар */}
-        <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 p-4">
-          <p className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-            <Icon name="Radar" size={15} className="text-indigo-500" />
+        <div className="relative rounded-2xl p-5 overflow-hidden chart-card shadow-sm" style={{ background: 'radial-gradient(120% 120% at 50% 0%, #eef2ff 0%, #e0e7ff 100%)' }}>
+          <div className="pointer-events-none absolute -top-8 -right-8 w-32 h-32 rounded-full blur-3xl opacity-40" style={{ background: BRAND }} />
+          <p className="relative text-sm font-bold text-gray-700 mb-3 flex items-center gap-1.5">
+            <Icon name="Radar" size={16} className="text-indigo-500" />
             Баланс качества
           </p>
-          <div className="h-56">
+          <div className="relative h-64">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData} outerRadius="72%">
                 <defs>
                   <radialGradient id="radarFill" cx="50%" cy="50%" r="75%">
-                    <stop offset="0%" stopColor={BRAND2} stopOpacity={0.55} />
-                    <stop offset="100%" stopColor={BRAND} stopOpacity={0.15} />
+                    <stop offset="0%" stopColor="#818cf8" stopOpacity={0.75} />
+                    <stop offset="60%" stopColor={BRAND2} stopOpacity={0.4} />
+                    <stop offset="100%" stopColor={BRAND} stopOpacity={0.1} />
                   </radialGradient>
+                  <filter id="radarGlow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="3.5" result="b" />
+                    <feMerge>
+                      <feMergeNode in="b" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
                 </defs>
-                <PolarGrid stroke="#c7d2fe" />
+                <PolarGrid stroke="#c7d2fe" strokeDasharray="3 4" />
                 <PolarAngleAxis
                   dataKey="metric"
-                  tick={{ fontSize: 11, fill: '#4b5563', fontWeight: 500 }}
+                  tick={{ fontSize: 12, fill: '#475569', fontWeight: 600 }}
                 />
                 <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                 <Radar
                   dataKey="value"
-                  stroke={BRAND}
-                  strokeWidth={2}
+                  stroke="#6366f1"
+                  strokeWidth={2.5}
                   fill="url(#radarFill)"
                   fillOpacity={1}
-                  dot={{ r: 3, fill: BRAND, strokeWidth: 0 }}
+                  filter="url(#radarGlow)"
+                  dot={{ r: 4, fill: '#fff', stroke: BRAND, strokeWidth: 2 }}
+                  isAnimationActive
+                  animationDuration={1100}
                 />
                 <Tooltip content={<ChartTooltip />} />
               </RadarChart>
@@ -189,43 +246,54 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
         </div>
 
         {/* Динамика */}
-        <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
-          <p className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-            <Icon name="TrendingUp" size={15} className="text-blue-500" />
+        <div className="relative rounded-2xl p-5 overflow-hidden chart-card shadow-sm" style={{ background: 'radial-gradient(120% 120% at 50% 0%, #eff6ff 0%, #e0e7ff 100%)' }}>
+          <div className="pointer-events-none absolute -top-8 -left-8 w-32 h-32 rounded-full blur-3xl opacity-40" style={{ background: BRAND2 }} />
+          <p className="relative text-sm font-bold text-gray-700 mb-3 flex items-center gap-1.5">
+            <Icon name="TrendingUp" size={16} className="text-blue-500" />
             Динамика оценок
           </p>
-          <div className="h-56">
+          <div className="relative h-64">
             {lineData.length < 2 ? (
               <div className="h-full flex items-center justify-center text-center px-4">
-                <p className="text-xs text-gray-500">
+                <p className="text-sm text-gray-500">
                   График появится после второго приёма
                 </p>
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={lineData} margin={{ top: 5, right: 12, left: -18, bottom: 0 }}>
+                <AreaChart data={lineData} margin={{ top: 8, right: 14, left: -14, bottom: 0 }}>
                   <defs>
                     <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={BRAND2} stopOpacity={0.35} />
+                      <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.5} />
                       <stop offset="100%" stopColor={BRAND2} stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="lineStroke" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor={BRAND2} />
+                      <stop offset="0%" stopColor="#60a5fa" />
                       <stop offset="100%" stopColor={BRAND} />
                     </linearGradient>
+                    <filter id="lineGlow" x="-20%" y="-50%" width="140%" height="200%">
+                      <feGaussianBlur stdDeviation="3" result="b" />
+                      <feMerge>
+                        <feMergeNode in="b" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
                   </defs>
-                  <CartesianGrid strokeDasharray="4 4" stroke="#e0e7ff" vertical={false} />
-                  <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
-                  <YAxis domain={[0, 100]} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
-                  <Tooltip content={<ChartTooltip />} />
+                  <CartesianGrid strokeDasharray="4 4" stroke="#dbeafe" vertical={false} />
+                  <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                  <YAxis domain={[0, 100]} tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                  <Tooltip content={<ChartTooltip />} cursor={{ stroke: '#c7d2fe', strokeWidth: 2 }} />
                   <Area
                     type="monotone"
                     dataKey="Общий"
                     stroke="url(#lineStroke)"
-                    strokeWidth={3}
+                    strokeWidth={3.5}
                     fill="url(#areaFill)"
-                    dot={{ r: 3, fill: '#fff', stroke: BRAND, strokeWidth: 2 }}
-                    activeDot={{ r: 5, fill: BRAND, stroke: '#fff', strokeWidth: 2 }}
+                    filter="url(#lineGlow)"
+                    dot={{ r: 4, fill: '#fff', stroke: BRAND, strokeWidth: 2.5 }}
+                    activeDot={{ r: 6, fill: BRAND, stroke: '#fff', strokeWidth: 2.5 }}
+                    isAnimationActive
+                    animationDuration={1200}
                   />
                 </AreaChart>
               </ResponsiveContainer>

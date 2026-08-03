@@ -25,6 +25,7 @@ const ProgressRing = ({
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (clamped / 100) * c;
+  const glowId = `${gradientId}-glow`;
 
   return (
     <div className="flex flex-col items-center">
@@ -35,9 +36,17 @@ const ProgressRing = ({
               <stop offset="0%" stopColor={from} />
               <stop offset="100%" stopColor={to} />
             </linearGradient>
+            <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
           <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#eef2ff" strokeWidth={stroke} />
           <circle
+            className="ring-anim"
             cx={size / 2}
             cy={size / 2}
             r={r}
@@ -46,18 +55,22 @@ const ProgressRing = ({
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={c}
-            strokeDashoffset={offset}
-            style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+            filter={`url(#${glowId})`}
+            style={{
+              ['--ring-circ' as string]: `${c}`,
+              ['--ring-offset' as string]: `${offset}`,
+              strokeDashoffset: offset,
+            }}
           />
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="font-bold text-gray-800" style={{ fontSize: size * 0.26 }}>
+        <div className="absolute inset-0 flex items-center justify-center count-pop">
+          <span className="font-extrabold text-gray-800" style={{ fontSize: size * 0.26 }}>
             {displayValue ?? Math.round(clamped)}
             <span className="text-gray-400" style={{ fontSize: size * 0.14 }}>{suffix}</span>
           </span>
         </div>
       </div>
-      {label && <span className="text-sm text-gray-500 mt-2 text-center leading-tight">{label}</span>}
+      {label && <span className="text-sm text-gray-500 mt-2 text-center leading-tight font-medium">{label}</span>}
     </div>
   );
 };
