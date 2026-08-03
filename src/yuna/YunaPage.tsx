@@ -624,7 +624,7 @@ const YunaPage = () => {
             <TreatmentReport treatment={!processing ? analysis?.treatment : null} />
 
             {/* Авто-журналы (реальная статистика) */}
-            <AutoJournalsBlock stats={stats} />
+            <AutoJournalsBlock stats={stats} sessions={sessions} />
 
             {/* KPI качества (реальные метрики) */}
             <KpiBlock stats={stats} />

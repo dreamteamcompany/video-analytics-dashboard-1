@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 import Icon from '@/components/ui/icon';
-import { yunaApi, RatingEntry, YunaStats, Learning } from './api';
+import { yunaApi, RatingEntry, YunaStats, YunaSession, Learning } from './api';
+import ProgressRing from './ProgressRing';
 
 const placeColors = ['bg-yellow-400', 'bg-gray-400', 'bg-orange-400'];
 const placeBg = ['bg-yellow-50', 'bg-gray-50', 'bg-orange-50 border border-orange-200'];
@@ -27,56 +29,133 @@ export const RatingBlock = ({ refreshKey }: { refreshKey?: number }) => {
         <p className="text-sm text-gray-500 text-center py-4">Добавьте врачей в разделе «Настройки»</p>
       ) : (
         <div className="space-y-3">
-          {rating.map((d, i) => (
-            <div key={d.id} className={`flex items-center justify-between p-2 rounded-lg ${placeBg[i] || 'bg-gray-50'}`}>
-              <div className="flex items-center space-x-2">
-                <div className={`w-6 h-6 ${placeColors[i] || 'bg-blue-300'} rounded-full flex items-center justify-center text-xs font-bold`}>{d.place}</div>
-                {d.avatar_url ? (
-                  <img src={d.avatar_url} alt={d.name} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow" />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center border-2 border-white shadow">
-                    <Icon name="User" size={18} className="text-blue-500" />
+          {(() => {
+            const maxPts = Math.max(...rating.map((d) => d.points), 1);
+            return rating.map((d, i) => (
+              <div key={d.id} className={`p-2.5 rounded-xl ${placeBg[i] || 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-6 h-6 ${placeColors[i] || 'bg-blue-300'} rounded-full flex items-center justify-center text-xs font-bold text-white`}>{d.place}</div>
+                    {d.avatar_url ? (
+                      <img src={d.avatar_url} alt={d.name} className="w-9 h-9 rounded-full object-cover border-2 border-white shadow" />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center border-2 border-white shadow">
+                        <Icon name="User" size={16} className="text-blue-500" />
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-sm font-semibold">{d.name}</span>
+                      <p className="text-xs text-gray-500">
+                        {[d.specialty, d.experience_years ? `${d.experience_years} лет` : null].filter(Boolean).join(' • ')}
+                      </p>
+                    </div>
                   </div>
-                )}
-                <div>
-                  <span className="text-sm font-semibold">{d.name}</span>
-                  <p className="text-xs text-gray-600">
-                    {[d.specialty, d.experience_years ? `${d.experience_years} лет опыта` : null].filter(Boolean).join(' • ')}
-                  </p>
+                  <span className="text-sm font-bold text-indigo-600">{d.points}</span>
+                </div>
+                <div className="h-2 rounded-full bg-white/70 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${Math.max(6, (d.points / maxPts) * 100)}%`,
+                      background: 'linear-gradient(90deg, #2563eb, #4f46e5)',
+                    }}
+                  />
                 </div>
               </div>
-              <span className="text-sm font-bold text-gray-700">{d.points}</span>
-            </div>
-          ))}
+            ));
+          })()}
         </div>
       )}
     </div>
   );
 };
 
-export const AutoJournalsBlock = ({ stats }: { stats: YunaStats | null }) => (
-  <div className="bg-white rounded-2xl shadow-lg p-6">
-    <h2 className="text-xl font-bold text-gray-800 mb-4">
-      <Icon name="FileText" size={20} className="text-blue-500 mr-2 inline" />
-      Авто-журналы
-    </h2>
-    <div className="grid grid-cols-3 gap-3">
-      <div className="bg-blue-50 rounded-xl p-4 text-center">
-        <p className="text-2xl font-bold text-blue-600">{stats?.counts.today ?? '—'}</p>
-        <p className="text-xs text-blue-700">Сегодня</p>
+const DAY_LABELS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+
+const JournalTooltip = ({ active, payload, label }: {
+  active?: boolean; payload?: { value?: number }[]; label?: string;
+}) => {
+  if (!active || !payload || !payload.length) return null;
+  return (
+    <div className="rounded-lg bg-white/95 shadow-lg border border-blue-100 px-2.5 py-1.5">
+      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-sm font-bold text-blue-600">{payload[0].value} приёмов</p>
+    </div>
+  );
+};
+
+export const AutoJournalsBlock = ({ stats, sessions }: { stats: YunaStats | null; sessions?: YunaSession[] }) => {
+  const weekData = useMemo(() => {
+    const days: { name: string; value: number }[] = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const count = (sessions || []).filter((s) => {
+        const sd = new Date(s.created_at.replace(' ', 'T'));
+        return sd.toISOString().slice(0, 10) === key;
+      }).length;
+      days.push({ name: DAY_LABELS[(d.getDay() + 6) % 7], value: count });
+    }
+    return days;
+  }, [sessions]);
+
+  const hasData = weekData.some((d) => d.value > 0);
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-6">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">
+        <Icon name="FileText" size={20} className="text-blue-500 mr-2 inline" />
+        Авто-журналы
+      </h2>
+
+      <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-3 mb-4">
+        <p className="text-xs text-gray-500 mb-1 px-1">Приёмы за 7 дней</p>
+        <div className="h-32">
+          {hasData ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={weekData} margin={{ top: 8, right: 4, left: 4, bottom: 0 }} barCategoryGap="28%">
+                <defs>
+                  <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#4f46e5" />
+                    <stop offset="100%" stopColor="#2563eb" />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
+                <Tooltip cursor={{ fill: 'rgba(79,70,229,0.06)' }} content={<JournalTooltip />} />
+                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                  {weekData.map((_, i) => (
+                    <Cell key={i} fill="url(#barFill)" />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <p className="text-xs text-gray-400">За неделю приёмов пока нет</p>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="bg-purple-50 rounded-xl p-4 text-center">
-        <p className="text-2xl font-bold text-purple-600">{stats?.counts.week ?? '—'}</p>
-        <p className="text-xs text-purple-700">За неделю</p>
-      </div>
-      <div className="bg-green-50 rounded-xl p-4 text-center">
-        <p className="text-2xl font-bold text-green-600">{stats?.counts.month ?? '—'}</p>
-        <p className="text-xs text-green-700">За месяц</p>
+
+      <div className="grid grid-cols-3 gap-2">
+        <div className="bg-blue-50 rounded-xl p-3 text-center">
+          <p className="text-xl font-bold text-blue-600">{stats?.counts.today ?? '—'}</p>
+          <p className="text-xs text-blue-700">Сегодня</p>
+        </div>
+        <div className="bg-purple-50 rounded-xl p-3 text-center">
+          <p className="text-xl font-bold text-purple-600">{stats?.counts.week ?? '—'}</p>
+          <p className="text-xs text-purple-700">Неделя</p>
+        </div>
+        <div className="bg-green-50 rounded-xl p-3 text-center">
+          <p className="text-xl font-bold text-green-600">{stats?.counts.total ?? '—'}</p>
+          <p className="text-xs text-green-700">Всего</p>
+        </div>
       </div>
     </div>
-    <p className="text-xs text-gray-500 mt-3 text-center">Всего приёмов: {stats?.counts.total ?? '—'}</p>
-  </div>
-);
+  );
+};
 
 export const KpiBlock = ({ stats }: { stats: YunaStats | null }) => {
   const k = stats?.kpi;
@@ -86,22 +165,39 @@ export const KpiBlock = ({ stats }: { stats: YunaStats | null }) => {
         <Icon name="Target" size={20} className="text-green-500 mr-2 inline" />
         KPI качества
       </h2>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">Качество приёма</span>
-          <span className="text-lg font-bold text-green-600">{k?.quality != null ? `${k.quality}%` : '—'}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">Коммуникация</span>
-          <span className="text-lg font-bold text-blue-600">{k?.communication != null ? `${k.communication}%` : '—'}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">Среднее время приёма</span>
-          <span className="text-lg font-bold text-purple-600">{k?.avg_minutes != null ? `${k.avg_minutes} мин` : '—'}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">Удовлетворённость</span>
-          <span className="text-lg font-bold text-amber-600">{k?.satisfaction != null ? `${k.satisfaction}/5` : '—'}</span>
+      <div className="grid grid-cols-2 gap-4">
+        <ProgressRing
+          gradientId="kpiQuality"
+          value={k?.quality ?? 0}
+          from="#22c55e"
+          to="#16a34a"
+          label="Качество приёма"
+        />
+        <ProgressRing
+          gradientId="kpiComm"
+          value={k?.communication ?? 0}
+          from="#3b82f6"
+          to="#2563eb"
+          label="Коммуникация"
+        />
+        <ProgressRing
+          gradientId="kpiSat"
+          value={k?.satisfaction != null ? (k.satisfaction / 5) * 100 : 0}
+          from="#f59e0b"
+          to="#d97706"
+          suffix="/5"
+          displayValue={k?.satisfaction != null ? String(k.satisfaction) : '—'}
+          label="Удовлетворённость"
+        />
+        <div className="flex flex-col items-center justify-center">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-50 to-indigo-50 flex flex-col items-center justify-center">
+            <Icon name="Clock" size={20} className="text-purple-500 mb-0.5" />
+            <span className="text-lg font-bold text-gray-800">
+              {k?.avg_minutes != null ? k.avg_minutes : '—'}
+              <span className="text-xs text-gray-400"> мин</span>
+            </span>
+          </div>
+          <span className="text-xs text-gray-500 mt-1.5 text-center leading-tight">Среднее время</span>
         </div>
       </div>
     </div>

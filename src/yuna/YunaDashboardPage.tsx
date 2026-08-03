@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { yunaApi, YunaSession, YunaStats } from './api';
 import { useAuth } from './useAuth';
 import YunaDashboard from './YunaDashboard';
+import Sparkline from './Sparkline';
 import { KpiBlock, AutoJournalsBlock, RatingBlock } from './DoctorBlocks';
 
 const YunaDashboardPage = () => {
@@ -38,6 +39,37 @@ const YunaDashboardPage = () => {
     await logout();
     navigate('/yuna/login', { replace: true });
   };
+
+  // Спарклайны: серии по дням для карточек шапки
+  const spark = useMemo(() => {
+    const days: string[] = [];
+    const today = new Date();
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      days.push(d.toISOString().slice(0, 10));
+    }
+    const perDay = days.map(
+      (key) => sessions.filter((s) => new Date(s.created_at.replace(' ', 'T')).toISOString().slice(0, 10) === key).length,
+    );
+    // накопительно за неделю (скользящее окно 7 дней)
+    const weekRolling = days.map((_, idx) => perDay.slice(Math.max(0, idx - 6), idx + 1).reduce((a, b) => a + b, 0));
+    // кумулятивно за месяц
+    let acc = 0;
+    const monthCum = perDay.map((v) => (acc += v));
+    // качество по последним приёмам
+    const quality = [...sessions]
+      .reverse()
+      .filter((s) => s.overall != null)
+      .map((s) => s.overall as number)
+      .slice(-14);
+    return {
+      today: perDay,
+      week: weekRolling,
+      month: monthCum,
+      quality: quality.length ? quality : [0],
+    };
+  }, [sessions]);
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}>
@@ -96,21 +128,25 @@ const YunaDashboardPage = () => {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
             <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
               <p className="text-3xl font-bold">{stats?.counts.today ?? '—'}</p>
-              <p className="text-white/70 text-sm">Приёмов сегодня</p>
+              <p className="text-white/70 text-sm mb-2">Приёмов сегодня</p>
+              <div className="h-8"><Sparkline data={spark.today} gradientId="spToday" /></div>
             </div>
             <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
               <p className="text-3xl font-bold">{stats?.counts.week ?? '—'}</p>
-              <p className="text-white/70 text-sm">За неделю</p>
+              <p className="text-white/70 text-sm mb-2">За неделю</p>
+              <div className="h-8"><Sparkline data={spark.week} gradientId="spWeek" /></div>
             </div>
             <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
               <p className="text-3xl font-bold">{stats?.counts.month ?? '—'}</p>
-              <p className="text-white/70 text-sm">За месяц</p>
+              <p className="text-white/70 text-sm mb-2">За месяц</p>
+              <div className="h-8"><Sparkline data={spark.month} gradientId="spMonth" /></div>
             </div>
             <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
               <p className="text-3xl font-bold">
                 {stats?.kpi.quality != null ? `${stats.kpi.quality}%` : '—'}
               </p>
-              <p className="text-white/70 text-sm">Качество приёма</p>
+              <p className="text-white/70 text-sm mb-2">Качество приёма</p>
+              <div className="h-8"><Sparkline data={spark.quality} gradientId="spQuality" /></div>
             </div>
           </div>
         </div>
@@ -137,7 +173,7 @@ const YunaDashboardPage = () => {
             {/* KPI + журналы + рейтинг */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <KpiBlock stats={stats} />
-              <AutoJournalsBlock stats={stats} />
+              <AutoJournalsBlock stats={stats} sessions={sessions} />
               <RatingBlock />
             </div>
           </>
