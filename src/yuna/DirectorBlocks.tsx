@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
-import { PsychologyStats } from './api';
+import { PsychologyStats, QualityMetric, AiRecommendation } from './api';
 
 const tooltipStyle = {
   contentStyle: { borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12 },
@@ -24,14 +24,6 @@ const specData = [
   { name: 'Гигиена', value: 900 },
 ];
 
-const qualityData = [
-  { name: 'Удовлетвор.', value: 94 },
-  { name: 'Эффективн.', value: 91 },
-  { name: 'Время приёма', value: 84 },
-  { name: 'Доп. продажи', value: 78 },
-  { name: 'Лояльность', value: 85 },
-];
-
 const salesCards = [
   {
     title: 'Доп. продажи', icon: 'ArrowUp', color: '#22c55e', bg: 'from-green-50 to-emerald-50', border: 'border-green-100', tColor: 'text-green-700',
@@ -44,25 +36,6 @@ const salesCards = [
   {
     title: 'Эффективность', icon: 'Zap', color: '#a855f7', bg: 'from-purple-50 to-pink-50', border: 'border-purple-100', tColor: 'text-purple-700',
     rows: ['Автоматизация: 87%', 'Время экономия: 23 мин/приём', 'Точность: 94%'],
-  },
-];
-
-const aiRecs = [
-  {
-    title: 'Повышение квалификации терапевтов', priority: 'Высокий приоритет', tone: 'high',
-    text: 'Терапевтическое отделение показывает выработку на 35% ниже среднего по клинике. Врач Саркисян К.С. имеет только 52% позитивных диалогов и самый низкий средний чек — 8 400 руб. Требуется срочное вмешательство.',
-  },
-  {
-    title: 'Внедрение системы мотивации', priority: 'Средний приоритет', tone: 'medium',
-    text: 'Разрыв между лучшими и отстающими врачами велик. Притчина А.Н. показывает 104% выработки при чеке 24 500 руб., другие — ниже. Мотивация выровняет показатели.',
-  },
-  {
-    title: 'Оптимизация расписания приёмов', priority: 'Низкий приоритет', tone: 'low',
-    text: 'Утром (9:00–11:00) заполняемость 65%, вечером (17:00–19:00) — 98%. Перераспределение нагрузки повысит эффективность на 12–15%.',
-  },
-  {
-    title: 'Внедрение программы менторства', priority: 'Высокий приоритет', tone: 'high',
-    text: 'Ясиин М.Г. демонстрирует эмпатию 4.8/5, тогда как Мурадян Г.С. — 65% позитивных диалогов. Менторство передаст лучшие практики.',
   },
 ];
 
@@ -154,9 +127,62 @@ const PsychologyCard = ({ psy }: { psy: PsychologyStats }) => {
   );
 };
 
+/* Реальные средние показатели качества */
+const QualityCard = ({ metrics }: { metrics: QualityMetric[] }) => (
+  <div>
+    <SectionHeader icon="Star" title="СРЕДНИЕ ПОКАЗАТЕЛИ КАЧЕСТВА" gradient="linear-gradient(135deg, #d97706 0%, #f59e0b 100%)" />
+    <Card className="p-6">
+      <div style={{ height: Math.max(200, metrics.length * 42) }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={metrics} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10 }} />
+            <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={130} />
+            <Tooltip {...tooltipStyle} />
+            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+              {metrics.map((m, i) => (
+                <Cell key={i} fill={m.value >= 80 ? '#22c55e' : m.value >= 60 ? '#eab308' : '#ef4444'} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </Card>
+  </div>
+);
+
+/* Реальные AI-рекомендации из приёмов */
+const AiRecsCard = ({ recs }: { recs: AiRecommendation[] }) => (
+  <div>
+    <SectionHeader icon="Bot" title="AI-РЕКОМЕНДАЦИИ С ОБОСНОВАНИЕМ" gradient="linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)" />
+    <Card className="p-6">
+      <div className="space-y-4">
+        {recs.map((r, i) => {
+          const t = toneStyle[r.priority];
+          const label = r.priority === 'high' ? 'Высокий приоритет' : r.priority === 'medium' ? 'Средний приоритет' : 'Низкий приоритет';
+          return (
+            <div key={i} className={`border-l-4 ${t.border} bg-gray-50 rounded-r-xl p-4`}>
+              <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
+                <p className="font-bold text-gray-800">{r.title}</p>
+                <span className={`${t.badgeBg} ${t.badgeText} text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap`}>{label}</span>
+              </div>
+              <p className="text-xs font-semibold text-gray-500 mb-1">Обоснование рекомендации:</p>
+              <p className="text-sm text-gray-600">{r.reason}</p>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  </div>
+);
+
 /* ─────────── Компонент ─────────── */
 
-const DirectorBlocks = ({ psychology }: { psychology: PsychologyStats | null }) => (
+const DirectorBlocks = ({ psychology, qualityMetrics, aiRecommendations }: {
+  psychology: PsychologyStats | null;
+  qualityMetrics: QualityMetric[] | null;
+  aiRecommendations: AiRecommendation[] | null;
+}) => (
   <div className="space-y-6 mb-6">
     {psychology && psychology.count > 0 && (
       <div>
@@ -164,6 +190,10 @@ const DirectorBlocks = ({ psychology }: { psychology: PsychologyStats | null }) 
         <PsychologyCard psy={psychology} />
       </div>
     )}
+
+    {qualityMetrics && qualityMetrics.length > 0 && <QualityCard metrics={qualityMetrics} />}
+
+    {aiRecommendations && aiRecommendations.length > 0 && <AiRecsCard recs={aiRecommendations} />}
 
     <SectionHeader icon="Building2" title="УПРАВЛЕНЧЕСКАЯ АНАЛИТИКА КЛИНИКИ" gradient="linear-gradient(135deg, #0f766e 0%, #0d9488 100%)" />
 
@@ -232,58 +262,6 @@ const DirectorBlocks = ({ psychology }: { psychology: PsychologyStats | null }) 
       </DemoWrap>
     </div>
 
-    {/* Средние показатели качества */}
-    <DemoWrap>
-      <Card className="p-6">
-        <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <Icon name="Star" size={20} className="text-yellow-500" />
-          Средние показатели качества
-        </h2>
-        <div style={{ height: 240 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={qualityData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10 }} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={90} />
-              <Tooltip {...tooltipStyle} />
-              <Bar dataKey="value" fill="#eab308" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-    </DemoWrap>
-
-    {/* AI-рекомендации */}
-    <div>
-      <SectionHeader icon="Bot" title="AI-РЕКОМЕНДАЦИИ С ОБОСНОВАНИЕМ" gradient="linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)" />
-      <DemoWrap>
-      <Card className="p-6">
-        <div className="space-y-4">
-          {aiRecs.map((r) => {
-            const t = toneStyle[r.tone];
-            return (
-              <div key={r.title} className={`border-l-4 ${t.border} bg-gray-50 rounded-r-xl p-4`}>
-                <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
-                  <p className="font-bold text-gray-800">{r.title}</p>
-                  <span className={`${t.badgeBg} ${t.badgeText} text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap`}>{r.priority}</span>
-                </div>
-                <p className="text-xs font-semibold text-gray-500 mb-1">Обоснование рекомендации:</p>
-                <p className="text-sm text-gray-600">{r.text}</p>
-              </div>
-            );
-          })}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
-          <button className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-            <Icon name="Download" size={16} />Скачать отчёт
-          </button>
-          <button className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
-            <Icon name="Users" size={16} />Собрание с врачами
-          </button>
-        </div>
-      </Card>
-      </DemoWrap>
-    </div>
   </div>
 );
 

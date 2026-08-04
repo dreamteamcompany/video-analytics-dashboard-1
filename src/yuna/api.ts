@@ -201,6 +201,17 @@ export interface PsychologyStats {
   distribution: { low: number; medium: number; high: number };
 }
 
+export interface QualityMetric {
+  name: string;
+  value: number;
+}
+
+export interface AiRecommendation {
+  title: string;
+  priority: 'high' | 'medium' | 'low';
+  reason: string;
+}
+
 export interface YunaStats {
   counts: { today: number; week: number; month: number; total: number };
   kpi: {
@@ -211,6 +222,8 @@ export interface YunaStats {
   };
   speech: SpeechStats | null;
   psychology: PsychologyStats | null;
+  quality_metrics: QualityMetric[] | null;
+  ai_recommendations: AiRecommendation[] | null;
 }
 
 export interface Learning {

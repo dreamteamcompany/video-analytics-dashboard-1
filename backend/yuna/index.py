@@ -1363,6 +1363,10 @@ def _stats(doctor_id=None) -> dict:
         quals, comms, loyals = [], [], []
         speech_rows = []
         stress_vals = []
+        emps, pstates, engages, repeats = [], [], [], []
+        recs_counter = {}
+        concerns_counter = {}
+        improve_counter = {}
         for (a,) in cur.fetchall():
             if not a:
                 continue
@@ -1370,15 +1374,36 @@ def _stats(doctor_id=None) -> dict:
                 quals.append(a["quality"])
             if isinstance(a.get("communication"), (int, float)):
                 comms.append(a["communication"])
+            if isinstance(a.get("empathy"), (int, float)):
+                emps.append(a["empathy"])
+            if isinstance(a.get("patient_state"), (int, float)):
+                pstates.append(a["patient_state"])
             loy = a.get("loyalty") or {}
             if isinstance(loy.get("nps"), (int, float)):
                 loyals.append(loy["nps"])
+            if isinstance(loy.get("repeat"), (int, float)):
+                repeats.append(loy["repeat"])
             sp = a.get("speech")
             if isinstance(sp, dict):
                 speech_rows.append(sp)
+                cq = sp.get("comm_quality") or {}
+                if isinstance(cq.get("engagement"), (int, float)):
+                    engages.append(cq["engagement"])
             ds = a.get("doctor_state") or {}
             if isinstance(ds.get("stress"), (int, float)):
                 stress_vals.append(ds["stress"])
+            for area in (ds.get("improve") or []):
+                if isinstance(area, dict) and str(area.get("area", "")).strip():
+                    k = str(area["area"]).strip()
+                    improve_counter[k] = improve_counter.get(k, 0) + 1
+            for rec in (a.get("recommendations") or []):
+                r = str(rec).strip()
+                if r:
+                    recs_counter[r] = recs_counter.get(r, 0) + 1
+            for cn in (a.get("concerns") or []):
+                c = str(cn).strip()
+                if c:
+                    concerns_counter[c] = concerns_counter.get(c, 0) + 1
 
         def avg(lst):
             return round(sum(lst) / len(lst)) if lst else None
@@ -1400,6 +1425,39 @@ def _stats(doctor_id=None) -> dict:
                 "distribution": {"low": low, "medium": mid, "high": high},
             }
 
+        # Средние показатели качества (проценты 0-100)
+        quality_metrics = None
+        qm = [
+            ("Удовлетворённость", avg(quals)),
+            ("Эмпатия", avg(emps)),
+            ("Коммуникация", avg(comms)),
+            ("Состояние пациента", avg(pstates)),
+            ("Вовлечённость", avg(engages)),
+            ("Лояльность", avg(repeats)),
+        ]
+        qm = [{"name": n, "value": v} for n, v in qm if v is not None]
+        if qm:
+            quality_metrics = qm
+
+        # AI-рекомендации: самые частые рекомендации и тревоги по приёмам
+        ai_recommendations = None
+        ai_list = []
+        for text, cnt in sorted(concerns_counter.items(), key=lambda x: -x[1])[:2]:
+            ai_list.append({"title": text, "priority": "high",
+                            "reason": f"Отмечено как тревожный момент в {cnt} "
+                                      f"{'приёме' if cnt == 1 else 'приёмах'}. Требует внимания."})
+        for area, cnt in sorted(improve_counter.items(), key=lambda x: -x[1])[:2]:
+            ai_list.append({"title": f"Зона роста: {area}", "priority": "medium",
+                            "reason": f"AI отметил это как область для улучшения в {cnt} "
+                                      f"{'приёме' if cnt == 1 else 'приёмах'}."})
+        for text, cnt in sorted(recs_counter.items(), key=lambda x: -x[1])[:3]:
+            prio = "medium" if cnt > 1 else "low"
+            ai_list.append({"title": text, "priority": prio,
+                            "reason": f"Рекомендация повторяется в {cnt} "
+                                      f"{'приёме' if cnt == 1 else 'приёмах'}."})
+        if ai_list:
+            ai_recommendations = ai_list[:6]
+
         return _resp(200, {
             "counts": {"today": today, "week": week, "month": month, "total": total},
             "kpi": {
@@ -1410,6 +1468,8 @@ def _stats(doctor_id=None) -> dict:
             },
             "speech": _aggregate_speech(speech_rows),
             "psychology": psychology,
+            "quality_metrics": quality_metrics,
+            "ai_recommendations": ai_recommendations,
         })
     finally:
         conn.close()
