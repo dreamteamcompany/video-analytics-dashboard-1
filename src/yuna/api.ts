@@ -180,6 +180,20 @@ export interface RatingEntry {
   sessions_week: number;
 }
 
+export interface SpeechStats {
+  count: number;
+  comm_quality: { empathy: number; clarity: number; professionalism: number; engagement: number };
+  needs: { active_questions: number; depth: number; hidden_needs: number };
+  objections: { financial: number; fear_pain: number; time_need: number };
+  promotions: { mentioned: number; relevance: number; conversion: number };
+  listening: { clarifying: number; paraphrasing: number };
+  med_terms: { explained: number; adapted: number };
+  emotion: { positive: number; neutral: number; negative: number };
+  pauses_sec: number;
+  filler_words: { word: string; count: number }[];
+  mistakes: { name: string; share: number }[];
+}
+
 export interface YunaStats {
   counts: { today: number; week: number; month: number; total: number };
   kpi: {
@@ -188,6 +202,7 @@ export interface YunaStats {
     avg_minutes: number | null;
     satisfaction: number | null;
   };
+  speech: SpeechStats | null;
 }
 
 export interface Learning {

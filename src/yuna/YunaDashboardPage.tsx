@@ -180,7 +180,7 @@ const YunaDashboardPage = () => {
             <RatingBlock />
 
             <div className="mt-6">
-              <SpeechAnalytics />
+              <SpeechAnalytics speech={stats?.speech ?? null} />
             </div>
 
             <div className="mt-6">

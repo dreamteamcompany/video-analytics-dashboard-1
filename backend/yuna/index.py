@@ -510,6 +510,26 @@ ANALYSIS_PROMPT = (
     "- improve: массив 0-4 объектов {area, delta} — что улучшить и оценка "
     "(например {area:'Эмпатические ответы', delta:'-15%'});\n"
     "- coaching: строка — рекомендуемая мини-тренировка (например 'Активное слушание пациента').\n"
+    "Дополнительно сформируй speech — детальную РЕЧЕВУЮ АНАЛИТИКУ речи ВРАЧА в диалоге:\n"
+    "- comm_quality: {empathy, clarity, professionalism, engagement} — оценки качества общения "
+    "по шкале 0-100 (эмпатия, ясность, профессионализм, вовлечённость);\n"
+    "- needs: {active_questions, depth, hidden_needs} int 0-100 — выявление потребностей пациента "
+    "(активные вопросы, глубина анализа, выявление скрытых нужд);\n"
+    "- objections: {financial, fear_pain, time_need} int 0-100 — качество отработки возражений "
+    "(финансовых, страха/боли, времени/необходимости);\n"
+    "- promotions: {mentioned, relevance, conversion} int 0-100 — информирование об акциях/доп.услугах "
+    "(упоминание, релевантность, конверсия);\n"
+    "- filler_words: массив 0-6 объектов {word, count} — слова-паразиты врача с числом употреблений "
+    "(например {word:'ну', count:5}), пустой если их нет;\n"
+    "- pauses_sec: number — средняя длительность пауз в речи врача в секундах;\n"
+    "- listening: {clarifying, paraphrasing} int 0-100 — активное слушание "
+    "(уточняющие вопросы, перефразирование);\n"
+    "- med_terms: {explained, adapted} int 0-100 — работа с мед. терминами "
+    "(объяснение терминов, адаптация под пациента);\n"
+    "- emotion: {positive, neutral, negative} int 0-100 — эмоциональный окрас диалога "
+    "(в сумме ~100);\n"
+    "- mistakes: массив 0-5 объектов {name, share} — ошибки в общении с пациентом и их доля 0-100 "
+    "(например {name:'Сложные термины', share:42}), пустой если ошибок нет.\n"
     "Если данных в диалоге недостаточно — делай осторожные предположения с низкой "
     "probability/match, но поля всё равно заполни осмысленно по контексту стоматологии.\n"
     "Верни СТРОГО JSON без markdown вида: "
@@ -531,7 +551,16 @@ ANALYSIS_PROMPT = (
     '"upsell":{"potential":str,"services":[{"name":str,"score":int}],"phrases":[str]},'
     '"loyalty":{"repeat":int,"nps":int,"recommend":int},'
     '"doctor_state":{"status":str,"stress":int,"speech_rate":str,"tone":str,'
-    '"improve":[{"area":str,"delta":str}],"coaching":str}}. '
+    '"improve":[{"area":str,"delta":str}],"coaching":str},'
+    '"speech":{"comm_quality":{"empathy":int,"clarity":int,"professionalism":int,"engagement":int},'
+    '"needs":{"active_questions":int,"depth":int,"hidden_needs":int},'
+    '"objections":{"financial":int,"fear_pain":int,"time_need":int},'
+    '"promotions":{"mentioned":int,"relevance":int,"conversion":int},'
+    '"filler_words":[{"word":str,"count":int}],"pauses_sec":number,'
+    '"listening":{"clarifying":int,"paraphrasing":int},'
+    '"med_terms":{"explained":int,"adapted":int},'
+    '"emotion":{"positive":int,"neutral":int,"negative":int},'
+    '"mistakes":[{"name":str,"share":int}]}}. '
     "Ничего кроме JSON."
 )
 
@@ -600,6 +629,53 @@ def _analyze(transcript: str) -> dict:
         "upsell": _parse_upsell(p.get("upsell")),
         "loyalty": _parse_loyalty(p.get("loyalty")),
         "doctor_state": _parse_doctor_state(p.get("doctor_state")),
+        "speech": _parse_speech(p.get("speech")),
+    }
+
+
+def _parse_speech(s) -> dict:
+    """Детальная речевая аналитика речи врача."""
+    s = s if isinstance(s, dict) else {}
+
+    def grp(key, fields):
+        src = s.get(key) if isinstance(s.get(key), dict) else {}
+        return {f: _clamp_score(src.get(f)) for f in fields}
+
+    cq = grp("comm_quality", ["empathy", "clarity", "professionalism", "engagement"])
+    needs = grp("needs", ["active_questions", "depth", "hidden_needs"])
+    obj = grp("objections", ["financial", "fear_pain", "time_need"])
+    promo = grp("promotions", ["mentioned", "relevance", "conversion"])
+    listening = grp("listening", ["clarifying", "paraphrasing"])
+    med = grp("med_terms", ["explained", "adapted"])
+    emo = grp("emotion", ["positive", "neutral", "negative"])
+
+    fillers = []
+    for it in (s.get("filler_words") or []):
+        if isinstance(it, dict) and str(it.get("word", "")).strip():
+            fillers.append({
+                "word": str(it["word"]).strip(),
+                "count": _int_or_none(it.get("count")) or 0,
+            })
+
+    mistakes = []
+    for it in (s.get("mistakes") or []):
+        if isinstance(it, dict) and str(it.get("name", "")).strip():
+            mistakes.append({
+                "name": str(it["name"]).strip(),
+                "share": _clamp_score(it.get("share")),
+            })
+
+    return {
+        "comm_quality": cq,
+        "needs": needs,
+        "objections": obj,
+        "promotions": promo,
+        "filler_words": fillers[:6],
+        "pauses_sec": _num(s.get("pauses_sec")) or 0,
+        "listening": listening,
+        "med_terms": med,
+        "emotion": emo,
+        "mistakes": mistakes[:5],
     }
 
 
@@ -1205,6 +1281,62 @@ def _doctors_rating() -> dict:
         conn.close()
 
 
+def _aggregate_speech(rows: list) -> dict:
+    """Усредняет speech-аналитику по всем приёмам врача. None, если приёмов нет."""
+    if not rows:
+        return None
+
+    def avg_group(key, fields):
+        out = {}
+        for f in fields:
+            vals = [r[key][f] for r in rows
+                    if isinstance(r.get(key), dict) and isinstance(r[key].get(f), (int, float))]
+            out[f] = round(sum(vals) / len(vals)) if vals else 0
+        return out
+
+    def avg_num(key):
+        vals = [r[key] for r in rows if isinstance(r.get(key), (int, float))]
+        return round(sum(vals) / len(vals), 1) if vals else 0
+
+    # слова-паразиты: суммируем по слову
+    fillers = {}
+    for r in rows:
+        for it in (r.get("filler_words") or []):
+            w = str(it.get("word", "")).strip()
+            if w:
+                fillers[w] = fillers.get(w, 0) + (it.get("count") or 0)
+    filler_list = sorted(
+        [{"word": w, "count": c} for w, c in fillers.items()],
+        key=lambda x: -x["count"],
+    )[:6]
+
+    # ошибки: усредняем долю по названию
+    merr = {}
+    for r in rows:
+        for it in (r.get("mistakes") or []):
+            n = str(it.get("name", "")).strip()
+            if n:
+                merr.setdefault(n, []).append(it.get("share") or 0)
+    mistakes = sorted(
+        [{"name": n, "share": round(sum(v) / len(v))} for n, v in merr.items()],
+        key=lambda x: -x["share"],
+    )[:5]
+
+    return {
+        "count": len(rows),
+        "comm_quality": avg_group("comm_quality", ["empathy", "clarity", "professionalism", "engagement"]),
+        "needs": avg_group("needs", ["active_questions", "depth", "hidden_needs"]),
+        "objections": avg_group("objections", ["financial", "fear_pain", "time_need"]),
+        "promotions": avg_group("promotions", ["mentioned", "relevance", "conversion"]),
+        "listening": avg_group("listening", ["clarifying", "paraphrasing"]),
+        "med_terms": avg_group("med_terms", ["explained", "adapted"]),
+        "emotion": avg_group("emotion", ["positive", "neutral", "negative"]),
+        "pauses_sec": avg_num("pauses_sec"),
+        "filler_words": filler_list,
+        "mistakes": mistakes,
+    }
+
+
 def _stats(doctor_id=None) -> dict:
     """Авто-журналы (п.7) и KPI (п.7): агрегаты по приёмам."""
     where = "WHERE doctor_id = %s" if doctor_id is not None else ""
@@ -1229,6 +1361,7 @@ def _stats(doctor_id=None) -> dict:
         kpi_where = "WHERE analysis IS NOT NULL" + (" AND doctor_id = %s" if doctor_id is not None else "")
         cur.execute(f"SELECT analysis FROM yuna_sessions {kpi_where}", params)
         quals, comms, loyals = [], [], []
+        speech_rows = []
         for (a,) in cur.fetchall():
             if not a:
                 continue
@@ -1239,6 +1372,9 @@ def _stats(doctor_id=None) -> dict:
             loy = a.get("loyalty") or {}
             if isinstance(loy.get("nps"), (int, float)):
                 loyals.append(loy["nps"])
+            sp = a.get("speech")
+            if isinstance(sp, dict):
+                speech_rows.append(sp)
 
         def avg(lst):
             return round(sum(lst) / len(lst)) if lst else None
@@ -1255,6 +1391,7 @@ def _stats(doctor_id=None) -> dict:
                 "avg_minutes": round(avg_dur / 60) if avg_dur else None,
                 "satisfaction": satisfaction,
             },
+            "speech": _aggregate_speech(speech_rows),
         })
     finally:
         conn.close()

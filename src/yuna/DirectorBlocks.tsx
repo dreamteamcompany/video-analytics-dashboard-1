@@ -1,8 +1,8 @@
+import type { ReactNode } from 'react';
 import {
   ResponsiveContainer, Tooltip, CartesianGrid, XAxis, YAxis,
   BarChart, Bar, Cell,
   PieChart, Pie,
-  RadarChart, Radar, PolarGrid, PolarAngleAxis,
 } from 'recharts';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
@@ -34,14 +34,6 @@ const qualityData = [
   { name: 'Время приёма', value: 84 },
   { name: 'Доп. продажи', value: 78 },
   { name: 'Лояльность', value: 85 },
-];
-
-const mistakesData = [
-  { name: 'Сложные термины', value: 42 },
-  { name: 'Недостаток эмпатии', value: 35 },
-  { name: 'Спешка', value: 28 },
-  { name: 'Неполные объяснения', value: 22 },
-  { name: 'Технический жаргон', value: 18 },
 ];
 
 const salesCards = [
@@ -95,15 +87,32 @@ const SectionHeader = ({ icon, title, gradient }: { icon: string; title: string;
   </div>
 );
 
+/* Обёртка для демо-блоков: затемняет содержимое и вешает бейдж «Демо» */
+const DemoWrap = ({ children }: { children: ReactNode }) => (
+  <div className="relative select-none">
+    <div className="opacity-40 grayscale-[35%] pointer-events-none">{children}</div>
+    <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-gray-800/85 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow">
+      <Icon name="Lock" size={12} />
+      Демо
+    </div>
+  </div>
+);
+
 /* ─────────── Компонент ─────────── */
 
 const DirectorBlocks = () => (
   <div className="space-y-6 mb-6">
     <SectionHeader icon="Building2" title="УПРАВЛЕНЧЕСКАЯ АНАЛИТИКА КЛИНИКИ" gradient="linear-gradient(135deg, #0f766e 0%, #0d9488 100%)" />
 
+    <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-amber-800">
+      <Icon name="Info" size={16} />
+      Блоки ниже — демонстрационные. Они оживут, когда подключим данные клиники (выработка, касса, продажи).
+    </div>
+
     {/* Верхний ряд: психология / выработка / продажи */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Психологическое состояние */}
+      <DemoWrap>
       <Card className="p-6 border border-red-200">
         <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
           <Icon name="Brain" size={20} className="text-red-500" />
@@ -134,8 +143,10 @@ const DirectorBlocks = () => (
           </div>
         </div>
       </Card>
+      </DemoWrap>
 
       {/* Выработка по направлениям */}
+      <DemoWrap>
       <Card className="p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
           <Icon name="ChartPie" size={20} className="text-indigo-500" />
@@ -163,8 +174,10 @@ const DirectorBlocks = () => (
           </div>
         </div>
       </Card>
+      </DemoWrap>
 
       {/* Анализ продаж и лояльности */}
+      <DemoWrap>
       <Card className="p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
           <Icon name="ChartLine" size={20} className="text-green-500" />
@@ -186,11 +199,11 @@ const DirectorBlocks = () => (
           ))}
         </div>
       </Card>
+      </DemoWrap>
     </div>
 
-    {/* Средний ряд: качество / ошибки */}
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Средние показатели качества */}
+    {/* Средние показатели качества */}
+    <DemoWrap>
       <Card className="p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
           <Icon name="Star" size={20} className="text-yellow-500" />
@@ -208,47 +221,12 @@ const DirectorBlocks = () => (
           </ResponsiveContainer>
         </div>
       </Card>
-
-      {/* Ошибки в общении */}
-      <Card className="p-6">
-        <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <Icon name="MessageSquareWarning" size={20} className="text-red-500" />
-          Ошибки в общении с пациентами
-        </h2>
-        <div style={{ height: 200 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <RadarChart data={mistakesData} outerRadius="72%">
-              <PolarGrid stroke="#e5e7eb" />
-              <PolarAngleAxis dataKey="name" tick={{ fontSize: 9, fill: '#6b7280' }} />
-              <Radar dataKey="value" stroke="#ef4444" fill="#ef4444" fillOpacity={0.35} />
-              <Tooltip {...tooltipStyle} />
-            </RadarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <div className="bg-red-50 rounded-xl p-4">
-            <h4 className="font-semibold text-red-800 mb-2 text-sm">Частые ошибки</h4>
-            <div className="space-y-1.5 text-sm text-red-700">
-              <div className="flex justify-between"><span>Сложные термины</span><span className="font-semibold">42%</span></div>
-              <div className="flex justify-between"><span>Недостаток эмпатии</span><span className="font-semibold">35%</span></div>
-              <div className="flex justify-between"><span>Спешка в объяснениях</span><span className="font-semibold">28%</span></div>
-            </div>
-          </div>
-          <div className="bg-blue-50 rounded-xl p-4">
-            <h4 className="font-semibold text-blue-800 mb-2 text-sm">Рекомендации</h4>
-            <div className="space-y-1 text-sm text-blue-700">
-              <p>• Провести тренинг по коммуникации</p>
-              <p>• Внедрить чек-лист объяснений</p>
-              <p>• Мониторить время на консультацию</p>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </div>
+    </DemoWrap>
 
     {/* AI-рекомендации */}
     <div>
       <SectionHeader icon="Bot" title="AI-РЕКОМЕНДАЦИИ С ОБОСНОВАНИЕМ" gradient="linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)" />
+      <DemoWrap>
       <Card className="p-6">
         <div className="space-y-4">
           {aiRecs.map((r) => {
@@ -274,6 +252,7 @@ const DirectorBlocks = () => (
           </button>
         </div>
       </Card>
+      </DemoWrap>
     </div>
   </div>
 );
