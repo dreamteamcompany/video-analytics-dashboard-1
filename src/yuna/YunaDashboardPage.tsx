@@ -7,7 +7,7 @@ import YunaDashboard from './YunaDashboard';
 import Sparkline from './Sparkline';
 import { KpiBlock, AutoJournalsBlock, RatingBlock } from './DoctorBlocks';
 import SpeechAnalytics from './SpeechAnalytics';
-import DirectorBlocks from './DirectorBlocks';
+import DirectorBlocks, { AiRecsCard } from './DirectorBlocks';
 
 const YunaDashboardPage = () => {
   const navigate = useNavigate();
@@ -169,27 +169,38 @@ const YunaDashboardPage = () => {
           </div>
         ) : (
           <>
-            {/* Сводка-графики по врачу */}
+            {/* 1. Общая статистика */}
             <YunaDashboard sessions={sessions} />
 
-            {/* KPI + журналы + рейтинг — крупные блоки */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <KpiBlock stats={stats} />
               <AutoJournalsBlock stats={stats} sessions={sessions} />
             </div>
-            <RatingBlock />
 
-            <div className="mt-6">
-              <SpeechAnalytics speech={stats?.speech ?? null} />
-            </div>
-
+            {/* 2. Управленческая аналитика: психология, выработка, продажи, качество */}
             <div className="mt-6">
               <DirectorBlocks
                 psychology={stats?.psychology ?? null}
                 qualityMetrics={stats?.quality_metrics ?? null}
-                aiRecommendations={stats?.ai_recommendations ?? null}
               />
             </div>
+
+            {/* 3. Мониторинг врачей — рейтинг */}
+            <div className="mt-6">
+              <RatingBlock />
+            </div>
+
+            {/* 4. Речевая аналитика + комплексный анализ */}
+            <div className="mt-6">
+              <SpeechAnalytics speech={stats?.speech ?? null} />
+            </div>
+
+            {/* 5. AI-рекомендации — в самом конце */}
+            {stats?.ai_recommendations && stats.ai_recommendations.length > 0 && (
+              <div className="mt-6">
+                <AiRecsCard recs={stats.ai_recommendations} />
+              </div>
+            )}
           </>
         )}
       </div>

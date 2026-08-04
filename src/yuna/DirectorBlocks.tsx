@@ -152,7 +152,7 @@ const QualityCard = ({ metrics }: { metrics: QualityMetric[] }) => (
 );
 
 /* Реальные AI-рекомендации из приёмов */
-const AiRecsCard = ({ recs }: { recs: AiRecommendation[] }) => (
+export const AiRecsCard = ({ recs }: { recs: AiRecommendation[] }) => (
   <div>
     <SectionHeader icon="Bot" title="AI-РЕКОМЕНДАЦИИ С ОБОСНОВАНИЕМ" gradient="linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)" />
     <Card className="p-6">
@@ -178,32 +178,22 @@ const AiRecsCard = ({ recs }: { recs: AiRecommendation[] }) => (
 
 /* ─────────── Компонент ─────────── */
 
-const DirectorBlocks = ({ psychology, qualityMetrics, aiRecommendations }: {
+const DirectorBlocks = ({ psychology, qualityMetrics }: {
   psychology: PsychologyStats | null;
   qualityMetrics: QualityMetric[] | null;
-  aiRecommendations: AiRecommendation[] | null;
 }) => (
   <div className="space-y-6 mb-6">
-    {psychology && psychology.count > 0 && (
-      <div>
-        <SectionHeader icon="HeartPulse" title="ПСИХОЛОГИЧЕСКОЕ СОСТОЯНИЕ" gradient="linear-gradient(135deg, #dc2626 0%, #ea580c 100%)" />
-        <PsychologyCard psy={psychology} />
-      </div>
-    )}
-
-    {qualityMetrics && qualityMetrics.length > 0 && <QualityCard metrics={qualityMetrics} />}
-
-    {aiRecommendations && aiRecommendations.length > 0 && <AiRecsCard recs={aiRecommendations} />}
-
     <SectionHeader icon="Building2" title="УПРАВЛЕНЧЕСКАЯ АНАЛИТИКА КЛИНИКИ" gradient="linear-gradient(135deg, #0f766e 0%, #0d9488 100%)" />
+
+    {psychology && psychology.count > 0 && <PsychologyCard psy={psychology} />}
 
     <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-amber-800">
       <Icon name="Info" size={16} />
-      Блоки ниже — демонстрационные. Они оживут, когда подключим данные клиники (выработка, касса, продажи).
+      Блоки «Выработка» и «Продажи» — демонстрационные. Они оживут, когда подключим данные клиники (касса, CRM).
     </div>
 
-    {/* Верхний ряд: выработка / продажи */}
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    {/* Ряд: выработка / продажи (демо) */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
       {/* Выработка по направлениям */}
       <DemoWrap>
@@ -261,6 +251,8 @@ const DirectorBlocks = ({ psychology, qualityMetrics, aiRecommendations }: {
       </Card>
       </DemoWrap>
     </div>
+
+    {qualityMetrics && qualityMetrics.length > 0 && <QualityCard metrics={qualityMetrics} />}
 
   </div>
 );
