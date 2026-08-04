@@ -184,7 +184,7 @@ const YunaDashboardPage = () => {
             </div>
 
             <div className="mt-6">
-              <DirectorBlocks />
+              <DirectorBlocks psychology={stats?.psychology ?? null} />
             </div>
           </>
         )}

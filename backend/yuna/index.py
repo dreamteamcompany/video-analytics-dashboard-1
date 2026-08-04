@@ -1362,6 +1362,7 @@ def _stats(doctor_id=None) -> dict:
         cur.execute(f"SELECT analysis FROM yuna_sessions {kpi_where}", params)
         quals, comms, loyals = [], [], []
         speech_rows = []
+        stress_vals = []
         for (a,) in cur.fetchall():
             if not a:
                 continue
@@ -1375,6 +1376,9 @@ def _stats(doctor_id=None) -> dict:
             sp = a.get("speech")
             if isinstance(sp, dict):
                 speech_rows.append(sp)
+            ds = a.get("doctor_state") or {}
+            if isinstance(ds.get("stress"), (int, float)):
+                stress_vals.append(ds["stress"])
 
         def avg(lst):
             return round(sum(lst) / len(lst)) if lst else None
@@ -1382,6 +1386,19 @@ def _stats(doctor_id=None) -> dict:
         satisfaction = None
         if loyals:
             satisfaction = round(sum(loyals) / len(loyals) / 2, 1)  # nps 0-10 -> 0-5
+
+        # Психологическое состояние: распределение стресса врача по приёмам
+        psychology = None
+        if stress_vals:
+            low = sum(1 for v in stress_vals if v < 34)
+            mid = sum(1 for v in stress_vals if 34 <= v < 67)
+            high = sum(1 for v in stress_vals if v >= 67)
+            psychology = {
+                "count": len(stress_vals),
+                "avg_stress": round(sum(stress_vals) / len(stress_vals)),
+                "high_stress_count": high,
+                "distribution": {"low": low, "medium": mid, "high": high},
+            }
 
         return _resp(200, {
             "counts": {"today": today, "week": week, "month": month, "total": total},
@@ -1392,6 +1409,7 @@ def _stats(doctor_id=None) -> dict:
                 "satisfaction": satisfaction,
             },
             "speech": _aggregate_speech(speech_rows),
+            "psychology": psychology,
         })
     finally:
         conn.close()

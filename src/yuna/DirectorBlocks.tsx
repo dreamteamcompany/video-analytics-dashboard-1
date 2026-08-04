@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
+import { PsychologyStats } from './api';
 
 const tooltipStyle = {
   contentStyle: { borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12 },
@@ -13,11 +14,6 @@ const tooltipStyle = {
 
 /* ─────────── Данные ─────────── */
 
-const psychologyData = [
-  { name: 'Низкий стресс', value: 25 },
-  { name: 'Средний стресс', value: 45 },
-  { name: 'Высокий стресс', value: 30 },
-];
 const PSY_COLORS = ['#22c55e', '#eab308', '#ef4444'];
 
 const specData = [
@@ -98,10 +94,77 @@ const DemoWrap = ({ children }: { children: ReactNode }) => (
   </div>
 );
 
+/* Реальный блок психологического состояния врача — из стресса по речи */
+const PsychologyCard = ({ psy }: { psy: PsychologyStats }) => {
+  const dist = [
+    { name: 'Спокоен', value: psy.distribution.low },
+    { name: 'Умеренный стресс', value: psy.distribution.medium },
+    { name: 'Высокий стресс', value: psy.distribution.high },
+  ];
+  const s = psy.avg_stress;
+  const level = s < 34 ? 'спокойное' : s < 67 ? 'умеренное напряжение' : 'высокое напряжение';
+  const barColor = s < 34 ? 'bg-green-500' : s < 67 ? 'bg-yellow-500' : 'bg-red-500';
+  const txtColor = s < 34 ? 'text-green-600' : s < 67 ? 'text-yellow-600' : 'text-red-600';
+  return (
+    <Card className="p-6 border border-red-200">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+          <Icon name="Brain" size={20} className="text-red-500" />
+          Моё психологическое состояние
+        </h2>
+        <span className="text-xs text-gray-400">по {psy.count} приёмам</span>
+      </div>
+      <div style={{ height: 180 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={dist} dataKey="value" nameKey="name" innerRadius="55%" outerRadius="80%" paddingAngle={2}>
+              {dist.map((_, i) => <Cell key={i} fill={PSY_COLORS[i]} />)}
+            </Pie>
+            <Tooltip {...tooltipStyle} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="flex items-center justify-between text-sm mt-2 mb-1">
+        <span className="text-gray-600">Средний уровень стресса:</span>
+        <span className={`font-semibold ${txtColor}`}>{s}%</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className={`${barColor} h-2 rounded-full`} style={{ width: `${s}%` }} />
+      </div>
+      {psy.high_stress_count > 0 ? (
+        <div className="bg-red-100 rounded-xl p-3 border border-red-300 mt-4 flex items-start gap-2">
+          <Icon name="TriangleAlert" size={18} className="text-red-500 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-red-800">Замечено напряжение</p>
+            <p className="text-xs text-red-700">
+              В {psy.high_stress_count} {psy.high_stress_count === 1 ? 'приёме' : 'приёмах'} высокий уровень стресса — стоит отдохнуть.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-green-100 rounded-xl p-3 border border-green-300 mt-4 flex items-start gap-2">
+          <Icon name="CircleCheck" size={18} className="text-green-600 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-green-800">Состояние {level}</p>
+            <p className="text-xs text-green-700">По вашей речи всё в норме. Так держать!</p>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+};
+
 /* ─────────── Компонент ─────────── */
 
-const DirectorBlocks = () => (
+const DirectorBlocks = ({ psychology }: { psychology: PsychologyStats | null }) => (
   <div className="space-y-6 mb-6">
+    {psychology && psychology.count > 0 && (
+      <div>
+        <SectionHeader icon="HeartPulse" title="ПСИХОЛОГИЧЕСКОЕ СОСТОЯНИЕ" gradient="linear-gradient(135deg, #dc2626 0%, #ea580c 100%)" />
+        <PsychologyCard psy={psychology} />
+      </div>
+    )}
+
     <SectionHeader icon="Building2" title="УПРАВЛЕНЧЕСКАЯ АНАЛИТИКА КЛИНИКИ" gradient="linear-gradient(135deg, #0f766e 0%, #0d9488 100%)" />
 
     <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-amber-800">
@@ -109,41 +172,8 @@ const DirectorBlocks = () => (
       Блоки ниже — демонстрационные. Они оживут, когда подключим данные клиники (выработка, касса, продажи).
     </div>
 
-    {/* Верхний ряд: психология / выработка / продажи */}
+    {/* Верхний ряд: выработка / продажи */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Психологическое состояние */}
-      <DemoWrap>
-      <Card className="p-6 border border-red-200">
-        <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <Icon name="Brain" size={20} className="text-red-500" />
-          Психологическое состояние сотрудников
-        </h2>
-        <div style={{ height: 180 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={psychologyData} dataKey="value" nameKey="name" innerRadius="55%" outerRadius="80%" paddingAngle={2}>
-                {psychologyData.map((_, i) => <Cell key={i} fill={PSY_COLORS[i]} />)}
-              </Pie>
-              <Tooltip {...tooltipStyle} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="flex items-center justify-between text-sm mt-2 mb-1">
-          <span className="text-gray-600">Средний уровень стресса:</span>
-          <span className="font-semibold text-red-600">68%</span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div className="bg-red-500 h-2 rounded-full" style={{ width: '68%' }} />
-        </div>
-        <div className="bg-red-100 rounded-xl p-3 border border-red-300 mt-4 flex items-start gap-2">
-          <Icon name="TriangleAlert" size={18} className="text-red-500 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-red-800">Высокий уровень стресса</p>
-            <p className="text-xs text-red-700">3 врача требуют срочной психологической поддержки</p>
-          </div>
-        </div>
-      </Card>
-      </DemoWrap>
 
       {/* Выработка по направлениям */}
       <DemoWrap>

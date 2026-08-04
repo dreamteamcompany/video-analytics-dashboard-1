@@ -194,6 +194,13 @@ export interface SpeechStats {
   mistakes: { name: string; share: number }[];
 }
 
+export interface PsychologyStats {
+  count: number;
+  avg_stress: number;
+  high_stress_count: number;
+  distribution: { low: number; medium: number; high: number };
+}
+
 export interface YunaStats {
   counts: { today: number; week: number; month: number; total: number };
   kpi: {
@@ -203,6 +210,7 @@ export interface YunaStats {
     satisfaction: number | null;
   };
   speech: SpeechStats | null;
+  psychology: PsychologyStats | null;
 }
 
 export interface Learning {
