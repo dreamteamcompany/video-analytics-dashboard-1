@@ -7,6 +7,7 @@ import YunaDashboard from './YunaDashboard';
 import Sparkline from './Sparkline';
 import { KpiBlock, AutoJournalsBlock, RatingBlock } from './DoctorBlocks';
 import SpeechAnalytics from './SpeechAnalytics';
+import DirectorBlocks from './DirectorBlocks';
 
 const YunaDashboardPage = () => {
   const navigate = useNavigate();
@@ -180,6 +181,10 @@ const YunaDashboardPage = () => {
 
             <div className="mt-6">
               <SpeechAnalytics />
+            </div>
+
+            <div className="mt-6">
+              <DirectorBlocks />
             </div>
           </>
         )}
