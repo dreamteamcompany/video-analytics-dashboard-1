@@ -12,11 +12,11 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, delay = 0 }
   role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; delay?: number;
 }) => (
   <div
-    className="flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-7 org-in transition-transform duration-300 hover:scale-[1.02]"
+    className="flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-3 org-in transition-transform duration-300 hover:scale-[1.02]"
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
-      minHeight: 'clamp(88px, 12vh, 170px)',
+      minHeight: 'clamp(80px, 10.5vh, 160px)',
     }}
   >
     {photo ? (
@@ -185,14 +185,14 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               <Icon name="Crown" size={22} className="text-violet-500" />
             </div>
             <div
-              className="rounded-3xl bg-white px-16 sm:px-20 pt-5 pb-3 text-center flex flex-col items-center"
+              className="rounded-3xl bg-white px-16 sm:px-20 pt-4 pb-2.5 text-center flex flex-col items-center"
               style={{ boxShadow: '0 8px 30px rgba(124,58,237,0.12), 0 2px 6px rgba(15,23,42,0.06)' }}
             >
               {slide.head.photo && (
                 <img
                   src={slide.head.photo}
                   alt={slide.head.name || slide.head.role}
-                  className="w-16 h-16 rounded-full object-cover ring-2 ring-violet-200 mb-2"
+                  className="w-14 h-14 rounded-full object-cover ring-2 ring-violet-200 mb-1.5"
                 />
               )}
               <p className="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">
