@@ -224,14 +224,14 @@ export const slides: Slide[] = [
         title: 'Администрирование проектов',
         icon: 'ClipboardList',
         people: [
-          { role: 'Администратор проектов', name: 'Стовбун И.Я.', note: 'На увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true, photo: '/stovbun.png' },
+          { role: 'Администратор проектов', name: 'Стовбун И.Я.', note: 'На увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true, big: true, photo: '/stovbun.png' },
         ],
       },
       {
         title: 'Администрирование проектов',
         icon: 'ClipboardList',
         people: [
-          { role: 'Администратор проектов', name: 'Юдина А.', note: 'На увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true, photo: '/yudina.png' },
+          { role: 'Администратор проектов', name: 'Юдина А.', note: 'На увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true, big: true, photo: '/yudina.png' },
         ],
       },
     ],

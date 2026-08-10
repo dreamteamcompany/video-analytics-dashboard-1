@@ -28,11 +28,11 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
         <img
           src={photo}
           alt={name || role}
-          className={`w-14 h-14 rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : replace ? 'ring-rose-300' : 'ring-violet-200'}`}
+          className={`${big ? 'w-24 h-24' : 'w-14 h-14'} rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : replace ? 'ring-rose-300' : 'ring-violet-200'}`}
         />
       ) : (
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center ${replace ? 'bg-rose-100' : 'bg-violet-50'} ${lead ? 'ring-2 ring-amber-300' : ''}`}>
-          <Icon name={replace ? 'UserMinus' : vacancy ? 'UserPlus' : 'User'} size={26} className={replace ? 'text-rose-500' : 'text-violet-500'} />
+        <div className={`${big ? 'w-24 h-24' : 'w-14 h-14'} rounded-full flex items-center justify-center ${replace ? 'bg-rose-100' : 'bg-violet-50'} ${lead ? 'ring-2 ring-amber-300' : ''}`}>
+          <Icon name={replace ? 'UserMinus' : vacancy ? 'UserPlus' : 'User'} size={big ? 44 : 26} className={replace ? 'text-rose-500' : 'text-violet-500'} />
         </div>
       )}
       {lead && (
@@ -72,7 +72,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
           )
         )}
         {note && (
-          <span className={`text-xs font-semibold text-white px-2.5 py-0.5 rounded-full leading-snug bg-gradient-to-r ${replace ? 'from-rose-500 to-red-500' : 'from-emerald-500 to-teal-500 whitespace-nowrap'}`}>
+          <span className={`${big ? 'text-base px-4 py-1' : 'text-xs px-2.5 py-0.5'} font-semibold text-white rounded-full leading-snug bg-gradient-to-r ${replace ? 'from-rose-500 to-red-500' : 'from-emerald-500 to-teal-500 whitespace-nowrap'}`}>
             {note}
           </span>
         )}
