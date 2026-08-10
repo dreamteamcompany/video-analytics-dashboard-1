@@ -4,9 +4,12 @@ import SlideView from './SlideView';
 import { slides } from './slides';
 
 const PresentationPage = () => {
-  const [index, setIndex] = useState(0);
-  const touchX = useRef<number | null>(null);
   const total = slides.length;
+  const [index, setIndex] = useState(() => {
+    const n = parseInt(new URLSearchParams(window.location.search).get('slide') || '1', 10);
+    return Number.isFinite(n) ? Math.min(Math.max(n - 1, 0), total - 1) : 0;
+  });
+  const touchX = useRef<number | null>(null);
 
   const next = useCallback(() => setIndex((i) => Math.min(i + 1, total - 1)), [total]);
   const prev = useCallback(() => setIndex((i) => Math.max(i - 1, 0)), []);
@@ -21,6 +24,12 @@ const PresentationPage = () => {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [next, prev, total]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('slide', String(index + 1));
+    window.history.replaceState(null, '', url.toString());
+  }, [index]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
