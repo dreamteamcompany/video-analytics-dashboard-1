@@ -115,7 +115,7 @@ export const slides: Slide[] = [
     badge: 'Служба информационной безопасности',
     badgeIcon: 'ShieldCheck',
     columnsLabel: 'направления',
-    head: { role: 'Руководитель Службы', name: 'Гаврилова Е.И.', salary: '180 000 ₽/мес' },
+    head: { role: 'Руководитель Службы', name: 'Гаврилова Е.И.', salary: '180 000 ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/851dcb31-49db-40a3-b9f6-a38c0d433684.png' },
     payroll: '450 000 ₽/мес',
     payrollNote: 'с учётом открытых вакансий',
     columns: [
