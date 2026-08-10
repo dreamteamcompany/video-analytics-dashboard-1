@@ -64,7 +64,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
         {/* Карточки целей */}
         <div
-          className={`flex-1 grid ${compact ? 'gap-2.5 md:gap-3' : 'gap-3 md:gap-5'} min-h-0 content-start md:content-stretch`}
+          className={`flex-none md:flex-1 grid ${compact ? 'gap-2.5 md:gap-3' : 'gap-3 md:gap-5'} md:min-h-0 auto-rows-max md:auto-rows-auto content-start md:content-stretch`}
           style={{ gridTemplateColumns: `repeat(${isMobile ? 1 : cols}, minmax(0, 1fr))` }}
         >
           {goals.map((g, i) => (
