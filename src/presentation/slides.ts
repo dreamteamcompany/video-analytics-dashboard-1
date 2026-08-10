@@ -80,12 +80,12 @@ export const slides: Slide[] = [
     id: 'med-systems',
     type: 'org',
     theme: 'light',
-    badge: 'Учётно-медицинские системы',
+    badge: 'Управление эксплуатации и развития учётно-медицинских систем',
     badgeIcon: 'Stethoscope',
     columnsLabel: 'службы',
     head: { role: 'Руководитель Управления', name: 'Лазарева Ю.В.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/072ff6d7-8e84-4ae1-950b-6c41791a8337.png' },
     payroll: '**** ₽/мес',
-    payrollNote: 'Управление эксплуатации и развития учётно-медицинских систем',
+    payrollNote: 'с учётом открытых вакансий',
     columns: [
       {
         title: 'Служба проектов 1С и МИС',

@@ -168,14 +168,14 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       <div className="flex-shrink-0 relative flex items-start justify-center">
         {slide.badge && (
           <span
-            className="absolute left-0 top-0 inline-flex items-center gap-2.5 rounded-full px-6 py-3 text-white text-lg font-semibold"
+            className="absolute left-0 top-0 inline-flex items-center gap-2.5 rounded-full px-6 py-3 text-white text-lg font-semibold max-w-[30%]"
             style={{
               background: HEADER_GRADIENT,
               boxShadow: '0 8px 24px rgba(124,58,237,0.35)',
             }}
           >
-            <Icon name={slide.badgeIcon ?? 'Headphones'} size={20} />
-            {slide.badge}
+            <Icon name={slide.badgeIcon ?? 'Headphones'} size={20} className="flex-shrink-0" />
+            <span className="leading-snug">{slide.badge}</span>
           </span>
         )}
 
