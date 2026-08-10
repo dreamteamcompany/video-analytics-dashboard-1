@@ -24,7 +24,7 @@ export interface Slide {
   logo?: string;
   bullets?: { icon?: string; text: string; note?: string }[];
   badge?: string;
-  head?: { role: string; name?: string; salary: string };
+  head?: { role: string; name?: string; salary: string; photo?: string };
   columns?: OrgColumn[];
   payroll?: string;
   payrollNote?: string;
@@ -45,7 +45,7 @@ export const slides: Slide[] = [
     type: 'org',
     theme: 'light',
     badge: 'Техническая поддержка',
-    head: { role: 'Руководитель Службы', name: 'Лютиков А.А.', salary: '120 000 ₽/мес' },
+    head: { role: 'Руководитель Службы', name: 'Лютиков А.А.', salary: '120 000 ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/bc1d12ea-f0f1-45d9-94ae-c90ade44bb54.png' },
     payroll: '700 000 ₽/мес',
     payrollNote: 'без учёта специалиста 3-й линии (AI)',
     columns: [

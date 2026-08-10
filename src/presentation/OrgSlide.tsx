@@ -185,9 +185,16 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               <Icon name="Crown" size={22} className="text-violet-500" />
             </div>
             <div
-              className="rounded-3xl bg-white px-16 sm:px-20 pt-5 pb-3 text-center"
+              className="rounded-3xl bg-white px-16 sm:px-20 pt-5 pb-3 text-center flex flex-col items-center"
               style={{ boxShadow: '0 8px 30px rgba(124,58,237,0.12), 0 2px 6px rgba(15,23,42,0.06)' }}
             >
+              {slide.head.photo && (
+                <img
+                  src={slide.head.photo}
+                  alt={slide.head.name || slide.head.role}
+                  className="w-16 h-16 rounded-full object-cover ring-2 ring-violet-200 mb-2"
+                />
+              )}
               <p className="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">
                 {slide.head.role}
               </p>
