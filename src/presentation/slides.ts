@@ -1,6 +1,7 @@
 export interface OrgPerson {
   role: string;
   name?: string;
+  note?: string;
   salary: string;
   vacancy?: boolean;
 }
@@ -56,8 +57,8 @@ export const slides: Slide[] = [
       {
         title: '2-я линия',
         people: [
-          { role: 'Специалист 2-й линии', name: 'Онищенко Д.А. (повышение ЗП)', salary: '100 000 ₽/мес' },
-          { role: 'Специалист 2-й линии', name: 'Медведев Д.В. (перевод)', salary: '100 000 ₽/мес' },
+          { role: 'Специалист 2-й линии', name: 'Онищенко Д.А.', note: 'повышение ЗП', salary: '100 000 ₽/мес' },
+          { role: 'Специалист 2-й линии', name: 'Медведев Д.В.', note: 'перевод', salary: '100 000 ₽/мес' },
         ],
       },
       {
