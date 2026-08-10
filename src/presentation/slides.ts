@@ -180,7 +180,7 @@ export const slides: Slide[] = [
         title: 'Группа веб-разработки и сервисов',
         icon: 'Globe',
         people: [
-          { role: 'Администратор веб-сервисов', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+          { role: 'Администратор веб-сервисов', name: 'Старжинский К.Е.', salary: '**** ₽/мес', photo: '/starzhinsky.png' },
           { role: 'Full-stack разработчик', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
         ],
       },
