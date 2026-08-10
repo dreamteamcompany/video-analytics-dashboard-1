@@ -8,8 +8,8 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
-const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, delay = 0 }: {
-  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; delay?: number;
+const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; delay?: number;
 }) => (
   <div
     className="relative flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-3 org-in transition-transform duration-300 hover:scale-[1.02]"
@@ -20,7 +20,11 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, delay
     }}
   >
     <div className="relative flex-shrink-0">
-      {photo ? (
+      {logo ? (
+        <div className="w-20 h-14 rounded-xl bg-white flex items-center justify-center px-2 ring-1 ring-slate-200">
+          <img src={logo} alt={role} className="max-w-full max-h-full object-contain" />
+        </div>
+      ) : photo ? (
         <img
           src={photo}
           alt={name || role}
