@@ -97,18 +97,18 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       {slide.head && (
         <div className="flex-shrink-0 flex justify-center">
           <div
-            className="rounded-[2rem] bg-[#eef0f6] px-14 sm:px-20 py-4 text-center org-drop"
+            className="rounded-[2rem] bg-[#eef0f6] px-14 sm:px-20 py-3 text-center org-drop"
             style={{ boxShadow: SOFT_SHADOW }}
           >
-            <p className="text-2xl sm:text-4xl font-bold text-green-600 leading-tight">
+            <p className="text-2xl sm:text-3xl font-bold text-green-600 leading-tight">
               {slide.head.role}
             </p>
             {slide.head.name && (
-              <p className="text-xl sm:text-3xl font-bold text-slate-700 leading-tight mt-1">
+              <p className="text-xl sm:text-2xl font-bold text-slate-700 leading-tight mt-0.5">
                 {slide.head.name}
               </p>
             )}
-            <p className="text-2xl sm:text-4xl font-bold text-green-600 leading-tight mt-1">
+            <p className="text-2xl sm:text-3xl font-bold text-green-600 leading-tight mt-0.5">
               {slide.head.salary}
             </p>
           </div>
@@ -179,12 +179,19 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   </div>
                 )}
                 <div
-                  className="relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-28 sm:pr-36 py-3 sm:py-4 flex items-center overflow-hidden org-drop"
+                  className="relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-28 sm:pr-36 py-2.5 sm:py-3 flex items-center overflow-hidden org-drop"
                   style={{ boxShadow: SOFT_SHADOW, animationDelay: '1550ms' }}
                 >
-                  <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 whitespace-nowrap">
-                    ФОТ: {slide.payroll}
-                  </p>
+                  <div className="min-w-0">
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 whitespace-nowrap">
+                      ФОТ: {slide.payroll}
+                    </p>
+                    {slide.payrollNote && (
+                      <p className="text-xs sm:text-sm font-semibold text-slate-500 mt-1">
+                        {slide.payrollNote}
+                      </p>
+                    )}
+                  </div>
                   <img
                     src="/coins-3d.png"
                     alt=""

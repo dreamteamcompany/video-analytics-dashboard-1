@@ -25,6 +25,7 @@ export interface Slide {
   head?: { role: string; name?: string; salary: string };
   columns?: OrgColumn[];
   payroll?: string;
+  payrollNote?: string;
 }
 
 export const slides: Slide[] = [
@@ -44,6 +45,7 @@ export const slides: Slide[] = [
     badge: 'Техническая поддержка',
     head: { role: 'Руководитель Службы', name: 'Лютиков А.А.', salary: '120 000 ₽/мес' },
     payroll: '700 000 ₽/мес',
+    payrollNote: 'без учёта специалиста 3-й линии (AI)',
     columns: [
       {
         title: '1-я линия',
