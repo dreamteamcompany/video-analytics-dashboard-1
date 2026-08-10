@@ -279,7 +279,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
         style={{ gridTemplateColumns: `repeat(${colCount}, minmax(0, 1fr))` }}
       >
         {slide.columns?.map((col, ci) => (
-          <div key={col.title} className="flex flex-col min-w-0">
+          <div key={`${col.title}-${ci}`} className="flex flex-col min-w-0">
             {/* Заголовок линии */}
             <div
               className="rounded-full py-2.5 px-6 flex items-center justify-center gap-2.5 mb-2.5 org-drop"
