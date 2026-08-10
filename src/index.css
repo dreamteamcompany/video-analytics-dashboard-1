@@ -151,4 +151,30 @@
   .chart-glow {
     filter: drop-shadow(0 6px 14px rgba(79, 70, 229, 0.35));
   }
+  @keyframes org-in {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .org-in {
+    animation: org-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes org-drop {
+    from {
+      opacity: 0;
+      transform: translateY(-18px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .org-drop {
+    animation: org-drop 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
 }

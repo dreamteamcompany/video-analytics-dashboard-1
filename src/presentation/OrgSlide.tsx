@@ -1,13 +1,14 @@
 import { Slide } from './slides';
+import Icon from '@/components/ui/icon';
 
 const SOFT_SHADOW = '6px 6px 14px rgba(163,177,198,0.55), -6px -6px 14px rgba(255,255,255,0.9)';
 const PILL_GRADIENT = 'linear-gradient(90deg, #6d28d9 0%, #7c3aed 45%, #4f46e5 100%)';
 const LINE_COLOR = '#5b21b6';
 
-const PersonCard = ({ role, name, note, salary, vacancy }: {
-  role: string; name?: string; note?: string; salary: string; vacancy?: boolean;
+const PersonCard = ({ role, name, note, salary, vacancy, delay = 0 }: {
+  role: string; name?: string; note?: string; salary: string; vacancy?: boolean; delay?: number;
 }) => (
-  <div className="relative flex items-center group">
+  <div className="relative flex items-center group org-in" style={{ animationDelay: `${delay}ms` }}>
     {/* стрелка от вертикальной линии */}
     <div className="absolute -left-6 top-1/2 -translate-y-1/2 flex items-center">
       <div className="w-4 h-[3px] rounded-full" style={{ background: LINE_COLOR }} />
@@ -48,7 +49,27 @@ const PersonCard = ({ role, name, note, salary, vacancy }: {
   </div>
 );
 
-const OrgSlide = ({ slide }: { slide: Slide }) => (
+const StatCard = ({ icon, value, label, delay }: {
+  icon: string; value: string; label: string; delay: number;
+}) => (
+  <div
+    className="flex-1 min-w-0 rounded-2xl bg-[#eef0f6] px-2 py-3 text-center org-drop"
+    style={{ boxShadow: SOFT_SHADOW, animationDelay: `${delay}ms` }}
+  >
+    <Icon name={icon} size={20} className="mx-auto text-violet-600 mb-1" />
+    <p className="text-2xl sm:text-3xl font-extrabold leading-none bg-gradient-to-r from-violet-700 to-indigo-600 bg-clip-text text-transparent">
+      {value}
+    </p>
+    <p className="text-xs font-semibold text-slate-500 mt-1 leading-tight">{label}</p>
+  </div>
+);
+
+const OrgSlide = ({ slide }: { slide: Slide }) => {
+  const allPeople = slide.columns?.flatMap((c) => c.people) ?? [];
+  const total = allPeople.length + (slide.head ? 1 : 0);
+  const vacancies = allPeople.filter((p) => p.vacancy).length;
+
+  return (
   <div className="h-full flex flex-col bg-[#eef0f6] overflow-hidden relative">
     {/* Декоративная сфера в углу */}
     <div
@@ -76,7 +97,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
       {slide.head && (
         <div className="flex-shrink-0 flex justify-center">
           <div
-            className="rounded-3xl bg-[#eef0f6] px-10 sm:px-14 py-3 text-center"
+            className="rounded-3xl bg-[#eef0f6] px-10 sm:px-14 py-3 text-center org-drop"
             style={{ boxShadow: SOFT_SHADOW }}
           >
             <p className="text-lg sm:text-2xl font-bold text-green-600 leading-tight">
@@ -119,10 +140,11 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
           <div key={col.title} className="flex flex-col min-w-0">
             {/* Заголовок линии */}
             <div
-              className="rounded-full py-2.5 px-6 text-center mb-4"
+              className="rounded-full py-2.5 px-6 text-center mb-4 org-drop"
               style={{
                 background: 'linear-gradient(135deg, #312e81 0%, #4c1d95 100%)',
                 boxShadow: '6px 6px 16px rgba(76,29,149,0.35), -4px -4px 12px rgba(255,255,255,0.8)',
+                animationDelay: `${250 + ci * 110}ms`,
               }}
             >
               <p className="text-xl sm:text-3xl font-extrabold text-white">{col.title}</p>
@@ -135,15 +157,15 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
                 style={{ background: LINE_COLOR }}
               />
               {col.people.map((p, i) => (
-                <PersonCard key={i} {...p} />
+                <PersonCard key={i} {...p} delay={500 + ci * 120 + i * 110} />
               ))}
             </div>
 
             {/* ФОТ — крупный блок под 2-й и 3-й колонками */}
             {ci === 1 && slide.payroll && (
               <div
-                className="mt-auto relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-32 sm:pr-40 py-6 sm:py-8 flex items-center overflow-hidden md:w-[calc(200%+1.5rem)]"
-                style={{ boxShadow: SOFT_SHADOW }}
+                className="mt-auto relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-32 sm:pr-40 py-6 sm:py-8 flex items-center overflow-hidden md:w-[calc(200%+1.5rem)] org-drop"
+                style={{ boxShadow: SOFT_SHADOW, animationDelay: '1100ms' }}
               >
                 <p className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 whitespace-nowrap">
                   ФОТ: {slide.payroll}
@@ -155,11 +177,23 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
                 />
               </div>
             )}
+
+            {/* Итоги в цифрах — под третьей колонкой */}
+            {ci === 2 && slide.columns && (
+              <div className="mt-5 flex gap-3">
+                <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} />
+                <StatCard icon="Layers" value={String(slide.columns.length)} label="линии" delay={1320} />
+                {vacancies > 0 && (
+                  <StatCard icon="Search" value={String(vacancies)} label={vacancies === 1 ? 'вакансия' : 'вакансии'} delay={1440} />
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default OrgSlide;
