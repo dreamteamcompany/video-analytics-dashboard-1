@@ -27,9 +27,16 @@ export interface Goal {
   effect?: string;
 }
 
+export interface ImpactItem {
+  icon?: string;
+  label: string;
+  value: string;
+  note?: string;
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'impact';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -46,6 +53,9 @@ export interface Slide {
   payrollNote?: string;
   goals?: Goal[];
   goalsYear?: string;
+  impactGoal?: string;
+  impacts?: ImpactItem[];
+  conclusion?: string;
 }
 
 export const slides: Slide[] = [
