@@ -8,20 +8,20 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
-const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, delay = 0 }: {
-  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; delay?: number;
+const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; delay?: number;
 }) => (
   <div
     className="relative flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-3 org-in transition-transform duration-300 hover:scale-[1.02]"
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
-      minHeight: 'clamp(80px, 10.5vh, 160px)',
+      minHeight: big ? 'clamp(120px, 16vh, 240px)' : 'clamp(80px, 10.5vh, 160px)',
     }}
   >
     <div className="relative flex-shrink-0">
       {logo ? (
-        <div className="w-20 h-14 rounded-xl bg-white flex items-center justify-center px-2 ring-1 ring-slate-200">
+        <div className={`${big ? 'w-32 h-20' : 'w-20 h-14'} rounded-xl bg-white flex items-center justify-center px-2 ring-1 ring-slate-200`}>
           <img src={logo} alt={role} className="max-w-full max-h-full object-contain" />
         </div>
       ) : photo ? (
@@ -47,7 +47,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
 
     <div className="flex-1 min-w-0">
       <div className="flex items-center gap-2">
-        <p className="text-base font-semibold text-slate-800 leading-snug whitespace-nowrap">
+        <p className={`${big ? 'text-2xl' : 'text-base'} font-semibold text-slate-800 leading-snug whitespace-nowrap`}>
           {role}
         </p>
         {tag && (
@@ -66,7 +66,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
               {name}
             </span>
           ) : (
-            <span className="text-base leading-snug text-slate-500">{name}</span>
+            <span className={`${big ? 'text-xl' : 'text-base'} leading-snug text-slate-500`}>{name}</span>
           )
         )}
         {note && (
@@ -78,7 +78,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     </div>
 
     <div
-      className="rounded-full px-3.5 py-1.5 text-white text-sm font-semibold whitespace-nowrap flex-shrink-0"
+      className={`rounded-full text-white font-semibold whitespace-nowrap flex-shrink-0 ${big ? 'px-5 py-2.5 text-xl' : 'px-3.5 py-1.5 text-sm'}`}
       style={{ background: PILL_GRADIENT }}
     >
       {salary}
@@ -340,13 +340,13 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   {col.subBlocks.map((sb, si) => (
                     <div
                       key={sb.title}
-                      className="rounded-2xl bg-white/90 px-4 py-3 flex items-center gap-2.5 org-in"
-                      style={{ boxShadow: CARD_SHADOW, animationDelay: `${800 + si * 110}ms` }}
+                      className="rounded-2xl bg-white/90 px-5 py-4 flex flex-col items-center justify-center text-center gap-3 org-in"
+                      style={{ boxShadow: CARD_SHADOW, animationDelay: `${800 + si * 110}ms`, minHeight: 'clamp(150px, 20vh, 300px)' }}
                     >
-                      <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0">
-                        <Icon name={sb.icon ?? 'Server'} size={19} className="text-violet-500" />
+                      <div className="w-14 h-14 rounded-2xl bg-violet-50 flex items-center justify-center flex-shrink-0">
+                        <Icon name={sb.icon ?? 'Server'} size={28} className="text-violet-500" />
                       </div>
-                      <p className="text-sm sm:text-base font-semibold text-slate-700 leading-snug">
+                      <p className="text-base sm:text-lg font-semibold text-slate-700 leading-snug">
                         {sb.title}
                       </p>
                     </div>
