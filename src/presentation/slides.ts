@@ -36,7 +36,7 @@ export interface ImpactItem {
 
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'impact';
+  type: 'title' | 'bullets' | 'org' | 'goals';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -166,6 +166,14 @@ export const slides: Slide[] = [
         effect: 'Стимул к абсолютной надёжности сервисов',
       },
     ],
+    impactGoal: 'Сделать поддержку не затратной функцией, а центром генерации прибыли',
+    impacts: [
+      { icon: 'ShieldCheck', label: 'Предотвращение простоев', value: '300+ млн ₽/год', note: 'сохранённая выручка' },
+      { icon: 'Bot', label: 'Автоматизация', value: '40+ млн ₽/год', note: 'сокращение операционных расходов' },
+      { icon: 'ChartLine', label: 'Аналитика и клиентский опыт', value: '+5% к выручке', note: 'рост повторных обращений по платным услугам' },
+      { icon: 'Sparkles', label: 'ИТ как сервис: AI-агенты', value: '30+ млн ₽', note: 'экономия подразделений' },
+    ],
+    conclusion: 'Техподдержка — «цифровой щит» компании: защищает от потерь и создаёт новую ценность. Каждый пункт измерим и защитим перед финансовым директором.',
   },
   {
     id: 'med-systems',
