@@ -2,6 +2,7 @@ export interface OrgPerson {
   role: string;
   name?: string;
   note?: string;
+  tag?: string;
   salary: string;
   vacancy?: boolean;
 }
@@ -66,7 +67,7 @@ export const slides: Slide[] = [
       {
         title: '3-я линия',
         people: [
-          { role: 'Специалист 3-й линии', note: 'AI', name: 'В будущем', salary: '100 000 ₽/мес', vacancy: true },
+          { role: 'Специалист 3-й линии', tag: 'AI', name: 'В будущем', salary: '100 000 ₽/мес', vacancy: true },
         ],
       },
     ],

@@ -8,8 +8,8 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
-const PersonCard = ({ role, name, note, salary, vacancy, delay = 0 }: {
-  role: string; name?: string; note?: string; salary: string; vacancy?: boolean; delay?: number;
+const PersonCard = ({ role, name, note, tag, salary, vacancy, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; delay?: number;
 }) => (
   <div
     className="flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-7 org-in transition-transform duration-300 hover:scale-[1.02]"
@@ -20,9 +20,19 @@ const PersonCard = ({ role, name, note, salary, vacancy, delay = 0 }: {
     </div>
 
     <div className="flex-1 min-w-0">
-      <p className="text-base font-semibold text-slate-800 leading-snug whitespace-nowrap">
-        {role}
-      </p>
+      <div className="flex items-center gap-2">
+        <p className="text-base font-semibold text-slate-800 leading-snug whitespace-nowrap">
+          {role}
+        </p>
+        {tag && (
+          <span
+            className="text-xs font-semibold text-white px-2.5 py-0.5 rounded-full whitespace-nowrap"
+            style={{ background: PILL_GRADIENT }}
+          >
+            {tag}
+          </span>
+        )}
+      </div>
       <div className="flex items-center gap-2 flex-wrap mt-0.5">
         {name && (
           vacancy ? (
