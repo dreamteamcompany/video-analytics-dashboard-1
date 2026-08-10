@@ -28,7 +28,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
         <img
           src={photo}
           alt={name || role}
-          className={`w-14 h-14 rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : 'ring-violet-200'}`}
+          className={`w-14 h-14 rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : replace ? 'ring-rose-300' : 'ring-violet-200'}`}
         />
       ) : (
         <div className={`w-14 h-14 rounded-full flex items-center justify-center ${replace ? 'bg-rose-100' : 'bg-violet-50'} ${lead ? 'ring-2 ring-amber-300' : ''}`}>
