@@ -55,8 +55,8 @@ export const slides: Slide[] = [
     badge: 'Руководство IT-департамента',
     badgeIcon: 'Crown',
     columnsLabel: 'направление',
-    head: { role: 'IT-директор', name: 'Лалиев Р.З.', salary: '**** ₽/мес', photo: '/laliev.png' },
-    payroll: '**** ₽/мес',
+    head: { role: 'IT-директор', name: 'Лалиев Р.З.', salary: '750 000 ₽/мес', photo: '/laliev.png' },
+    payroll: '810 000 ₽/мес',
     payrollNote: 'с учётом открытых вакансий',
     columns: [
       {
