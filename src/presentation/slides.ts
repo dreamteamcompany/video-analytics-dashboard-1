@@ -19,9 +19,17 @@ export interface OrgColumn {
   subBlocks?: { title: string; icon?: string }[];
 }
 
+export interface Goal {
+  title: string;
+  icon?: string;
+  text: string;
+  result?: string;
+  effect?: string;
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org';
+  type: 'title' | 'bullets' | 'org' | 'goals';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -36,6 +44,8 @@ export interface Slide {
   columns?: OrgColumn[];
   payroll?: string;
   payrollNote?: string;
+  goals?: Goal[];
+  goalsYear?: string;
 }
 
 export const slides: Slide[] = [
@@ -98,6 +108,24 @@ export const slides: Slide[] = [
         people: [
           { role: 'Специалист 3-й линии', tag: 'AI', name: 'В будущем', salary: '100 000 ₽/мес', vacancy: true },
         ],
+      },
+    ],
+  },
+  {
+    id: 'support-goals',
+    type: 'goals',
+    theme: 'light',
+    badge: 'Техническая поддержка',
+    badgeIcon: 'Headphones',
+    title: 'Цели на год',
+    goalsYear: '2026',
+    goals: [
+      {
+        title: 'Внедрить AIOps-платформу для предиктивного анализа',
+        icon: 'BrainCircuit',
+        text: 'Система на базе ML анализирует логи и метрики, выявляет аномалии и прогнозирует отказы за 2–4 часа до их возникновения. Автоматически инициирует профилактические действия: перезагрузка, масштабирование.',
+        result: 'Количество инцидентов снижается на 50%',
+        effect: 'Переход от реактивного к проактивному управлению — ИТ перестаёт быть «пожарной командой»',
       },
     ],
   },

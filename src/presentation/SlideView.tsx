@@ -1,6 +1,7 @@
 import Icon from '@/components/ui/icon';
 import { Slide } from './slides';
 import OrgSlide from './OrgSlide';
+import GoalsSlide from './GoalsSlide';
 
 const TitleSlide = ({ slide }: { slide: Slide }) => (
   <div className="h-full flex flex-col items-center justify-center text-center px-6 sm:px-12">
@@ -77,6 +78,7 @@ const SlideView = ({ slide }: { slide: Slide }) => (
     {slide.type === 'title' && <TitleSlide slide={slide} />}
     {slide.type === 'bullets' && <BulletsSlide slide={slide} />}
     {slide.type === 'org' && <OrgSlide slide={slide} />}
+    {slide.type === 'goals' && <GoalsSlide slide={slide} />}
   </div>
 );
 
