@@ -8,28 +8,38 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
-const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, delay = 0 }: {
-  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; delay?: number;
+const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; delay?: number;
 }) => (
   <div
-    className="flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-3 org-in transition-transform duration-300 hover:scale-[1.02]"
+    className="relative flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-3 org-in transition-transform duration-300 hover:scale-[1.02]"
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
       minHeight: 'clamp(80px, 10.5vh, 160px)',
     }}
   >
-    {photo ? (
-      <img
-        src={photo}
-        alt={name || role}
-        className="w-14 h-14 rounded-full object-cover flex-shrink-0 ring-2 ring-violet-200"
-      />
-    ) : (
-      <div className="w-14 h-14 rounded-full bg-violet-50 flex items-center justify-center flex-shrink-0">
-        <Icon name={vacancy ? 'UserPlus' : 'User'} size={26} className="text-violet-500" />
-      </div>
-    )}
+    <div className="relative flex-shrink-0">
+      {photo ? (
+        <img
+          src={photo}
+          alt={name || role}
+          className={`w-14 h-14 rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : 'ring-violet-200'}`}
+        />
+      ) : (
+        <div className={`w-14 h-14 rounded-full bg-violet-50 flex items-center justify-center ${lead ? 'ring-2 ring-amber-300' : ''}`}>
+          <Icon name={vacancy ? 'UserPlus' : 'User'} size={26} className="text-violet-500" />
+        </div>
+      )}
+      {lead && (
+        <div
+          className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-white flex items-center justify-center"
+          style={{ boxShadow: '0 3px 10px rgba(124,58,237,0.25)' }}
+        >
+          <Icon name="Crown" size={15} className="text-amber-500" />
+        </div>
+      )}
+    </div>
 
     <div className="flex-1 min-w-0">
       <div className="flex items-center gap-2">

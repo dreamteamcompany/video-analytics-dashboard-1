@@ -6,6 +6,7 @@ export interface OrgPerson {
   salary: string;
   vacancy?: boolean;
   photo?: string;
+  lead?: boolean;
 }
 
 export interface OrgColumn {
@@ -91,7 +92,7 @@ export const slides: Slide[] = [
         title: 'Служба проектов 1С и МИС',
         icon: 'ClipboardList',
         people: [
-          { role: 'Менеджер проектов 1С', name: 'Кобычева Л.Е.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/196b7099-96fa-4797-a145-2b530812cdd1.png' },
+          { role: 'Менеджер проектов 1С', lead: true, name: 'Кобычева Л.Е.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/196b7099-96fa-4797-a145-2b530812cdd1.png' },
           { role: 'Администратор проектов 1С', name: 'Ватлашова А.О.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/b92259da-37e7-45b4-b219-00957894d33c.png' },
         ],
       },
@@ -99,7 +100,7 @@ export const slides: Slide[] = [
         title: 'Служба разработки 1С',
         icon: 'Code',
         people: [
-          { role: 'Сеньор-разработчик 1С / Team Lead', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+          { role: 'Сеньор-разработчик 1С / Team Lead', lead: true, name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
           { role: 'Разработчик 1С', tag: 'Middle', name: 'Важенин К.В.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/0a54051d-4f4f-4e16-8fdf-5d77d84b7e76.png' },
           { role: 'Разработчик 1С', tag: 'Junior', name: 'Байбекова Л.Э.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/aa7d2209-d8d0-4a13-8f9f-ebd84b512b43.png' },
           { role: 'Тестировщик 1С', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
