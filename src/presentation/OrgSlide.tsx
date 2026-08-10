@@ -19,7 +19,7 @@ const PersonCard = ({ role, name, note, salary, vacancy, delay = 0 }: {
     </div>
 
     <div
-      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-4 transition-transform duration-300 hover:scale-[1.02]"
+      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-3 transition-transform duration-300 hover:scale-[1.02]"
       style={{ boxShadow: SOFT_SHADOW }}
     >
       <div className="flex-1 min-w-0">
@@ -53,7 +53,7 @@ const StatCard = ({ icon, value, label, delay }: {
   icon: string; value: string; label: string; delay: number;
 }) => (
   <div
-    className="flex-1 min-w-0 rounded-2xl bg-[#eef0f6] px-3 py-2 flex items-center justify-center gap-2.5 org-drop"
+    className="flex-1 min-w-0 rounded-2xl bg-[#eef0f6] px-3 py-1.5 flex items-center justify-center gap-2.5 org-drop"
     style={{ boxShadow: SOFT_SHADOW, animationDelay: `${delay}ms` }}
   >
     <Icon name={icon} size={20} className="text-violet-600 flex-shrink-0" />
@@ -92,7 +92,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       </div>
     )}
 
-    <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 pt-2 pb-3 min-h-0">
+    <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 pt-1 pb-1 min-h-0">
       {/* Руководитель */}
       {slide.head && (
         <div className="flex-shrink-0 flex justify-center">
@@ -168,9 +168,9 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
 
             {/* Итоги в цифрах + ФОТ — под 2-й и 3-й колонками */}
             {ci === 1 && slide.payroll && (
-              <div className="mt-auto md:w-[calc(200%+1.5rem)]">
+              <div className="mt-auto md:w-[calc(160%+1.5rem)]">
                 {slide.columns && (
-                  <div className="flex gap-3 mb-3">
+                  <div className="flex gap-3 mb-2.5">
                     <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} />
                     <StatCard icon="Layers" value={String(slide.columns.length)} label="линии" delay={1320} />
                     {vacancies > 0 && (
@@ -179,7 +179,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   </div>
                 )}
                 <div
-                  className="relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-28 sm:pr-36 py-2.5 sm:py-3 flex items-center overflow-hidden org-drop"
+                  className="relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-28 sm:pr-36 py-4 sm:py-5 flex items-center overflow-hidden org-drop"
                   style={{ boxShadow: SOFT_SHADOW, animationDelay: '1550ms' }}
                 >
                   <div className="min-w-0">
