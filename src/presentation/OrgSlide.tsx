@@ -25,9 +25,13 @@ const PersonCard = ({ role, name, note, salary, vacancy, delay = 0 }: {
       </p>
       <div className="flex items-center gap-2 flex-wrap mt-0.5">
         {name && (
-          <span className={`text-base leading-snug ${vacancy ? 'text-violet-600 font-semibold italic' : 'text-slate-500'}`}>
-            {name}
-          </span>
+          vacancy ? (
+            <span className="text-xs font-semibold text-white px-2.5 py-0.5 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 whitespace-nowrap">
+              {name}
+            </span>
+          ) : (
+            <span className="text-base leading-snug text-slate-500">{name}</span>
+          )
         )}
         {note && (
           <span className="text-xs font-semibold text-white px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 whitespace-nowrap">
