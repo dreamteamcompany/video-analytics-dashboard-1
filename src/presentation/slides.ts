@@ -83,7 +83,7 @@ export const slides: Slide[] = [
     badge: 'Учётно-медицинские системы',
     badgeIcon: 'Stethoscope',
     columnsLabel: 'службы',
-    head: { role: 'Руководитель Управления', name: 'Лазарева Ю.В.', salary: '**** ₽/мес' },
+    head: { role: 'Руководитель Управления', name: 'Лазарева Ю.В.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/072ff6d7-8e84-4ae1-950b-6c41791a8337.png' },
     payroll: '**** ₽/мес',
     payrollNote: 'Управление эксплуатации и развития учётно-медицинских систем',
     columns: [
