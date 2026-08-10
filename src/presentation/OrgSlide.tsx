@@ -115,23 +115,28 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
         </div>
       )}
 
-      {/* Диагональные стрелки к колонкам */}
+      {/* Разводка линий к колонкам */}
       <div className="flex-shrink-0 relative h-8 sm:h-10">
-        <svg
-          className="absolute inset-0 w-full h-full"
-          viewBox="0 0 300 60"
-          preserveAspectRatio="none"
-        >
-          <line x1="150" y1="0" x2="50" y2="52" stroke={LINE_COLOR} strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-          <line x1="150" y1="0" x2="150" y2="52" stroke={LINE_COLOR} strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-          <line x1="150" y1="0" x2="250" y2="52" stroke={LINE_COLOR} strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-        {/* наконечники стрелок */}
-        <div className="absolute inset-x-0 bottom-0 grid grid-cols-3">
+        {/* вертикаль от руководителя до горизонтали */}
+        <div
+          className="absolute left-1/2 top-0 h-1/2 w-[3px] -translate-x-1/2 rounded-full"
+          style={{ background: LINE_COLOR }}
+        />
+        {/* горизонталь от центра 1-й до центра 3-й колонки */}
+        <div
+          className="absolute top-1/2 h-[3px] -translate-y-1/2 rounded-full left-[16.666%] right-[16.666%]"
+          style={{ background: LINE_COLOR }}
+        />
+        {/* вертикальные спуски со стрелками по центру каждой колонки */}
+        <div className="absolute inset-0 grid grid-cols-3">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="flex justify-center">
+            <div key={i} className="relative flex justify-center">
               <div
-                className="w-0 h-0 border-x-[9px] border-x-transparent border-t-[13px]"
+                className="absolute top-1/2 bottom-[13px] w-[3px] rounded-full"
+                style={{ background: LINE_COLOR }}
+              />
+              <div
+                className="absolute bottom-0 w-0 h-0 border-x-[9px] border-x-transparent border-t-[13px]"
                 style={{ borderTopColor: LINE_COLOR }}
               />
             </div>
