@@ -188,7 +188,7 @@ export const slides: Slide[] = [
         title: 'Группа искусственного интеллекта',
         icon: 'Brain',
         people: [
-          { role: 'Специалист по ИИ', name: 'Кравчук Е.А.', note: 'На увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true, photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/6807ac6d-b16b-41d3-9b9c-2e97171794ae.png' },
+          { role: 'Специалист по ИИ', name: 'Кравчук Е.А.', note: 'На увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true, photo: '/kravchuk.png' },
           { role: 'Специалист по ИИ', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
         ],
       },
