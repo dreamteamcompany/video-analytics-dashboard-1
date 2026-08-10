@@ -2,6 +2,7 @@ import { Slide } from './slides';
 
 const SOFT_SHADOW = '6px 6px 14px rgba(163,177,198,0.55), -6px -6px 14px rgba(255,255,255,0.9)';
 const PILL_GRADIENT = 'linear-gradient(90deg, #6d28d9 0%, #7c3aed 45%, #4f46e5 100%)';
+const LINE_COLOR = '#5b21b6';
 
 const PersonCard = ({ role, name, note, salary, vacancy }: {
   role: string; name?: string; note?: string; salary: string; vacancy?: boolean;
@@ -9,8 +10,11 @@ const PersonCard = ({ role, name, note, salary, vacancy }: {
   <div className="relative flex items-center group">
     {/* стрелка от вертикальной линии */}
     <div className="absolute -left-6 top-1/2 -translate-y-1/2 flex items-center">
-      <div className="w-4 h-0.5 bg-violet-700" />
-      <div className="w-0 h-0 border-y-[5px] border-y-transparent border-l-[7px] border-l-violet-700" />
+      <div className="w-4 h-[3px] rounded-full" style={{ background: LINE_COLOR }} />
+      <div
+        className="w-0 h-0 border-y-[6px] border-y-transparent border-l-[9px]"
+        style={{ borderLeftColor: LINE_COLOR }}
+      />
     </div>
 
     <div
@@ -92,15 +96,18 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
           viewBox="0 0 300 60"
           preserveAspectRatio="none"
         >
-          <line x1="150" y1="0" x2="50" y2="52" stroke="#6d28d9" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
-          <line x1="150" y1="0" x2="150" y2="52" stroke="#6d28d9" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
-          <line x1="150" y1="0" x2="250" y2="52" stroke="#6d28d9" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+          <line x1="150" y1="0" x2="50" y2="52" stroke={LINE_COLOR} strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <line x1="150" y1="0" x2="150" y2="52" stroke={LINE_COLOR} strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <line x1="150" y1="0" x2="250" y2="52" stroke={LINE_COLOR} strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         </svg>
         {/* наконечники стрелок */}
         <div className="absolute inset-x-0 bottom-0 grid grid-cols-3">
           {[0, 1, 2].map((i) => (
             <div key={i} className="flex justify-center">
-              <div className="w-0 h-0 border-x-[7px] border-x-transparent border-t-[10px] border-t-violet-700" />
+              <div
+                className="w-0 h-0 border-x-[9px] border-x-transparent border-t-[13px]"
+                style={{ borderTopColor: LINE_COLOR }}
+              />
             </div>
           ))}
         </div>
@@ -120,7 +127,10 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
 
             {/* Вертикальная ветка + карточки */}
             <div className="relative pl-6 space-y-4">
-              <div className="absolute left-0 top-0 bottom-6 w-0.5 bg-violet-700" />
+              <div
+                className="absolute left-0 top-0 bottom-6 w-[3px] rounded-full"
+                style={{ background: LINE_COLOR }}
+              />
               {col.people.map((p, i) => (
                 <PersonCard key={i} {...p} />
               ))}
