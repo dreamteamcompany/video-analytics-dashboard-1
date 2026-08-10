@@ -10,6 +10,7 @@ export interface OrgPerson {
 
 export interface OrgColumn {
   title: string;
+  icon?: string;
   people: OrgPerson[];
 }
 
@@ -24,6 +25,8 @@ export interface Slide {
   logo?: string;
   bullets?: { icon?: string; text: string; note?: string }[];
   badge?: string;
+  badgeIcon?: string;
+  columnsLabel?: string;
   head?: { role: string; name?: string; salary: string; photo?: string };
   columns?: OrgColumn[];
   payroll?: string;
@@ -69,6 +72,37 @@ export const slides: Slide[] = [
         title: '3-я линия',
         people: [
           { role: 'Специалист 3-й линии', tag: 'AI', name: 'В будущем', salary: '100 000 ₽/мес', vacancy: true },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'med-systems',
+    type: 'org',
+    theme: 'light',
+    badge: 'Учётно-медицинские системы',
+    badgeIcon: 'Stethoscope',
+    columnsLabel: 'службы',
+    head: { role: 'Руководитель Управления', name: 'Лазарева Ю.В.', salary: '**** ₽/мес' },
+    payroll: '**** ₽/мес',
+    payrollNote: 'Управление эксплуатации и развития учётно-медицинских систем',
+    columns: [
+      {
+        title: 'Служба проектов 1С и МИС',
+        icon: 'ClipboardList',
+        people: [
+          { role: 'Менеджер проектов 1С', name: 'Кобычева Л.Е.', salary: '**** ₽/мес' },
+          { role: 'Администратор проектов 1С', name: 'Ватлашова А.О.', salary: '**** ₽/мес' },
+        ],
+      },
+      {
+        title: 'Служба разработки 1С',
+        icon: 'Code',
+        people: [
+          { role: 'Сеньор-разработчик 1С / Team Lead', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+          { role: 'Разработчик 1С', tag: 'Middle', name: 'Важенин К.В.', salary: '**** ₽/мес' },
+          { role: 'Разработчик 1С', tag: 'Junior', name: 'Байбекова Л.Э.', salary: '**** ₽/мес' },
+          { role: 'Тестировщик 1С', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
         ],
       },
     ],

@@ -95,6 +95,9 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
   const allPeople = slide.columns?.flatMap((c) => c.people) ?? [];
   const total = allPeople.length + (slide.head ? 1 : 0);
   const vacancies = allPeople.filter((p) => p.vacancy).length;
+  const colCount = slide.columns?.length ?? 3;
+  const statsIndex = colCount >= 3 ? 1 : 0;
+  const statsWidth = colCount >= 3 ? 'md:w-[calc(160%+1.5rem)]' : 'w-full';
 
   return (
   <div
@@ -171,7 +174,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               boxShadow: '0 8px 24px rgba(124,58,237,0.35)',
             }}
           >
-            <Icon name="Headphones" size={20} />
+            <Icon name={slide.badgeIcon ?? 'Headphones'} size={20} />
             {slide.badge}
           </span>
         )}
@@ -218,15 +221,24 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
           style={{ background: LINE_COLOR }}
         />
         <div
-          className="absolute left-[16.666%] right-[16.666%] top-1/2 bottom-[11px] rounded-t-2xl border-l-2 border-r-2 border-t-2"
-          style={{ borderColor: LINE_COLOR }}
+          className="absolute top-1/2 bottom-[11px] rounded-t-2xl border-l-2 border-r-2 border-t-2"
+          style={{
+            borderColor: LINE_COLOR,
+            left: `${50 / colCount}%`,
+            right: `${50 / colCount}%`,
+          }}
         />
+        {colCount % 2 === 1 && (
+          <div
+            className="absolute left-1/2 top-1/2 bottom-[11px] w-[2px] -translate-x-1/2"
+            style={{ background: LINE_COLOR }}
+          />
+        )}
         <div
-          className="absolute left-1/2 top-1/2 bottom-[11px] w-[2px] -translate-x-1/2"
-          style={{ background: LINE_COLOR }}
-        />
-        <div className="absolute inset-0 grid grid-cols-3">
-          {[0, 1, 2].map((i) => (
+          className="absolute inset-0 grid"
+          style={{ gridTemplateColumns: `repeat(${colCount}, minmax(0, 1fr))` }}
+        >
+          {Array.from({ length: colCount }, (_, i) => i).map((i) => (
             <div key={i} className="relative flex justify-center">
               <div
                 className="absolute bottom-0 w-0 h-0 border-x-[7px] border-x-transparent border-t-[11px]"
@@ -238,7 +250,10 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       </div>
 
       {/* Колонки линий */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 min-h-0">
+      <div
+        className="flex-1 grid grid-cols-1 gap-4 sm:gap-6 min-h-0"
+        style={{ gridTemplateColumns: `repeat(${colCount}, minmax(0, 1fr))` }}
+      >
         {slide.columns?.map((col, ci) => (
           <div key={col.title} className="flex flex-col min-w-0">
             {/* Заголовок линии */}
@@ -250,7 +265,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                 animationDelay: `${250 + ci * 110}ms`,
               }}
             >
-              <Icon name={COLUMN_ICONS[ci] ?? 'Circle'} size={20} className="text-white/90" />
+              <Icon name={col.icon ?? COLUMN_ICONS[ci] ?? 'Circle'} size={20} className="text-white/90" />
               <p className="text-lg sm:text-xl font-semibold text-white">{col.title}</p>
             </div>
 
@@ -262,12 +277,12 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
             </div>
 
             {/* Итоги в цифрах + ФОТ */}
-            {ci === 1 && slide.payroll && (
-              <div className="mt-auto md:w-[calc(160%+1.5rem)]">
+            {ci === statsIndex && slide.payroll && (
+              <div className={`mt-auto pt-3 ${statsWidth}`}>
                 {slide.columns && (
                   <div className="flex gap-3 mb-2">
                     <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} />
-                    <StatCard icon="Layers" value={String(slide.columns.length)} label="линии поддержки" delay={1320} />
+                    <StatCard icon="Layers" value={String(slide.columns.length)} label={slide.columnsLabel ?? 'линии поддержки'} delay={1320} />
                     {vacancies > 0 && (
                       <StatCard icon="Search" value={String(vacancies)} label={vacancies === 1 ? 'вакансия' : 'вакансии'} delay={1440} />
                     )}
