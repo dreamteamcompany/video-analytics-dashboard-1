@@ -8,11 +8,11 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
-const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, delay = 0 }: {
-  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; delay?: number;
+const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; delay?: number;
 }) => (
   <div
-    className="relative flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-3 org-in transition-transform duration-300 hover:scale-[1.02]"
+    className={`relative flex items-center gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-5 py-3 org-in transition-transform duration-300 hover:scale-[1.02] ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
@@ -31,8 +31,8 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
           className={`w-14 h-14 rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : 'ring-violet-200'}`}
         />
       ) : (
-        <div className={`w-14 h-14 rounded-full bg-violet-50 flex items-center justify-center ${lead ? 'ring-2 ring-amber-300' : ''}`}>
-          <Icon name={vacancy ? 'UserPlus' : 'User'} size={26} className="text-violet-500" />
+        <div className={`w-14 h-14 rounded-full flex items-center justify-center ${replace ? 'bg-rose-100' : 'bg-violet-50'} ${lead ? 'ring-2 ring-amber-300' : ''}`}>
+          <Icon name={replace ? 'UserMinus' : vacancy ? 'UserPlus' : 'User'} size={26} className={replace ? 'text-rose-500' : 'text-violet-500'} />
         </div>
       )}
       {lead && (
@@ -61,7 +61,11 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
       </div>
       <div className="flex items-center gap-2 flex-wrap mt-0.5">
         {name && (
-          vacancy ? (
+          replace ? (
+            <span className="text-xs font-semibold text-white px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-500 to-red-500 whitespace-nowrap">
+              {name}
+            </span>
+          ) : vacancy ? (
             <span className="text-xs font-semibold text-white px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 whitespace-nowrap">
               {name}
             </span>

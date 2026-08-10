@@ -9,6 +9,7 @@ export interface OrgPerson {
   lead?: boolean;
   logo?: string;
   big?: boolean;
+  replace?: boolean;
 }
 
 export interface OrgColumn {
@@ -187,8 +188,8 @@ export const slides: Slide[] = [
         title: 'Группа искусственного интеллекта',
         icon: 'Brain',
         people: [
-          { role: 'Специалист по ИИ', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
-          { role: 'Специалист по ИИ', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+          { role: 'Специалист по ИИ', name: 'Под замену', salary: '**** ₽/мес', replace: true },
+          { role: 'Специалист по ИИ', name: 'Под замену', salary: '**** ₽/мес', replace: true },
         ],
       },
       {
