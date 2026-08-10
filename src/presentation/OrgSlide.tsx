@@ -19,7 +19,7 @@ const PersonCard = ({ role, name, note, salary, vacancy, delay = 0 }: {
     </div>
 
     <div
-      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-2 transition-transform duration-300 hover:scale-[1.02]"
+      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-4 transition-transform duration-300 hover:scale-[1.02]"
       style={{ boxShadow: SOFT_SHADOW }}
     >
       <div className="flex-1 min-w-0">
@@ -145,7 +145,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
           <div key={col.title} className="flex flex-col min-w-0">
             {/* Заголовок линии */}
             <div
-              className="rounded-full py-2.5 px-6 text-center mb-4 org-drop"
+              className="rounded-full py-2 px-6 text-center mb-3 org-drop"
               style={{
                 background: 'linear-gradient(135deg, #312e81 0%, #4c1d95 100%)',
                 boxShadow: '6px 6px 16px rgba(76,29,149,0.35), -4px -4px 12px rgba(255,255,255,0.8)',
@@ -156,7 +156,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
             </div>
 
             {/* Вертикальная ветка + карточки */}
-            <div className="relative pl-6 space-y-2.5">
+            <div className="relative pl-6 space-y-2">
               <div
                 className="absolute left-0 top-0 bottom-6 w-[3px] rounded-full"
                 style={{ background: LINE_COLOR }}
