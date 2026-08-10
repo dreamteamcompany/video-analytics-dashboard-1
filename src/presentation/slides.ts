@@ -108,4 +108,31 @@ export const slides: Slide[] = [
       },
     ],
   },
+  {
+    id: 'infosec',
+    type: 'org',
+    theme: 'light',
+    badge: 'Служба информационной безопасности',
+    badgeIcon: 'ShieldCheck',
+    columnsLabel: 'направления',
+    head: { role: 'Руководитель Службы', name: 'Гаврилова Е.И.', salary: '180 000 ₽/мес' },
+    payroll: '450 000 ₽/мес',
+    payrollNote: 'с учётом открытых вакансий',
+    columns: [
+      {
+        title: 'Инженерия ИБ',
+        icon: 'Server',
+        people: [
+          { role: 'Инженер ИБ', name: 'Требуется поиск', salary: '150 000 ₽/мес', vacancy: true },
+        ],
+      },
+      {
+        title: 'Аналитика ИБ',
+        icon: 'ChartLine',
+        people: [
+          { role: 'Аналитик ИБ', name: 'Требуется поиск', salary: '120 000 ₽/мес', vacancy: true },
+        ],
+      },
+    ],
+  },
 ];
