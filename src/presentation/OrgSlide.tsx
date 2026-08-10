@@ -139,19 +139,19 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
               ))}
             </div>
 
-            {/* ФОТ — под второй колонкой, как в макете */}
+            {/* ФОТ — крупный блок под 2-й и 3-й колонками */}
             {ci === 1 && slide.payroll && (
               <div
-                className="mt-auto relative rounded-3xl bg-[#eef0f6] pl-6 pr-20 sm:pr-24 py-5 flex items-center justify-start overflow-hidden"
+                className="mt-auto relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-32 sm:pr-40 py-6 sm:py-8 flex items-center overflow-hidden md:w-[calc(200%+1.5rem)]"
                 style={{ boxShadow: SOFT_SHADOW }}
               >
-                <p className="text-xl sm:text-3xl font-extrabold text-slate-900 whitespace-nowrap">
+                <p className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 whitespace-nowrap">
                   ФОТ: {slide.payroll}
                 </p>
                 <img
                   src="/coins-3d.png"
                   alt=""
-                  className="absolute right-1 bottom-0 w-16 sm:w-20 object-contain pointer-events-none drop-shadow-lg"
+                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-24 sm:w-32 lg:w-36 object-contain pointer-events-none drop-shadow-xl"
                 />
               </div>
             )}
