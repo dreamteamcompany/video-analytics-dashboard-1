@@ -19,7 +19,7 @@ const PersonCard = ({ role, name, note, salary, vacancy, delay = 0 }: {
     </div>
 
     <div
-      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-2.5 transition-transform duration-300 hover:scale-[1.02]"
+      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-2 transition-transform duration-300 hover:scale-[1.02]"
       style={{ boxShadow: SOFT_SHADOW }}
     >
       <div className="flex-1 min-w-0">
@@ -53,14 +53,14 @@ const StatCard = ({ icon, value, label, delay }: {
   icon: string; value: string; label: string; delay: number;
 }) => (
   <div
-    className="flex-1 min-w-0 rounded-2xl bg-[#eef0f6] px-2 py-3 text-center org-drop"
+    className="flex-1 min-w-0 rounded-2xl bg-[#eef0f6] px-3 py-2 flex items-center justify-center gap-2.5 org-drop"
     style={{ boxShadow: SOFT_SHADOW, animationDelay: `${delay}ms` }}
   >
-    <Icon name={icon} size={20} className="mx-auto text-violet-600 mb-1" />
+    <Icon name={icon} size={20} className="text-violet-600 flex-shrink-0" />
     <p className="text-2xl sm:text-3xl font-extrabold leading-none bg-gradient-to-r from-violet-700 to-indigo-600 bg-clip-text text-transparent">
       {value}
     </p>
-    <p className="text-xs font-semibold text-slate-500 mt-1 leading-tight">{label}</p>
+    <p className="text-xs sm:text-sm font-semibold text-slate-500 leading-tight">{label}</p>
   </div>
 );
 
@@ -97,7 +97,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       {slide.head && (
         <div className="flex-shrink-0 flex justify-center">
           <div
-            className="rounded-[2rem] bg-[#eef0f6] px-14 sm:px-20 py-5 text-center org-drop"
+            className="rounded-[2rem] bg-[#eef0f6] px-14 sm:px-20 py-4 text-center org-drop"
             style={{ boxShadow: SOFT_SHADOW }}
           >
             <p className="text-2xl sm:text-4xl font-bold text-green-600 leading-tight">
@@ -166,31 +166,31 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               ))}
             </div>
 
-            {/* ФОТ — крупный блок под 2-й и 3-й колонками */}
+            {/* Итоги в цифрах + ФОТ — под 2-й и 3-й колонками */}
             {ci === 1 && slide.payroll && (
-              <div
-                className="mt-auto relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-32 sm:pr-40 py-4 sm:py-5 flex items-center overflow-hidden md:w-[calc(200%+1.5rem)] org-drop"
-                style={{ boxShadow: SOFT_SHADOW, animationDelay: '1100ms' }}
-              >
-                <p className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 whitespace-nowrap">
-                  ФОТ: {slide.payroll}
-                </p>
-                <img
-                  src="/coins-3d.png"
-                  alt=""
-                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-24 sm:w-32 lg:w-36 object-contain pointer-events-none drop-shadow-xl"
-                />
-              </div>
-            )}
-
-            {/* Итоги в цифрах — под третьей колонкой */}
-            {ci === 2 && slide.columns && (
-              <div className="mt-5 flex gap-3">
-                <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} />
-                <StatCard icon="Layers" value={String(slide.columns.length)} label="линии" delay={1320} />
-                {vacancies > 0 && (
-                  <StatCard icon="Search" value={String(vacancies)} label={vacancies === 1 ? 'вакансия' : 'вакансии'} delay={1440} />
+              <div className="mt-auto md:w-[calc(200%+1.5rem)]">
+                {slide.columns && (
+                  <div className="flex gap-3 mb-3">
+                    <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} />
+                    <StatCard icon="Layers" value={String(slide.columns.length)} label="линии" delay={1320} />
+                    {vacancies > 0 && (
+                      <StatCard icon="Search" value={String(vacancies)} label={vacancies === 1 ? 'вакансия' : 'вакансии'} delay={1440} />
+                    )}
+                  </div>
                 )}
+                <div
+                  className="relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-28 sm:pr-36 py-3 sm:py-4 flex items-center overflow-hidden org-drop"
+                  style={{ boxShadow: SOFT_SHADOW, animationDelay: '1550ms' }}
+                >
+                  <p className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 whitespace-nowrap">
+                    ФОТ: {slide.payroll}
+                  </p>
+                  <img
+                    src="/coins-3d.png"
+                    alt=""
+                    className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-20 sm:w-28 lg:w-32 object-contain pointer-events-none drop-shadow-xl"
+                  />
+                </div>
               </div>
             )}
           </div>
