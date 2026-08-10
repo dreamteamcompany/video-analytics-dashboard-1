@@ -12,6 +12,7 @@ import YunaSessionPage from "./yuna/YunaSessionPage";
 import YunaSettingsPage from "./yuna/YunaSettingsPage";
 import YunaLoginPage from "./yuna/YunaLoginPage";
 import RequireAuth from "./yuna/RequireAuth";
+import PresentationPage from "./presentation/PresentationPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/yuna/work" element={<RequireAuth><YunaPage /></RequireAuth>} />
           <Route path="/yuna/settings" element={<RequireAuth><YunaSettingsPage /></RequireAuth>} />
           <Route path="/yuna/:id" element={<RequireAuth><YunaSessionPage /></RequireAuth>} />
+          <Route path="/presentation" element={<PresentationPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
