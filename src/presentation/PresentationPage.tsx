@@ -45,16 +45,29 @@ const PresentationPage = () => {
     touchX.current = null;
   };
 
+  const light = slides[index].theme === 'light';
+  const btn = light
+    ? 'bg-white/80 hover:bg-white text-violet-700 border-slate-200 shadow-lg'
+    : 'bg-white/15 hover:bg-white/25 text-white border-white/20 backdrop-blur-sm';
+
   return (
     <div
       className="fixed inset-0 overflow-hidden select-none"
-      style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #4f46e5 45%, #7c3aed 100%)' }}
+      style={{
+        background: light
+          ? '#eef0f6'
+          : 'linear-gradient(135deg, #1e3a8a 0%, #4f46e5 45%, #7c3aed 100%)',
+      }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
       {/* Декоративные пятна */}
-      <div className="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-20 w-[28rem] h-[28rem] rounded-full bg-fuchsia-500/20 blur-3xl pointer-events-none" />
+      {!light && (
+        <>
+          <div className="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-20 w-[28rem] h-[28rem] rounded-full bg-fuchsia-500/20 blur-3xl pointer-events-none" />
+        </>
+      )}
 
       {/* Слайд */}
       <div className="relative h-full w-full pb-16">
@@ -66,7 +79,7 @@ const PresentationPage = () => {
         <button
           onClick={prev}
           aria-label="Предыдущий слайд"
-          className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center transition-colors"
+          className={`absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
         >
           <Icon name="ChevronLeft" size={26} />
         </button>
@@ -77,7 +90,7 @@ const PresentationPage = () => {
         <button
           onClick={next}
           aria-label="Следующий слайд"
-          className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center transition-colors"
+          className={`absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
         >
           <Icon name="ChevronRight" size={26} />
         </button>
@@ -87,14 +100,18 @@ const PresentationPage = () => {
       <button
         onClick={toggleFullscreen}
         aria-label="Полный экран"
-        className="absolute top-4 right-4 w-11 h-11 rounded-xl bg-white/12 hover:bg-white/22 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center transition-colors"
+        className={`absolute top-4 right-4 w-11 h-11 rounded-xl border flex items-center justify-center transition-colors ${btn}`}
       >
         <Icon name="Maximize" size={18} />
       </button>
 
       {/* Нижняя панель: точки + счётчик */}
-      <div className="absolute bottom-0 inset-x-0 pb-6 pt-10 bg-gradient-to-t from-black/25 to-transparent">
-        <div className="flex flex-col items-center gap-3">
+      <div
+        className={`absolute bottom-0 inset-x-0 pb-4 pt-8 ${
+          light ? '' : 'bg-gradient-to-t from-black/25 to-transparent'
+        }`}
+      >
+        <div className="flex flex-col items-center gap-2">
           <div className="flex items-center gap-2 flex-wrap justify-center px-4">
             {slides.map((s, i) => (
               <button
@@ -102,12 +119,14 @@ const PresentationPage = () => {
                 onClick={() => setIndex(i)}
                 aria-label={`Слайд ${i + 1}`}
                 className={`rounded-full transition-all ${
-                  i === index ? 'w-8 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70'
+                  i === index
+                    ? `w-8 h-2.5 ${light ? 'bg-violet-600' : 'bg-white'}`
+                    : `w-2.5 h-2.5 ${light ? 'bg-slate-300 hover:bg-slate-400' : 'bg-white/40 hover:bg-white/70'}`
                 }`}
               />
             ))}
           </div>
-          <p className="text-white/60 text-sm font-medium">
+          <p className={`text-sm font-medium ${light ? 'text-slate-400' : 'text-white/60'}`}>
             {index + 1} / {total}
           </p>
         </div>

@@ -13,6 +13,7 @@ export interface OrgColumn {
 export interface Slide {
   id: string;
   type: 'title' | 'bullets' | 'org';
+  theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
   author?: string;
@@ -38,6 +39,7 @@ export const slides: Slide[] = [
   {
     id: 'support',
     type: 'org',
+    theme: 'light',
     badge: 'Техническая поддержка',
     head: { role: 'Руководитель Службы', salary: '120 000 ₽/мес' },
     payroll: '700 000 ₽/мес',
