@@ -119,10 +119,13 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
           <div key={col.title} className="flex flex-col min-w-0">
             {/* Заголовок линии */}
             <div
-              className="rounded-full bg-[#eef0f6] py-3 px-6 text-center mb-5"
-              style={{ boxShadow: SOFT_SHADOW }}
+              className="rounded-full py-3 px-6 text-center mb-5"
+              style={{
+                background: 'linear-gradient(135deg, #312e81 0%, #4c1d95 100%)',
+                boxShadow: '6px 6px 16px rgba(76,29,149,0.35), -4px -4px 12px rgba(255,255,255,0.8)',
+              }}
             >
-              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">{col.title}</p>
+              <p className="text-xl sm:text-3xl font-extrabold text-white">{col.title}</p>
             </div>
 
             {/* Вертикальная ветка + карточки */}
