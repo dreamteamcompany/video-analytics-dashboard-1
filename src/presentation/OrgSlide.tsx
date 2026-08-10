@@ -19,7 +19,7 @@ const PersonCard = ({ role, name, note, salary, vacancy, delay = 0 }: {
     </div>
 
     <div
-      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-3.5 transition-transform duration-300 hover:scale-[1.02]"
+      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-2.5 transition-transform duration-300 hover:scale-[1.02]"
       style={{ boxShadow: SOFT_SHADOW }}
     >
       <div className="flex-1 min-w-0">
@@ -84,7 +84,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
     {slide.badge && (
       <div className="flex-shrink-0 relative z-10">
         <span
-          className="inline-block rounded-br-[2.5rem] rounded-tr-[0.5rem] pl-10 pr-10 py-4 text-white text-xl sm:text-3xl font-extrabold shadow-xl"
+          className="inline-block rounded-br-[2.5rem] rounded-tr-[0.5rem] pl-10 pr-10 py-3 text-white text-xl sm:text-2xl font-extrabold shadow-xl"
           style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)' }}
         >
           {slide.badge}
@@ -97,13 +97,18 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       {slide.head && (
         <div className="flex-shrink-0 flex justify-center">
           <div
-            className="rounded-3xl bg-[#eef0f6] px-10 sm:px-14 py-3 text-center org-drop"
+            className="rounded-[2rem] bg-[#eef0f6] px-14 sm:px-20 py-5 text-center org-drop"
             style={{ boxShadow: SOFT_SHADOW }}
           >
-            <p className="text-lg sm:text-2xl font-bold text-green-600 leading-tight">
+            <p className="text-2xl sm:text-4xl font-bold text-green-600 leading-tight">
               {slide.head.role}
             </p>
-            <p className="text-lg sm:text-2xl font-bold text-green-600 leading-tight mt-0.5">
+            {slide.head.name && (
+              <p className="text-xl sm:text-3xl font-bold text-slate-700 leading-tight mt-1">
+                {slide.head.name}
+              </p>
+            )}
+            <p className="text-2xl sm:text-4xl font-bold text-green-600 leading-tight mt-1">
               {slide.head.salary}
             </p>
           </div>
@@ -111,7 +116,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       )}
 
       {/* Диагональные стрелки к колонкам */}
-      <div className="flex-shrink-0 relative h-10 sm:h-12">
+      <div className="flex-shrink-0 relative h-8 sm:h-10">
         <svg
           className="absolute inset-0 w-full h-full"
           viewBox="0 0 300 60"
@@ -147,11 +152,11 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                 animationDelay: `${250 + ci * 110}ms`,
               }}
             >
-              <p className="text-xl sm:text-3xl font-extrabold text-white">{col.title}</p>
+              <p className="text-xl sm:text-2xl font-extrabold text-white">{col.title}</p>
             </div>
 
             {/* Вертикальная ветка + карточки */}
-            <div className="relative pl-6 space-y-3">
+            <div className="relative pl-6 space-y-2.5">
               <div
                 className="absolute left-0 top-0 bottom-6 w-[3px] rounded-full"
                 style={{ background: LINE_COLOR }}
@@ -164,7 +169,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
             {/* ФОТ — крупный блок под 2-й и 3-й колонками */}
             {ci === 1 && slide.payroll && (
               <div
-                className="mt-auto relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-32 sm:pr-40 py-6 sm:py-8 flex items-center overflow-hidden md:w-[calc(200%+1.5rem)] org-drop"
+                className="mt-auto relative rounded-[2rem] bg-[#eef0f6] pl-8 pr-32 sm:pr-40 py-4 sm:py-5 flex items-center overflow-hidden md:w-[calc(200%+1.5rem)] org-drop"
                 style={{ boxShadow: SOFT_SHADOW, animationDelay: '1100ms' }}
               >
                 <p className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 whitespace-nowrap">

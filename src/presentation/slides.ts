@@ -22,7 +22,7 @@ export interface Slide {
   logo?: string;
   bullets?: { icon?: string; text: string; note?: string }[];
   badge?: string;
-  head?: { role: string; salary: string };
+  head?: { role: string; name?: string; salary: string };
   columns?: OrgColumn[];
   payroll?: string;
 }
@@ -42,7 +42,7 @@ export const slides: Slide[] = [
     type: 'org',
     theme: 'light',
     badge: 'Техническая поддержка',
-    head: { role: 'Руководитель Службы', salary: '120 000 ₽/мес' },
+    head: { role: 'Руководитель Службы', name: 'Лютиков А.А.', salary: '120 000 ₽/мес' },
     payroll: '700 000 ₽/мес',
     columns: [
       {
