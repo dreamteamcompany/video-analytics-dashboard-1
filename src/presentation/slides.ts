@@ -203,7 +203,7 @@ export const slides: Slide[] = [
         title: 'Группа BI-аналитики',
         icon: 'ChartColumn',
         people: [
-          { role: 'Старший BI-аналитик', lead: true, name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+          { role: 'Старший BI-аналитик', lead: true, name: 'Фёдоров Е.М.', salary: '**** ₽/мес', photo: '/fedorov.png' },
           { role: 'BI-аналитик', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
         ],
       },
