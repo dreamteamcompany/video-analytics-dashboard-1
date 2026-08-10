@@ -72,7 +72,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
           )
         )}
         {note && (
-          <span className={`text-xs font-semibold text-white px-2.5 py-0.5 rounded-full whitespace-nowrap bg-gradient-to-r ${replace ? 'from-rose-500 to-red-500' : 'from-emerald-500 to-teal-500'}`}>
+          <span className={`text-xs font-semibold text-white px-2.5 py-0.5 rounded-full leading-snug bg-gradient-to-r ${replace ? 'from-rose-500 to-red-500' : 'from-emerald-500 to-teal-500 whitespace-nowrap'}`}>
             {note}
           </span>
         )}

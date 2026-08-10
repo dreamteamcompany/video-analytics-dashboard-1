@@ -188,7 +188,7 @@ export const slides: Slide[] = [
         title: 'Группа искусственного интеллекта',
         icon: 'Brain',
         people: [
-          { role: 'Специалист по ИИ', name: 'Кравчук Е.А.', note: 'под замену', salary: '**** ₽/мес', replace: true },
+          { role: 'Специалист по ИИ', name: 'Кравчук Е.А.', note: 'на увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true },
           { role: 'Специалист по ИИ', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
         ],
       },
