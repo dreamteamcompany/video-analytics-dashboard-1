@@ -47,7 +47,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
 
     <div className="flex-1 min-w-0">
       <div className="flex items-center gap-2">
-        <p className={`${big ? 'text-2xl' : 'text-base'} font-semibold text-slate-800 leading-snug whitespace-nowrap`}>
+        <p className={`${big ? 'text-2xl' : 'text-base'} font-semibold text-slate-800 leading-snug`}>
           {role}
         </p>
         {tag && (

@@ -164,4 +164,48 @@ export const slides: Slide[] = [
       },
     ],
   },
+  {
+    id: 'digital',
+    type: 'org',
+    theme: 'light',
+    badge: 'Служба разработки и поддержки цифровых решений',
+    badgeIcon: 'Code',
+    columnsLabel: 'группы',
+    head: { role: 'Руководитель Службы', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+    payroll: '**** ₽/мес',
+    payrollNote: 'с учётом открытых вакансий',
+    columns: [
+      {
+        title: 'Группа веб-разработки и сервисов',
+        icon: 'Globe',
+        people: [
+          { role: 'Администратор веб-сервисов', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+          { role: 'Full-stack разработчик', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+        ],
+      },
+      {
+        title: 'Группа искусственного интеллекта',
+        icon: 'Brain',
+        people: [
+          { role: 'Специалист по ИИ', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+          { role: 'Специалист по ИИ', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+        ],
+      },
+      {
+        title: 'Группа контроля качества',
+        icon: 'CheckCheck',
+        people: [
+          { role: 'QA-тестировщик', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+        ],
+      },
+      {
+        title: 'Группа BI-аналитики',
+        icon: 'ChartColumn',
+        people: [
+          { role: 'Старший BI-аналитик', lead: true, name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+          { role: 'BI-аналитик', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+        ],
+      },
+    ],
+  },
 ];
