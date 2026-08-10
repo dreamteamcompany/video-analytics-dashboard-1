@@ -216,9 +216,15 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                 {slide.head.role}
               </p>
               {slide.head.name && (
-                <p className="text-lg sm:text-xl text-slate-500 leading-tight mt-1">
-                  {slide.head.name}
-                </p>
+                slide.head.vacancy ? (
+                  <span className="text-sm font-semibold text-white px-3 py-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 whitespace-nowrap mt-1.5">
+                    {slide.head.name}
+                  </span>
+                ) : (
+                  <p className="text-lg sm:text-xl text-slate-500 leading-tight mt-1">
+                    {slide.head.name}
+                  </p>
+                )
               )}
               <p className="text-xl sm:text-2xl font-bold text-violet-600 leading-tight mt-1.5">
                 {slide.head.salary}
