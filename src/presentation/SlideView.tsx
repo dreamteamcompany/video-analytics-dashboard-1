@@ -11,25 +11,26 @@ const TitleSlide = ({ slide }: { slide: Slide }) => (
         className="h-24 sm:h-32 lg:h-40 object-contain mb-8 drop-shadow-2xl"
       />
     ) : (
-      <div className="mb-8 flex flex-col items-center">
-        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center shadow-2xl">
-          <Icon name="Users" size={56} className="text-white/90" />
+      <div className="mb-6 sm:mb-8 flex flex-col items-center">
+        <div className="w-20 h-20 sm:w-32 sm:h-32 rounded-3xl bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center shadow-2xl">
+          <Icon name="Users" size={44} className="text-white/90 sm:hidden" />
+          <Icon name="Users" size={56} className="text-white/90 hidden sm:block" />
         </div>
         {slide.subtitle && (
-          <p className="mt-5 text-lg sm:text-2xl font-semibold text-white/90 tracking-wide">
+          <p className="mt-4 sm:mt-5 text-base sm:text-2xl font-semibold text-white/90 tracking-wide">
             {slide.subtitle}
           </p>
         )}
       </div>
     )}
 
-    <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold text-white tracking-tight drop-shadow-lg">
+    <h1 className="text-4xl sm:text-7xl lg:text-8xl font-extrabold text-white tracking-tight drop-shadow-lg">
       {slide.title}
     </h1>
 
-    <div className="mt-8 w-24 h-1.5 rounded-full bg-gradient-to-r from-cyan-300 to-fuchsia-300" />
+    <div className="mt-6 sm:mt-8 w-20 sm:w-24 h-1.5 rounded-full bg-gradient-to-r from-cyan-300 to-fuchsia-300" />
 
-    <div className="mt-10 space-y-2">
+    <div className="mt-6 sm:mt-10 space-y-2">
       {slide.author && (
         <p className="text-xl sm:text-2xl text-white/85 font-medium">{slide.author}</p>
       )}

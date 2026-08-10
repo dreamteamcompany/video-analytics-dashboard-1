@@ -1,5 +1,6 @@
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const CARD_SHADOW = '0 4px 20px rgba(124,58,237,0.08), 0 1px 3px rgba(15,23,42,0.06)';
 const PILL_GRADIENT = 'linear-gradient(90deg, #7c3aed 0%, #6366f1 100%)';
@@ -12,27 +13,28 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
   role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; delay?: number;
 }) => (
   <div
-    className={`relative flex items-center gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-5 py-3 org-in transition-transform duration-300 hover:scale-[1.02] ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
+    className={`relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
-      minHeight: big ? 'clamp(120px, 16vh, 240px)' : 'clamp(80px, 10.5vh, 160px)',
+      ['--mh' as string]: big ? 'clamp(120px, 16vh, 240px)' : 'clamp(80px, 10.5vh, 160px)',
     }}
   >
     <div className="relative flex-shrink-0">
       {logo ? (
-        <div className={`${big ? 'w-32 h-20' : 'w-20 h-14'} rounded-xl bg-white flex items-center justify-center px-2 ring-1 ring-slate-200`}>
+        <div className={`${big ? 'w-20 h-14 md:w-32 md:h-20' : 'w-14 h-10 md:w-20 md:h-14'} rounded-xl bg-white flex items-center justify-center px-2 ring-1 ring-slate-200`}>
           <img src={logo} alt={role} className="max-w-full max-h-full object-contain" />
         </div>
       ) : photo ? (
         <img
           src={photo}
           alt={name || role}
-          className={`${big ? 'w-24 h-24' : 'w-14 h-14'} rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : replace ? 'ring-rose-300' : 'ring-violet-200'}`}
+          className={`${big ? 'w-14 h-14 md:w-24 md:h-24' : 'w-11 h-11 md:w-14 md:h-14'} rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : replace ? 'ring-rose-300' : 'ring-violet-200'}`}
         />
       ) : (
-        <div className={`${big ? 'w-24 h-24' : 'w-14 h-14'} rounded-full flex items-center justify-center ${replace ? 'bg-rose-100' : 'bg-violet-50'} ${lead ? 'ring-2 ring-amber-300' : ''}`}>
-          <Icon name={replace ? 'UserMinus' : vacancy ? 'UserPlus' : 'User'} size={big ? 44 : 26} className={replace ? 'text-rose-500' : 'text-violet-500'} />
+        <div className={`${big ? 'w-14 h-14 md:w-24 md:h-24' : 'w-11 h-11 md:w-14 md:h-14'} rounded-full flex items-center justify-center ${replace ? 'bg-rose-100' : 'bg-violet-50'} ${lead ? 'ring-2 ring-amber-300' : ''}`}>
+          <Icon name={replace ? 'UserMinus' : vacancy ? 'UserPlus' : 'User'} size={big ? 28 : 22} className={`${replace ? 'text-rose-500' : 'text-violet-500'} md:hidden`} />
+          <Icon name={replace ? 'UserMinus' : vacancy ? 'UserPlus' : 'User'} size={big ? 44 : 26} className={`${replace ? 'text-rose-500' : 'text-violet-500'} hidden md:block`} />
         </div>
       )}
       {lead && (
@@ -46,13 +48,13 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     </div>
 
     <div className="flex-1 min-w-0">
-      <div className="flex items-center gap-2">
-        <p className={`${big ? 'text-2xl' : 'text-base'} font-semibold text-slate-800 leading-snug`}>
+      <div className="flex items-center gap-2 flex-wrap">
+        <p className={`${big ? 'text-sm md:text-2xl' : 'text-[13px] md:text-base'} font-semibold text-slate-800 leading-snug`}>
           {role}
         </p>
         {tag && (
           <span
-            className="text-xs font-semibold text-white px-2.5 py-0.5 rounded-full whitespace-nowrap"
+            className="text-[10px] md:text-xs font-semibold text-white px-2 md:px-2.5 py-0.5 rounded-full whitespace-nowrap"
             style={{ background: PILL_GRADIENT }}
           >
             {tag}
@@ -62,17 +64,17 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
       <div className="flex items-center gap-2 flex-wrap mt-0.5">
         {name && (
           replace ? (
-            <span className={`${big ? 'text-xl' : 'text-base'} leading-snug font-medium text-rose-700`}>{name}</span>
+            <span className={`${big ? 'text-xs md:text-xl' : 'text-xs md:text-base'} leading-snug font-medium text-rose-700`}>{name}</span>
           ) : vacancy ? (
-            <span className="text-xs font-semibold text-white px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 whitespace-nowrap">
+            <span className="text-[10px] md:text-xs font-semibold text-white px-2 md:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 whitespace-nowrap">
               {name}
             </span>
           ) : (
-            <span className={`${big ? 'text-xl' : 'text-base'} leading-snug text-slate-500`}>{name}</span>
+            <span className={`${big ? 'text-xs md:text-xl' : 'text-xs md:text-base'} leading-snug text-slate-500`}>{name}</span>
           )
         )}
         {note && (
-          <span className={`${big ? 'text-base px-4 py-1' : 'text-xs px-2.5 py-0.5'} font-semibold text-white rounded-full leading-snug bg-gradient-to-r ${replace ? 'from-rose-500 to-red-500' : 'from-emerald-500 to-teal-500 whitespace-nowrap'}`}>
+          <span className={`${big ? 'text-[10px] px-2 py-0.5 md:text-base md:px-4 md:py-1' : 'text-[10px] px-2 py-0.5 md:text-xs md:px-2.5'} font-semibold text-white rounded-full leading-snug bg-gradient-to-r ${replace ? 'from-rose-500 to-red-500' : 'from-emerald-500 to-teal-500 whitespace-nowrap'}`}>
             {note}
           </span>
         )}
@@ -80,7 +82,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     </div>
 
     <div
-      className={`rounded-full text-white font-semibold whitespace-nowrap flex-shrink-0 ${big ? 'px-5 py-2.5 text-xl' : 'px-3.5 py-1.5 text-sm'}`}
+      className={`rounded-full text-white font-semibold whitespace-nowrap flex-shrink-0 ${big ? 'px-2.5 py-1 text-[11px] md:px-5 md:py-2.5 md:text-xl' : 'px-2.5 py-1 text-[11px] md:px-3.5 md:py-1.5 md:text-sm'}`}
       style={{ background: PILL_GRADIENT }}
     >
       {salary}
@@ -92,28 +94,29 @@ const StatCard = ({ icon, value, label, delay }: {
   icon: string; value: string; label: string; delay: number;
 }) => (
   <div
-    className="flex-1 min-w-0 rounded-2xl bg-white/90 px-5 py-2.5 flex items-center gap-3 org-drop"
+    className="flex-1 min-w-0 rounded-2xl bg-white/90 px-3 md:px-5 py-2.5 flex items-center gap-2 md:gap-3 org-drop min-h-[52px] md:min-h-[clamp(58px,8vh,110px)]"
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
-      minHeight: 'clamp(58px, 8vh, 110px)',
     }}
   >
-    <Icon name={icon} size={26} className="text-violet-500 flex-shrink-0" />
+    <Icon name={icon} size={20} className="text-violet-500 flex-shrink-0 md:hidden" />
+    <Icon name={icon} size={26} className="text-violet-500 flex-shrink-0 hidden md:block" />
     <div className="min-w-0">
-      <p className="text-2xl font-bold text-violet-600 leading-none">{value}</p>
-      <p className="text-sm text-slate-500 leading-tight mt-0.5">{label}</p>
+      <p className="text-lg md:text-2xl font-bold text-violet-600 leading-none">{value}</p>
+      <p className="text-[11px] md:text-sm text-slate-500 leading-tight mt-0.5">{label}</p>
     </div>
   </div>
 );
 
 const OrgSlide = ({ slide }: { slide: Slide }) => {
+  const isMobile = useIsMobile();
   const allPeople = slide.columns?.flatMap((c) => c.people) ?? [];
   const total = allPeople.length + (slide.head ? 1 : 0);
   const vacancies = allPeople.filter((p) => p.vacancy).length;
   const colCount = slide.columns?.length ?? 3;
-  const statsIndex = colCount >= 3 ? 1 : 0;
-  const statsWidth = colCount >= 3 ? 'md:w-[calc(160%+1.5rem)]' : 'w-full';
+  const statsIndex = isMobile ? colCount - 1 : colCount >= 3 ? 1 : 0;
+  const statsWidth = !isMobile && colCount >= 3 ? 'md:w-[calc(160%+1.5rem)]' : 'w-full';
 
   return (
   <div
@@ -179,56 +182,58 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
         style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.10) 0%, transparent 70%)' }}
       />
     </div>
-    <div className="relative z-10 flex-1 flex flex-col px-6 sm:px-10 pt-4 pb-2 min-h-0">
+    <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-10 pt-3 sm:pt-4 pb-6 md:pb-2 min-h-0 overflow-y-auto md:overflow-hidden">
       {/* Верхняя строка: бейдж + руководитель */}
-      <div className="flex-shrink-0 relative flex items-start justify-center">
+      <div className="flex-shrink-0 relative flex flex-col md:block items-center md:items-start gap-3 md:gap-0 md:flex md:flex-row md:justify-center">
         {slide.badge && (
           <span
-            className="absolute left-0 top-0 inline-flex items-center gap-2.5 rounded-full px-6 py-3 text-white text-lg font-semibold max-w-[30%]"
+            className="md:absolute md:left-0 md:top-0 inline-flex items-center justify-center gap-2 md:gap-2.5 rounded-full px-4 py-2 md:px-6 md:py-3 text-white text-[13px] md:text-lg font-semibold w-full md:w-auto md:max-w-[30%] text-center"
             style={{
               background: HEADER_GRADIENT,
               boxShadow: '0 8px 24px rgba(124,58,237,0.35)',
             }}
           >
-            <Icon name={slide.badgeIcon ?? 'Headphones'} size={20} className="flex-shrink-0" />
+            <Icon name={slide.badgeIcon ?? 'Headphones'} size={16} className="flex-shrink-0 md:hidden" />
+            <Icon name={slide.badgeIcon ?? 'Headphones'} size={20} className="flex-shrink-0 hidden md:block" />
             <span className="leading-snug">{slide.badge}</span>
           </span>
         )}
 
         {slide.head && (
-          <div className="relative org-drop">
+          <div className="relative org-drop w-full md:w-auto">
             <div
-              className="absolute left-1/2 -top-4 -translate-x-1/2 w-11 h-11 rounded-full bg-white flex items-center justify-center z-10"
+              className="absolute left-1/2 -top-3.5 md:-top-4 -translate-x-1/2 w-9 h-9 md:w-11 md:h-11 rounded-full bg-white flex items-center justify-center z-10"
               style={{ boxShadow: '0 4px 14px rgba(124,58,237,0.22)' }}
             >
-              <Icon name="Crown" size={22} className="text-violet-500" />
+              <Icon name="Crown" size={18} className="text-violet-500 md:hidden" />
+              <Icon name="Crown" size={22} className="text-violet-500 hidden md:block" />
             </div>
             <div
-              className="rounded-3xl bg-white px-16 sm:px-20 pt-4 pb-2.5 text-center flex flex-col items-center"
+              className="rounded-3xl bg-white px-6 sm:px-20 pt-5 md:pt-4 pb-3 md:pb-2.5 text-center flex flex-col items-center"
               style={{ boxShadow: '0 8px 30px rgba(124,58,237,0.12), 0 2px 6px rgba(15,23,42,0.06)' }}
             >
               {slide.head.photo && (
                 <img
                   src={slide.head.photo}
                   alt={slide.head.name || slide.head.role}
-                  className="w-14 h-14 rounded-full object-cover ring-2 ring-violet-200 mb-1.5"
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover ring-2 ring-violet-200 mb-1.5"
                 />
               )}
-              <p className="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">
+              <p className="text-lg md:text-3xl font-bold text-slate-800 leading-tight">
                 {slide.head.role}
               </p>
               {slide.head.name && (
                 slide.head.vacancy ? (
-                  <span className="text-sm font-semibold text-white px-3 py-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 whitespace-nowrap mt-1.5">
+                  <span className="text-[11px] md:text-sm font-semibold text-white px-2.5 md:px-3 py-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 whitespace-nowrap mt-1.5">
                     {slide.head.name}
                   </span>
                 ) : (
-                  <p className="text-lg sm:text-xl text-slate-500 leading-tight mt-1">
+                  <p className="text-sm md:text-xl text-slate-500 leading-tight mt-1">
                     {slide.head.name}
                   </p>
                 )
               )}
-              <p className="text-xl sm:text-2xl font-bold text-violet-600 leading-tight mt-1.5">
+              <p className="text-base md:text-2xl font-bold text-violet-600 leading-tight mt-1.5">
                 {slide.head.salary}
               </p>
             </div>
@@ -237,12 +242,12 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       </div>
 
       {/* Скруглённая разводка линий к колонкам */}
-      <div className="flex-shrink-0 relative h-7 sm:h-8">
+      <div className="flex-shrink-0 relative h-5 sm:h-8">
         <div
           className="absolute left-1/2 top-0 h-1/2 w-[2px] -translate-x-1/2"
           style={{ background: LINE_COLOR }}
         />
-        {colCount > 1 && (
+        {colCount > 1 && !isMobile && (
           <div
             className="absolute top-1/2 bottom-[11px] rounded-t-2xl border-l-2 border-r-2 border-t-2"
             style={{
@@ -252,7 +257,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
             }}
           />
         )}
-        {colCount % 2 === 1 && (
+        {(isMobile || colCount % 2 === 1) && (
           <div
             className="absolute left-1/2 top-1/2 bottom-[11px] w-[2px] -translate-x-1/2"
             style={{ background: LINE_COLOR }}
@@ -260,9 +265,9 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
         )}
         <div
           className="absolute inset-0 grid"
-          style={{ gridTemplateColumns: `repeat(${colCount}, minmax(0, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${isMobile ? 1 : colCount}, minmax(0, 1fr))` }}
         >
-          {Array.from({ length: colCount }, (_, i) => i).map((i) => (
+          {Array.from({ length: isMobile ? 1 : colCount }, (_, i) => i).map((i) => (
             <div key={i} className="relative flex justify-center">
               <div
                 className="absolute bottom-0 w-0 h-0 border-x-[7px] border-x-transparent border-t-[11px]"
@@ -276,21 +281,22 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
       {/* Колонки линий */}
       <div
         className="flex-1 grid grid-cols-1 gap-4 sm:gap-6 min-h-0"
-        style={{ gridTemplateColumns: `repeat(${colCount}, minmax(0, 1fr))` }}
+        style={{ gridTemplateColumns: `repeat(${isMobile ? 1 : colCount}, minmax(0, 1fr))` }}
       >
         {slide.columns?.map((col, ci) => (
           <div key={`${col.title}-${ci}`} className="flex flex-col min-w-0">
             {/* Заголовок линии */}
             <div
-              className="rounded-full py-2.5 px-6 flex items-center justify-center gap-2.5 mb-2.5 org-drop"
+              className="rounded-full py-2 md:py-2.5 px-4 md:px-6 flex items-center justify-center gap-2 md:gap-2.5 mb-2.5 org-drop"
               style={{
                 background: HEADER_GRADIENT,
                 boxShadow: '0 8px 22px rgba(99,102,241,0.28)',
                 animationDelay: `${250 + ci * 110}ms`,
               }}
             >
-              <Icon name={col.icon ?? COLUMN_ICONS[ci] ?? 'Circle'} size={20} className="text-white/90" />
-              <p className="text-lg sm:text-xl font-semibold text-white">{col.title}</p>
+              <Icon name={col.icon ?? COLUMN_ICONS[ci] ?? 'Circle'} size={16} className="text-white/90 md:hidden flex-shrink-0" />
+              <Icon name={col.icon ?? COLUMN_ICONS[ci] ?? 'Circle'} size={20} className="text-white/90 hidden md:block flex-shrink-0" />
+              <p className="text-[13px] md:text-xl font-semibold text-white text-center leading-snug">{col.title}</p>
             </div>
 
             {/* Карточки сотрудников */}
@@ -302,7 +308,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
 
             {col.subBlocks && col.subBlocks.length > 0 && (
               <>
-                <div className="relative h-7 sm:h-8 flex-shrink-0">
+                <div className="relative h-5 sm:h-8 flex-shrink-0">
                   <div
                     className="absolute left-1/2 top-0 h-1/2 w-[2px] -translate-x-1/2"
                     style={{ background: LINE_COLOR }}
@@ -311,11 +317,11 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                     className="absolute top-1/2 bottom-[11px] rounded-t-2xl border-l-2 border-r-2 border-t-2"
                     style={{
                       borderColor: LINE_COLOR,
-                      left: `${50 / col.subBlocks.length}%`,
-                      right: `${50 / col.subBlocks.length}%`,
+                      left: `${50 / (isMobile ? 2 : col.subBlocks.length)}%`,
+                      right: `${50 / (isMobile ? 2 : col.subBlocks.length)}%`,
                     }}
                   />
-                  {col.subBlocks.length % 2 === 1 && (
+                  {!isMobile && col.subBlocks.length % 2 === 1 && (
                     <div
                       className="absolute left-1/2 top-1/2 bottom-[11px] w-[2px] -translate-x-1/2"
                       style={{ background: LINE_COLOR }}
@@ -323,10 +329,10 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   )}
                   <div
                     className="absolute inset-0 grid"
-                    style={{ gridTemplateColumns: `repeat(${col.subBlocks.length}, minmax(0, 1fr))` }}
+                    style={{ gridTemplateColumns: `repeat(${isMobile ? 2 : col.subBlocks.length}, minmax(0, 1fr))` }}
                   >
-                    {col.subBlocks.map((sb) => (
-                      <div key={sb.title} className="relative flex justify-center">
+                    {Array.from({ length: isMobile ? 2 : col.subBlocks.length }, (_, i) => i).map((i) => (
+                      <div key={i} className="relative flex justify-center">
                         <div
                           className="absolute bottom-0 w-0 h-0 border-x-[7px] border-x-transparent border-t-[11px]"
                           style={{ borderTopColor: LINE_COLOR }}
@@ -336,19 +342,20 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   </div>
                 </div>
                 <div
-                  className="grid gap-3"
-                  style={{ gridTemplateColumns: `repeat(${col.subBlocks.length}, minmax(0, 1fr))` }}
+                  className="grid gap-2 md:gap-3"
+                  style={{ gridTemplateColumns: `repeat(${isMobile ? 2 : col.subBlocks.length}, minmax(0, 1fr))` }}
                 >
                   {col.subBlocks.map((sb, si) => (
                     <div
                       key={sb.title}
-                      className="rounded-2xl bg-white/90 px-5 py-4 flex flex-col items-center justify-center text-center gap-3 org-in"
-                      style={{ boxShadow: CARD_SHADOW, animationDelay: `${800 + si * 110}ms`, minHeight: 'clamp(150px, 20vh, 300px)' }}
+                      className="rounded-2xl bg-white/90 px-3 md:px-5 py-3 md:py-4 flex flex-col items-center justify-center text-center gap-2 md:gap-3 org-in min-h-[92px] md:min-h-[clamp(150px,20vh,300px)]"
+                      style={{ boxShadow: CARD_SHADOW, animationDelay: `${800 + si * 110}ms` }}
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-violet-50 flex items-center justify-center flex-shrink-0">
-                        <Icon name={sb.icon ?? 'Server'} size={28} className="text-violet-500" />
+                      <div className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-violet-50 flex items-center justify-center flex-shrink-0">
+                        <Icon name={sb.icon ?? 'Server'} size={20} className="text-violet-500 md:hidden" />
+                        <Icon name={sb.icon ?? 'Server'} size={28} className="text-violet-500 hidden md:block" />
                       </div>
-                      <p className="text-base sm:text-lg font-semibold text-slate-700 leading-snug">
+                      <p className="text-[11px] md:text-lg font-semibold text-slate-700 leading-snug">
                         {sb.title}
                       </p>
                     </div>
@@ -361,7 +368,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
             {ci === statsIndex && slide.payroll && (
               <div className={`mt-auto pt-3 ${statsWidth}`}>
                 {slide.columns && (
-                  <div className="flex gap-3 mb-2">
+                  <div className="flex gap-2 md:gap-3 mb-2">
                     <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} />
                     <StatCard icon="Layers" value={String(slide.columns.length)} label={slide.columnsLabel ?? 'линии поддержки'} delay={1320} />
                     {vacancies > 0 && (
@@ -370,25 +377,24 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   </div>
                 )}
                 <div
-                  className="relative rounded-3xl bg-white pl-8 pr-32 sm:pr-40 py-4 flex items-center overflow-hidden org-drop"
+                  className="relative rounded-3xl bg-white pl-4 md:pl-8 pr-24 md:pr-40 py-3 md:py-4 flex items-center overflow-hidden org-drop min-h-[76px] md:min-h-[clamp(96px,13vh,165px)]"
                   style={{
                     boxShadow: CARD_SHADOW,
                     animationDelay: '1550ms',
-                    minHeight: 'clamp(96px, 13vh, 165px)',
                   }}
                 >
                   <div className="min-w-0">
-                    <p className="text-3xl lg:text-4xl font-extrabold text-slate-900 whitespace-nowrap">
+                    <p className="text-lg md:text-4xl font-extrabold text-slate-900 whitespace-nowrap">
                       ФОТ: {slide.payroll}
                     </p>
                     {slide.payrollNote && (
-                      <p className="text-sm text-slate-500 mt-1">{slide.payrollNote}</p>
+                      <p className="text-[11px] md:text-sm text-slate-500 mt-1">{slide.payrollNote}</p>
                     )}
                   </div>
                   <img
                     src="/coins-3d.png"
                     alt=""
-                    className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-24 sm:w-32 object-contain pointer-events-none"
+                    className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 w-16 md:w-32 object-contain pointer-events-none"
                   />
                 </div>
               </div>

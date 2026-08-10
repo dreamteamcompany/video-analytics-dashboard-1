@@ -78,7 +78,7 @@ const PresentationPage = () => {
       )}
 
       {/* Слайд */}
-      <div className="relative h-full w-full pb-16">
+      <div className="relative h-full w-full pb-14 sm:pb-16">
         <SlideView key={slides[index].id} slide={slides[index]} />
       </div>
 
@@ -87,9 +87,9 @@ const PresentationPage = () => {
         <button
           onClick={prev}
           aria-label="Предыдущий слайд"
-          className={`absolute z-50 left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
+          className={`absolute z-50 left-2 sm:left-6 bottom-3 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 w-10 h-10 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
         >
-          <Icon name="ChevronLeft" size={26} />
+          <Icon name="ChevronLeft" size={22} />
         </button>
       )}
 
@@ -98,9 +98,9 @@ const PresentationPage = () => {
         <button
           onClick={next}
           aria-label="Следующий слайд"
-          className={`absolute z-50 right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
+          className={`absolute z-50 right-2 sm:right-6 bottom-3 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 w-10 h-10 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
         >
-          <Icon name="ChevronRight" size={26} />
+          <Icon name="ChevronRight" size={22} />
         </button>
       )}
 
@@ -108,19 +108,19 @@ const PresentationPage = () => {
       <button
         onClick={toggleFullscreen}
         aria-label={isFull ? 'Выйти из полного экрана' : 'Полный экран'}
-        className={`absolute z-50 top-4 right-4 w-11 h-11 rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${btn}`}
+        className={`absolute z-50 top-2 right-2 sm:top-4 sm:right-4 w-9 h-9 sm:w-11 sm:h-11 rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${btn}`}
       >
-        <Icon name={isFull ? 'Minimize' : 'Maximize'} size={18} />
+        <Icon name={isFull ? 'Minimize' : 'Maximize'} size={16} />
       </button>
 
       {/* Нижняя панель: точки + счётчик */}
       <div
-        className={`absolute z-50 bottom-0 inset-x-0 pb-4 pt-8 pointer-events-none ${
+        className={`absolute z-40 bottom-0 inset-x-0 pb-3 sm:pb-4 pt-6 sm:pt-8 pointer-events-none ${
           light ? '' : 'bg-gradient-to-t from-black/25 to-transparent'
         }`}
       >
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2 flex-wrap justify-center px-4 pointer-events-auto">
+        <div className="flex flex-col items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center px-16 sm:px-4 pointer-events-auto">
             {slides.map((s, i) => (
               <button
                 key={s.id}
@@ -128,13 +128,13 @@ const PresentationPage = () => {
                 aria-label={`Слайд ${i + 1}`}
                 className={`rounded-full transition-all ${
                   i === index
-                    ? `w-8 h-2.5 ${light ? 'bg-violet-600' : 'bg-white'}`
-                    : `w-2.5 h-2.5 ${light ? 'bg-slate-300 hover:bg-slate-400' : 'bg-white/40 hover:bg-white/70'}`
+                    ? `w-6 h-2 sm:w-8 sm:h-2.5 ${light ? 'bg-violet-600' : 'bg-white'}`
+                    : `w-2 h-2 sm:w-2.5 sm:h-2.5 ${light ? 'bg-slate-300 hover:bg-slate-400' : 'bg-white/40 hover:bg-white/70'}`
                 }`}
               />
             ))}
           </div>
-          <p className={`text-sm font-medium ${light ? 'text-slate-400' : 'text-white/60'}`}>
+          <p className={`text-xs sm:text-sm font-medium ${light ? 'text-slate-400' : 'text-white/60'}`}>
             {index + 1} / {total}
           </p>
         </div>
