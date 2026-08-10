@@ -57,7 +57,7 @@ const PresentationPage = () => {
       <div className="absolute -bottom-40 -right-20 w-[28rem] h-[28rem] rounded-full bg-fuchsia-500/20 blur-3xl pointer-events-none" />
 
       {/* Слайд */}
-      <div className="relative h-full w-full pb-24">
+      <div className="relative h-full w-full pb-16">
         <SlideView key={slides[index].id} slide={slides[index]} />
       </div>
 
