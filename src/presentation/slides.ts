@@ -209,4 +209,25 @@ export const slides: Slide[] = [
       },
     ],
   },
+  {
+    id: 'pmo',
+    type: 'org',
+    theme: 'light',
+    badge: 'Служба проектного управления',
+    badgeIcon: 'ClipboardList',
+    columnsLabel: 'направление',
+    head: { role: 'Руководитель Службы', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
+    payroll: '**** ₽/мес',
+    payrollNote: 'с учётом открытых вакансий',
+    columns: [
+      {
+        title: 'Администрирование проектов',
+        icon: 'ClipboardList',
+        people: [
+          { role: 'Администратор проектов', name: 'Стовбун И.Я.', note: 'На увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true },
+          { role: 'Администратор проектов', name: 'Юдина А.', note: 'На увольнение, требуется поиск нового сотрудника', salary: '**** ₽/мес', replace: true },
+        ],
+      },
+    ],
+  },
 ];
