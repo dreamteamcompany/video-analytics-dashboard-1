@@ -1,13 +1,16 @@
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const CARD_SHADOW = '0 4px 20px rgba(124,58,237,0.08), 0 1px 3px rgba(15,23,42,0.06)';
 const HEADER_GRADIENT = 'linear-gradient(90deg, #6d28d9 0%, #7c3aed 50%, #6366f1 100%)';
 
 const GoalsSlide = ({ slide }: { slide: Slide }) => {
+  const isMobile = useIsMobile();
   const goals = slide.goals ?? [];
-  const cols = goals.length <= 2 ? 1 : 2;
+  const cols = goals.length <= 2 ? 1 : goals.length <= 4 ? 2 : 3;
   const compact = goals.length > 2;
+  const dense = goals.length > 4;
 
   return (
     <div
@@ -62,7 +65,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
         {/* Карточки целей */}
         <div
           className={`flex-1 grid ${compact ? 'gap-2.5 md:gap-3' : 'gap-3 md:gap-5'} min-h-0 content-start md:content-stretch`}
-          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${isMobile ? 1 : cols}, minmax(0, 1fr))` }}
         >
           {goals.map((g, i) => (
             <div
@@ -87,21 +90,21 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     >
                       {i + 1}
                     </span>
-                    <p className={`${compact ? 'text-[14px] md:text-base' : 'text-[14px] md:text-xl'} font-bold text-slate-800 leading-snug`}>
+                    <p className={`${dense ? 'text-[14px] md:text-[15px]' : compact ? 'text-[14px] md:text-base' : 'text-[14px] md:text-xl'} font-bold text-slate-800 leading-snug`}>
                       {g.title}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <p className={`${compact ? 'text-[12px] md:text-[13px] leading-snug' : 'text-[12px] md:text-base leading-relaxed'} text-slate-600 pl-1.5`}>
+              <p className={`${dense ? 'text-[12px] md:text-xs leading-snug' : compact ? 'text-[12px] md:text-[13px] leading-snug' : 'text-[12px] md:text-base leading-relaxed'} text-slate-600 pl-1.5`}>
                 {g.text}
               </p>
 
               {g.result && (
                 <div className={`mt-auto flex items-start gap-2 rounded-xl bg-emerald-50 ${compact ? 'px-3 py-1.5 md:px-3 md:py-2' : 'px-3 py-2 md:px-4 md:py-2.5'}`}>
                   <Icon name="TrendingUp" size={15} className="text-emerald-600 flex-shrink-0 mt-0.5" />
-                  <p className={`${compact ? 'text-[12px] md:text-[13px]' : 'text-[12px] md:text-base'} font-semibold text-emerald-700 leading-snug`}>
+                  <p className={`${dense ? 'text-[12px] md:text-xs' : compact ? 'text-[12px] md:text-[13px]' : 'text-[12px] md:text-base'} font-semibold text-emerald-700 leading-snug`}>
                     {g.result}
                   </p>
                 </div>
@@ -110,7 +113,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
               {g.effect && (
                 <div className="flex items-start gap-2 pl-1.5">
                   <Icon name="Sparkles" size={14} className="text-violet-400 flex-shrink-0 mt-0.5" />
-                  <p className={`${compact ? 'text-[11px] md:text-xs' : 'text-[11px] md:text-sm'} text-slate-500 italic leading-snug`}>
+                  <p className={`${dense ? 'text-[11px]' : compact ? 'text-[11px] md:text-xs' : 'text-[11px] md:text-sm'} text-slate-500 italic leading-snug`}>
                     {g.effect}
                   </p>
                 </div>
