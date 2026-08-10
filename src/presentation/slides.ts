@@ -204,7 +204,7 @@ export const slides: Slide[] = [
         icon: 'ChartColumn',
         people: [
           { role: 'Старший BI-аналитик', lead: true, name: 'Фёдоров Е.М.', salary: '**** ₽/мес', photo: '/fedorov.png' },
-          { role: 'BI-аналитик', name: 'Ерастова Н.С.', salary: '**** ₽/мес' },
+          { role: 'BI-аналитик', name: 'Ерастова Н.С.', salary: '**** ₽/мес', photo: '/erastova.png' },
         ],
       },
     ],
