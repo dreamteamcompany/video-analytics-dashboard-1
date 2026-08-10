@@ -298,6 +298,63 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               ))}
             </div>
 
+            {col.subBlocks && col.subBlocks.length > 0 && (
+              <>
+                <div className="relative h-7 sm:h-8 flex-shrink-0">
+                  <div
+                    className="absolute left-1/2 top-0 h-1/2 w-[2px] -translate-x-1/2"
+                    style={{ background: LINE_COLOR }}
+                  />
+                  <div
+                    className="absolute top-1/2 bottom-[11px] rounded-t-2xl border-l-2 border-r-2 border-t-2"
+                    style={{
+                      borderColor: LINE_COLOR,
+                      left: `${50 / col.subBlocks.length}%`,
+                      right: `${50 / col.subBlocks.length}%`,
+                    }}
+                  />
+                  {col.subBlocks.length % 2 === 1 && (
+                    <div
+                      className="absolute left-1/2 top-1/2 bottom-[11px] w-[2px] -translate-x-1/2"
+                      style={{ background: LINE_COLOR }}
+                    />
+                  )}
+                  <div
+                    className="absolute inset-0 grid"
+                    style={{ gridTemplateColumns: `repeat(${col.subBlocks.length}, minmax(0, 1fr))` }}
+                  >
+                    {col.subBlocks.map((sb) => (
+                      <div key={sb.title} className="relative flex justify-center">
+                        <div
+                          className="absolute bottom-0 w-0 h-0 border-x-[7px] border-x-transparent border-t-[11px]"
+                          style={{ borderTopColor: LINE_COLOR }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div
+                  className="grid gap-3"
+                  style={{ gridTemplateColumns: `repeat(${col.subBlocks.length}, minmax(0, 1fr))` }}
+                >
+                  {col.subBlocks.map((sb, si) => (
+                    <div
+                      key={sb.title}
+                      className="rounded-2xl bg-white/90 px-4 py-3 flex items-center gap-2.5 org-in"
+                      style={{ boxShadow: CARD_SHADOW, animationDelay: `${800 + si * 110}ms` }}
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0">
+                        <Icon name={sb.icon ?? 'Server'} size={19} className="text-violet-500" />
+                      </div>
+                      <p className="text-sm sm:text-base font-semibold text-slate-700 leading-snug">
+                        {sb.title}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
             {/* Итоги в цифрах + ФОТ */}
             {ci === statsIndex && slide.payroll && (
               <div className={`mt-auto pt-3 ${statsWidth}`}>

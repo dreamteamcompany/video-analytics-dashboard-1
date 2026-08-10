@@ -14,6 +14,7 @@ export interface OrgColumn {
   title: string;
   icon?: string;
   people: OrgPerson[];
+  subBlocks?: { title: string; icon?: string }[];
 }
 
 export interface Slide {
@@ -152,6 +153,11 @@ export const slides: Slide[] = [
         icon: 'Handshake',
         people: [
           { role: 'Подрядчик «Альфа»', name: 'Аутсорс-команда', tag: 'внешний', salary: '800 000 ₽/мес', logo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/a9aad61b-a0d8-4fea-bca2-4e95c1549b47.png' },
+        ],
+        subBlocks: [
+          { title: 'Инфраструктура клиник', icon: 'Stethoscope' },
+          { title: 'Инфраструктура бухгалтерии', icon: 'Calculator' },
+          { title: 'Инфраструктура Казахстана', icon: 'Globe' },
         ],
       },
     ],
