@@ -64,7 +64,7 @@ export const slides: Slide[] = [
       {
         title: '3-я линия',
         people: [
-          { role: 'Специалист 3-й линии (AI)', name: 'В будущем', salary: '100 000 ₽/мес', vacancy: true },
+          { role: 'Специалист 3-й линии', note: 'AI', name: 'В будущем', salary: '100 000 ₽/мес', vacancy: true },
         ],
       },
     ],

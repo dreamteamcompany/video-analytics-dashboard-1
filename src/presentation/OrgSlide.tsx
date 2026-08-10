@@ -18,16 +18,16 @@ const PersonCard = ({ role, name, note, salary, vacancy }: {
     </div>
 
     <div
-      className="flex-1 flex items-center rounded-full bg-[#eef0f6] min-w-0 transition-transform duration-300 hover:scale-[1.02]"
+      className="flex-1 flex items-center gap-3 rounded-3xl bg-[#eef0f6] min-w-0 pl-6 pr-3 py-3.5 transition-transform duration-300 hover:scale-[1.02]"
       style={{ boxShadow: SOFT_SHADOW }}
     >
-      <div className="flex-1 px-5 py-3 min-w-0">
-        <p className="text-sm sm:text-base font-semibold text-slate-800 leading-snug">
+      <div className="flex-1 min-w-0">
+        <p className="text-base sm:text-lg font-semibold text-slate-800 leading-snug whitespace-nowrap">
           {role}
         </p>
         <div className="flex items-center gap-2 flex-wrap mt-0.5">
           {name && (
-            <span className={`text-sm sm:text-base leading-snug ${vacancy ? 'text-violet-600 font-bold italic' : 'text-slate-600'}`}>
+            <span className={`text-sm sm:text-lg leading-snug ${vacancy ? 'text-violet-600 font-bold italic' : 'text-slate-600'}`}>
               {name}
             </span>
           )}
@@ -39,7 +39,7 @@ const PersonCard = ({ role, name, note, salary, vacancy }: {
         </div>
       </div>
       <div
-        className="rounded-full px-5 py-3 text-white text-sm sm:text-base font-bold whitespace-nowrap self-stretch flex items-center -ml-6 shadow-lg"
+        className="rounded-full px-4 py-2 text-white text-sm sm:text-lg font-bold whitespace-nowrap shadow-lg flex-shrink-0"
         style={{ background: PILL_GRADIENT }}
       >
         {salary}
@@ -71,18 +71,18 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
       </div>
     )}
 
-    <div className="flex-1 flex flex-col px-10 sm:px-16 lg:px-24 pt-2 pb-3 min-h-0">
+    <div className="flex-1 flex flex-col px-4 sm:px-6 lg:px-8 pt-2 pb-3 min-h-0">
       {/* Руководитель */}
       {slide.head && (
         <div className="flex-shrink-0 flex justify-center">
           <div
-            className="rounded-3xl bg-[#eef0f6] px-10 sm:px-16 py-4 text-center"
+            className="rounded-3xl bg-[#eef0f6] px-10 sm:px-14 py-3 text-center"
             style={{ boxShadow: SOFT_SHADOW }}
           >
-            <p className="text-lg sm:text-3xl font-bold text-green-600 leading-tight">
+            <p className="text-lg sm:text-2xl font-bold text-green-600 leading-tight">
               {slide.head.role}
             </p>
-            <p className="text-lg sm:text-3xl font-bold text-green-600 leading-tight mt-1">
+            <p className="text-lg sm:text-2xl font-bold text-green-600 leading-tight mt-0.5">
               {slide.head.salary}
             </p>
           </div>
@@ -90,7 +90,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
       )}
 
       {/* Диагональные стрелки к колонкам */}
-      <div className="flex-shrink-0 relative h-12 sm:h-16">
+      <div className="flex-shrink-0 relative h-10 sm:h-12">
         <svg
           className="absolute inset-0 w-full h-full"
           viewBox="0 0 300 60"
@@ -114,12 +114,12 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
       </div>
 
       {/* Колонки линий */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10 min-h-0">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 min-h-0">
         {slide.columns?.map((col, ci) => (
           <div key={col.title} className="flex flex-col min-w-0">
             {/* Заголовок линии */}
             <div
-              className="rounded-full py-3 px-6 text-center mb-5"
+              className="rounded-full py-2.5 px-6 text-center mb-4"
               style={{
                 background: 'linear-gradient(135deg, #312e81 0%, #4c1d95 100%)',
                 boxShadow: '6px 6px 16px rgba(76,29,149,0.35), -4px -4px 12px rgba(255,255,255,0.8)',
@@ -129,7 +129,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => (
             </div>
 
             {/* Вертикальная ветка + карточки */}
-            <div className="relative pl-6 space-y-4">
+            <div className="relative pl-6 space-y-3">
               <div
                 className="absolute left-0 top-0 bottom-6 w-[3px] rounded-full"
                 style={{ background: LINE_COLOR }}
