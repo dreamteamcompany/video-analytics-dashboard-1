@@ -31,6 +31,14 @@ const PresentationPage = () => {
     window.history.replaceState(null, '', url.toString());
   }, [index]);
 
+  const [isFull, setIsFull] = useState(false);
+
+  useEffect(() => {
+    const onChange = () => setIsFull(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, []);
+
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
     else document.exitFullscreen?.();
@@ -79,7 +87,7 @@ const PresentationPage = () => {
         <button
           onClick={prev}
           aria-label="Предыдущий слайд"
-          className={`absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
+          className={`absolute z-50 left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
         >
           <Icon name="ChevronLeft" size={26} />
         </button>
@@ -90,7 +98,7 @@ const PresentationPage = () => {
         <button
           onClick={next}
           aria-label="Следующий слайд"
-          className={`absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
+          className={`absolute z-50 right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 rounded-full border flex items-center justify-center transition-colors ${btn}`}
         >
           <Icon name="ChevronRight" size={26} />
         </button>
@@ -99,20 +107,20 @@ const PresentationPage = () => {
       {/* Полноэкранный режим */}
       <button
         onClick={toggleFullscreen}
-        aria-label="Полный экран"
-        className={`absolute top-4 right-4 w-11 h-11 rounded-xl border flex items-center justify-center transition-colors ${btn}`}
+        aria-label={isFull ? 'Выйти из полного экрана' : 'Полный экран'}
+        className={`absolute z-50 top-4 right-4 w-11 h-11 rounded-xl border flex items-center justify-center transition-colors cursor-pointer ${btn}`}
       >
-        <Icon name="Maximize" size={18} />
+        <Icon name={isFull ? 'Minimize' : 'Maximize'} size={18} />
       </button>
 
       {/* Нижняя панель: точки + счётчик */}
       <div
-        className={`absolute bottom-0 inset-x-0 pb-4 pt-8 ${
+        className={`absolute z-50 bottom-0 inset-x-0 pb-4 pt-8 pointer-events-none ${
           light ? '' : 'bg-gradient-to-t from-black/25 to-transparent'
         }`}
       >
         <div className="flex flex-col items-center gap-2">
-          <div className="flex items-center gap-2 flex-wrap justify-center px-4">
+          <div className="flex items-center gap-2 flex-wrap justify-center px-4 pointer-events-auto">
             {slides.map((s, i) => (
               <button
                 key={s.id}
