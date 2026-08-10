@@ -55,7 +55,7 @@ export const slides: Slide[] = [
     badge: 'Руководство IT-департамента',
     badgeIcon: 'Crown',
     columnsLabel: 'направление',
-    head: { role: 'IT-директор', name: 'Лалиев Р.', salary: '**** ₽/мес' },
+    head: { role: 'IT-директор', name: 'Лалиев Р.З.', salary: '**** ₽/мес', photo: '/laliev.png' },
     payroll: '**** ₽/мес',
     payrollNote: 'с учётом открытых вакансий',
     columns: [
@@ -63,7 +63,7 @@ export const slides: Slide[] = [
         title: 'Финансы и административные вопросы',
         icon: 'Briefcase',
         people: [
-          { role: 'Помощник IT-директора по финансам и административным вопросам', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true, big: true },
+          { role: 'Помощник IT-директора по финансам и административным вопросам', name: 'Требуется поиск', salary: '60 000 ₽/мес', vacancy: true, big: true },
         ],
       },
     ],
