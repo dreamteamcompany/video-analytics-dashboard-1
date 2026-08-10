@@ -49,6 +49,26 @@ export const slides: Slide[] = [
     logo: '',
   },
   {
+    id: 'director',
+    type: 'org',
+    theme: 'light',
+    badge: 'Руководство IT-департамента',
+    badgeIcon: 'Crown',
+    columnsLabel: 'направление',
+    head: { role: 'IT-директор', name: 'Лалиев Р.', salary: '**** ₽/мес' },
+    payroll: '**** ₽/мес',
+    payrollNote: 'с учётом открытых вакансий',
+    columns: [
+      {
+        title: 'Финансы и административные вопросы',
+        icon: 'Briefcase',
+        people: [
+          { role: 'Помощник IT-директора по финансам и административным вопросам', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true, big: true },
+        ],
+      },
+    ],
+  },
+  {
     id: 'support',
     type: 'org',
     theme: 'light',
