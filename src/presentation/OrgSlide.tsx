@@ -69,7 +69,11 @@ const StatCard = ({ icon, value, label, delay }: {
 }) => (
   <div
     className="flex-1 min-w-0 rounded-2xl bg-white/90 px-5 py-2.5 flex items-center gap-3 org-drop"
-    style={{ boxShadow: CARD_SHADOW, animationDelay: `${delay}ms` }}
+    style={{
+      boxShadow: CARD_SHADOW,
+      animationDelay: `${delay}ms`,
+      minHeight: 'clamp(58px, 8vh, 110px)',
+    }}
   >
     <Icon name={icon} size={26} className="text-violet-500 flex-shrink-0" />
     <div className="min-w-0">
@@ -256,7 +260,11 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                 )}
                 <div
                   className="relative rounded-3xl bg-white pl-8 pr-32 sm:pr-40 py-4 flex items-center overflow-hidden org-drop"
-                  style={{ boxShadow: CARD_SHADOW, animationDelay: '1550ms' }}
+                  style={{
+                    boxShadow: CARD_SHADOW,
+                    animationDelay: '1550ms',
+                    minHeight: 'clamp(96px, 13vh, 165px)',
+                  }}
                 >
                   <div className="min-w-0">
                     <p className="text-3xl lg:text-4xl font-extrabold text-slate-900 whitespace-nowrap">
