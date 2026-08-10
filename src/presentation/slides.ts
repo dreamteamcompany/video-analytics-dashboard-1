@@ -5,6 +5,7 @@ export interface OrgPerson {
   tag?: string;
   salary: string;
   vacancy?: boolean;
+  photo?: string;
 }
 
 export interface OrgColumn {
