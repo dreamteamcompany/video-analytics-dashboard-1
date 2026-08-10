@@ -143,8 +143,8 @@ export const slides: Slide[] = [
     badge: 'Служба эксплуатации IT-инфраструктуры',
     badgeIcon: 'Server',
     columnsLabel: 'направление',
-    head: { role: 'Руководитель Службы', name: 'Требуется поиск', salary: '**** ₽/мес' },
-    payroll: '**** ₽/мес',
+    head: { role: 'Руководитель Службы', name: 'Требуется поиск', salary: '180 000 ₽/мес' },
+    payroll: '980 000 ₽/мес',
     payrollNote: 'с учётом открытых вакансий',
     columns: [
       {
