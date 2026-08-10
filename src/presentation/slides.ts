@@ -135,4 +135,24 @@ export const slides: Slide[] = [
       },
     ],
   },
+  {
+    id: 'infra',
+    type: 'org',
+    theme: 'light',
+    badge: 'Служба эксплуатации IT-инфраструктуры',
+    badgeIcon: 'Server',
+    columnsLabel: 'направление',
+    head: { role: 'Руководитель Службы', name: 'Требуется поиск', salary: '**** ₽/мес' },
+    payroll: '**** ₽/мес',
+    payrollNote: 'с учётом открытых вакансий',
+    columns: [
+      {
+        title: 'Внешний подряд',
+        icon: 'Handshake',
+        people: [
+          { role: 'Подрядчик «Альфа»', name: 'Аутсорс-команда', tag: 'внешний', salary: '**** ₽/мес' },
+        ],
+      },
+    ],
+  },
 ];

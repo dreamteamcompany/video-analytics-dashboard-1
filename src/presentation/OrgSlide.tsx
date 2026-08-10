@@ -230,14 +230,16 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
           className="absolute left-1/2 top-0 h-1/2 w-[2px] -translate-x-1/2"
           style={{ background: LINE_COLOR }}
         />
-        <div
-          className="absolute top-1/2 bottom-[11px] rounded-t-2xl border-l-2 border-r-2 border-t-2"
-          style={{
-            borderColor: LINE_COLOR,
-            left: `${50 / colCount}%`,
-            right: `${50 / colCount}%`,
-          }}
-        />
+        {colCount > 1 && (
+          <div
+            className="absolute top-1/2 bottom-[11px] rounded-t-2xl border-l-2 border-r-2 border-t-2"
+            style={{
+              borderColor: LINE_COLOR,
+              left: `${50 / colCount}%`,
+              right: `${50 / colCount}%`,
+            }}
+          />
+        )}
         {colCount % 2 === 1 && (
           <div
             className="absolute left-1/2 top-1/2 bottom-[11px] w-[2px] -translate-x-1/2"
