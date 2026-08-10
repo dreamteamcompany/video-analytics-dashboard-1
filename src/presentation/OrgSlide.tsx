@@ -13,7 +13,11 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, delay = 0 }: {
 }) => (
   <div
     className="flex items-center gap-4 rounded-2xl bg-white/90 backdrop-blur-sm min-w-0 px-5 py-7 org-in transition-transform duration-300 hover:scale-[1.02]"
-    style={{ boxShadow: CARD_SHADOW, animationDelay: `${delay}ms` }}
+    style={{
+      boxShadow: CARD_SHADOW,
+      animationDelay: `${delay}ms`,
+      minHeight: 'clamp(88px, 12vh, 170px)',
+    }}
   >
     <div className="w-12 h-12 rounded-full bg-violet-50 flex items-center justify-center flex-shrink-0">
       <Icon name={vacancy ? 'UserPlus' : 'User'} size={24} className="text-violet-500" />
