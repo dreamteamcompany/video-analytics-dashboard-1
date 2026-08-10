@@ -92,7 +92,7 @@ export const slides: Slide[] = [
         icon: 'ClipboardList',
         people: [
           { role: 'Менеджер проектов 1С', name: 'Кобычева Л.Е.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/196b7099-96fa-4797-a145-2b530812cdd1.png' },
-          { role: 'Администратор проектов 1С', name: 'Ватлашова А.О.', salary: '**** ₽/мес' },
+          { role: 'Администратор проектов 1С', name: 'Ватлашова А.О.', salary: '**** ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/b92259da-37e7-45b4-b219-00957894d33c.png' },
         ],
       },
       {
