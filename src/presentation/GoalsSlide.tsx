@@ -22,21 +22,26 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
     >
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
-          className="absolute top-0 right-0 w-[34%] h-[42%]"
+          className="absolute inset-0"
           style={{
-            backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.28) 1.7px, transparent 1.7px)',
-            backgroundSize: '17px 17px',
-            maskImage: 'linear-gradient(225deg, #000 5%, transparent 60%)',
-            WebkitMaskImage: 'linear-gradient(225deg, #000 5%, transparent 60%)',
+            backgroundImage:
+              'linear-gradient(rgba(124,58,237,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.055) 1px, transparent 1px)',
+            backgroundSize: '46px 46px',
+            maskImage: 'radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at 50% 0%, #000 20%, transparent 78%)',
           }}
         />
         <div
-          className="absolute -bottom-28 -left-20 w-[26rem] h-[26rem] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(167,139,250,0.16) 0%, transparent 70%)' }}
+          className="aurora-a absolute -bottom-32 -left-24 w-[32rem] h-[32rem] rounded-full blur-[10px]"
+          style={{ background: 'radial-gradient(circle, rgba(167,139,250,0.22) 0%, transparent 68%)' }}
         />
         <div
-          className="absolute -top-24 right-[10%] w-[24rem] h-[24rem] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.10) 0%, transparent 70%)' }}
+          className="aurora-b absolute -top-32 right-[4%] w-[30rem] h-[30rem] rounded-full blur-[10px]"
+          style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 68%)' }}
+        />
+        <div
+          className="aurora-a absolute top-1/3 left-1/3 w-[26rem] h-[26rem] rounded-full blur-[10px]"
+          style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.12) 0%, transparent 68%)' }}
         />
       </div>
 
@@ -53,13 +58,25 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
               <span className="leading-snug">{slide.badge}</span>
             </span>
           )}
-          <h2 className={`${compact ? 'text-xl md:text-3xl' : 'text-xl md:text-4xl'} font-extrabold text-slate-800 text-center leading-tight`}>
+          <h2
+            className={`${compact ? 'text-2xl md:text-4xl' : 'text-2xl md:text-5xl'} font-black text-center leading-tight tracking-tight`}
+            style={{
+              background: 'linear-gradient(100deg, #1e1b4b 0%, #6d28d9 55%, #db2777 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             {slide.title ?? 'Цели на год'}
           </h2>
           {slide.goalsYear && (
-            <p className="text-xs md:text-base font-semibold text-violet-500 tracking-[0.25em]">
-              {slide.goalsYear}
-            </p>
+            <div className="flex items-center gap-3">
+              <span className="h-px w-8 md:w-14 bg-gradient-to-r from-transparent to-violet-300" />
+              <p className="text-xs md:text-sm font-bold text-violet-500 tracking-[0.4em]">
+                {slide.goalsYear}
+              </p>
+              <span className="h-px w-8 md:w-14 bg-gradient-to-l from-transparent to-violet-300" />
+            </div>
           )}
         </div>
 
@@ -71,24 +88,40 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
           {goals.map((g, i) => (
             <div
               key={g.title}
-              className={`group relative rounded-3xl bg-white ${compact ? 'p-4 md:p-5' : 'p-4 md:p-6'} flex flex-col gap-3 org-in overflow-hidden transition-shadow`}
-              style={{ boxShadow: CARD_SHADOW, animationDelay: `${200 + i * 110}ms` }}
+              className={`goal-card group relative rounded-[26px] ${compact ? 'p-4 md:p-5' : 'p-4 md:p-6'} flex flex-col gap-3 org-in overflow-hidden`}
+              style={{
+                background: 'linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(250,248,255,0.92) 100%)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: CARD_SHADOW,
+                animationDelay: `${200 + i * 110}ms`,
+              }}
             >
               <span
-                className="absolute right-4 top-2 text-[52px] md:text-[64px] font-black leading-none select-none pointer-events-none"
-                style={{ color: 'rgba(124,58,237,0.06)' }}
+                className="absolute -right-2 -top-5 text-[86px] md:text-[104px] font-black leading-none select-none pointer-events-none italic"
+                style={{
+                  background: 'linear-gradient(180deg, rgba(124,58,237,0.13) 0%, rgba(124,58,237,0) 78%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
               >
                 {i + 1}
               </span>
 
               <div className="relative flex items-start gap-3">
-                <div
-                  className="w-11 h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: HEADER_GRADIENT, boxShadow: '0 6px 16px rgba(124,58,237,0.28)' }}
-                >
-                  <Icon name={g.icon ?? 'Target'} size={22} className="text-white" />
+                <div className="relative flex-shrink-0">
+                  <div
+                    className="absolute inset-0 rounded-2xl blur-md opacity-60"
+                    style={{ background: HEADER_GRADIENT }}
+                  />
+                  <div
+                    className="relative w-11 h-11 md:w-[52px] md:h-[52px] rounded-2xl flex items-center justify-center"
+                    style={{ background: HEADER_GRADIENT }}
+                  >
+                    <Icon name={g.icon ?? 'Target'} size={24} className="text-white" />
+                  </div>
                 </div>
-                <p className={`${dense ? 'text-[15px] md:text-[17px]' : 'text-[15px] md:text-xl'} font-bold text-slate-800 leading-tight pt-1 pr-8`}>
+                <p className={`${dense ? 'text-[15px] md:text-[17px]' : 'text-[15px] md:text-xl'} font-bold text-slate-800 leading-tight pt-1.5 pr-6`}>
                   {g.title}
                 </p>
               </div>
@@ -96,9 +129,9 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
               {g.metric && (
                 <div className="relative flex items-baseline gap-2 flex-wrap">
                   <span
-                    className={`${dense ? 'text-[26px] md:text-[30px]' : 'text-3xl md:text-4xl'} font-black leading-none`}
+                    className={`${dense ? 'text-[30px] md:text-[36px]' : 'text-4xl md:text-5xl'} font-black leading-none tracking-tight`}
                     style={{
-                      background: HEADER_GRADIENT,
+                      background: 'linear-gradient(120deg, #7c3aed 0%, #6366f1 45%, #ec4899 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text',
@@ -107,21 +140,24 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     {g.metric}
                   </span>
                   {g.metricNote && (
-                    <span className="text-[11px] md:text-[13px] font-semibold text-slate-400 uppercase tracking-wide">
+                    <span className="text-[10px] md:text-[12px] font-bold text-slate-400 uppercase tracking-[0.12em]">
                       {g.metricNote}
                     </span>
                   )}
                 </div>
               )}
 
-              <p className={`relative ${dense ? 'text-[12px] md:text-[13px]' : 'text-[13px] md:text-[15px]'} text-slate-500 leading-snug`}>
+              <p className={`relative ${dense ? 'text-[12px] md:text-[13px]' : 'text-[13px] md:text-[15px]'} text-slate-500 leading-relaxed`}>
                 {g.text}
               </p>
 
               {(g.effect || g.result) && (
-                <div className="relative mt-auto pt-2.5 border-t border-slate-100 flex items-center gap-2">
-                  <Icon name="ArrowRight" size={14} className="text-violet-400 flex-shrink-0" />
-                  <p className={`${dense ? 'text-[11px] md:text-[12px]' : 'text-[12px] md:text-[13px]'} font-semibold text-violet-600 leading-snug`}>
+                <div
+                  className="relative mt-auto flex items-center gap-2 rounded-2xl px-3 py-2"
+                  style={{ background: 'linear-gradient(90deg, rgba(124,58,237,0.09) 0%, rgba(236,72,153,0.06) 100%)' }}
+                >
+                  <Icon name="Sparkles" size={14} className="text-violet-500 flex-shrink-0" />
+                  <p className={`${dense ? 'text-[11px] md:text-[12px]' : 'text-[12px] md:text-[13px]'} font-semibold text-violet-700 leading-snug`}>
                     {g.effect ?? g.result}
                   </p>
                 </div>
@@ -132,32 +168,39 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
           {/* Экономический эффект — акцентный блок */}
           {slide.impacts && slide.impacts.length > 0 && (
             <div
-              className="relative rounded-3xl p-4 md:px-5 md:py-4 flex flex-col gap-2.5 org-in overflow-hidden"
+              className="relative rounded-[26px] p-4 md:px-4 md:py-3.5 flex flex-col gap-2 org-in overflow-hidden"
               style={{
-                background: 'linear-gradient(150deg, #3b0764 0%, #5b21b6 45%, #312e81 100%)',
-                boxShadow: '0 16px 40px rgba(59,7,100,0.42)',
+                background: 'linear-gradient(155deg, #2e1065 0%, #5b21b6 42%, #1e1b4b 100%)',
+                boxShadow: '0 22px 50px rgba(46,16,101,0.5)',
                 animationDelay: `${200 + goals.length * 110}ms`,
               }}
             >
               <div
-                className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none"
-                style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.38) 0%, transparent 70%)' }}
+                className="aurora-a absolute -top-20 -right-16 w-64 h-64 rounded-full pointer-events-none"
+                style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.45) 0%, transparent 68%)' }}
               />
               <div
-                className="absolute inset-0 pointer-events-none opacity-[0.14]"
+                className="aurora-b absolute -bottom-24 -left-16 w-56 h-56 rounded-full pointer-events-none"
+                style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.32) 0%, transparent 68%)' }}
+              />
+              <div
+                className="absolute inset-0 pointer-events-none opacity-[0.13]"
                 style={{
                   backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
                   backgroundSize: '18px 18px',
-                  maskImage: 'linear-gradient(200deg, #000 0%, transparent 55%)',
-                  WebkitMaskImage: 'linear-gradient(200deg, #000 0%, transparent 55%)',
+                  maskImage: 'linear-gradient(200deg, #000 0%, transparent 60%)',
+                  WebkitMaskImage: 'linear-gradient(200deg, #000 0%, transparent 60%)',
                 }}
               />
 
               <div className="relative">
-                <p className="text-[9px] md:text-[10px] font-bold text-cyan-300 tracking-[0.24em] uppercase mb-1.5">
-                  Экономический эффект
-                </p>
-                <p className="text-[15px] md:text-xl font-extrabold text-white leading-tight">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 border border-white/15 px-2.5 py-1 mb-2">
+                  <Icon name="TrendingUp" size={12} className="text-cyan-300" />
+                  <span className="text-[9px] md:text-[10px] font-bold text-cyan-300 tracking-[0.2em] uppercase">
+                    Экономический эффект
+                  </span>
+                </span>
+                <p className="text-[15px] md:text-[19px] font-black text-white leading-tight">
                   {slide.impactGoal}
                 </p>
               </div>
@@ -166,10 +209,23 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                 {slide.impacts.map((it) => (
                   <div
                     key={it.label}
-                    className="rounded-2xl bg-white/10 border border-white/10 px-2.5 py-2 flex flex-col gap-0.5"
+                    className="relative rounded-2xl px-2.5 py-1.5 flex flex-col gap-0.5 overflow-hidden"
+                    style={{
+                      background: 'rgba(255,255,255,0.09)',
+                      border: '1px solid rgba(255,255,255,0.14)',
+                      backdropFilter: 'blur(6px)',
+                    }}
                   >
-                    <Icon name={it.icon ?? 'Coins'} size={16} className="text-cyan-300" />
-                    <p className="text-[16px] md:text-[20px] font-black text-white leading-none">
+                    <Icon name={it.icon ?? 'Coins'} size={15} className="text-cyan-300" />
+                    <p
+                      className="text-[17px] md:text-[20px] font-black leading-none tracking-tight"
+                      style={{
+                        background: 'linear-gradient(90deg, #a7f3d0 0%, #67e8f9 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
                       {it.value}
                     </p>
                     <p className="text-[10px] md:text-[11px] text-white/55 leading-snug">
@@ -180,9 +236,9 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
               </div>
 
               {slide.conclusion && (
-                <div className="relative mt-auto pt-2 border-t border-white/15 flex items-center gap-2">
-                  <Icon name="ShieldCheck" size={14} className="text-cyan-300 flex-shrink-0" />
-                  <p className="text-[11px] md:text-[12px] text-white/70 leading-snug">
+                <div className="relative mt-auto flex items-center gap-1.5">
+                  <Icon name="ShieldCheck" size={12} className="text-cyan-300 flex-shrink-0" />
+                  <p className="text-[10px] md:text-[11px] text-white/55 leading-snug">
                     {slide.conclusion}
                   </p>
                 </div>

@@ -180,7 +180,7 @@ export const slides: Slide[] = [
       { icon: 'Sparkles', label: 'AI-агенты подразделениям', value: '30+ млн ₽' },
       { icon: 'ChartLine', label: 'Рост платных услуг', value: '+5%' },
     ],
-    conclusion: 'Каждый пункт измерим и защитим перед финансовым директором',
+
   },
   {
     id: 'med-systems',
