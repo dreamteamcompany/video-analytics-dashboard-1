@@ -47,10 +47,10 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-10 pt-3 sm:pt-6 pb-6 md:pb-4 min-h-0 overflow-y-auto md:overflow-hidden">
         {/* Заголовок */}
-        <div className={`flex-shrink-0 flex flex-col items-center gap-2 ${compact ? 'md:gap-1.5 mb-3 md:mb-4' : 'md:gap-3 mb-4 md:mb-6'}`}>
+        <div className={`flex-shrink-0 flex flex-col items-center gap-1.5 ${compact ? 'md:gap-1 mb-3 md:mb-3' : 'md:gap-3 mb-4 md:mb-6'}`}>
           {slide.badge && (
             <span
-              className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 md:px-6 md:py-3 text-white text-[13px] md:text-lg font-semibold text-center"
+              className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 md:px-5 md:py-2 text-white text-[13px] md:text-[15px] font-semibold text-center"
               style={{ background: HEADER_GRADIENT, boxShadow: '0 8px 24px rgba(124,58,237,0.35)' }}
             >
               <Icon name={slide.badgeIcon ?? 'Target'} size={16} className="flex-shrink-0 md:hidden" />
@@ -59,7 +59,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
             </span>
           )}
           <h2
-            className={`${compact ? 'text-2xl md:text-4xl' : 'text-2xl md:text-5xl'} font-black text-center leading-tight tracking-tight`}
+            className={`${compact ? 'text-2xl md:text-3xl' : 'text-2xl md:text-5xl'} font-black text-center leading-tight tracking-tight`}
             style={{
               background: 'linear-gradient(100deg, #1e1b4b 0%, #6d28d9 55%, #db2777 100%)',
               WebkitBackgroundClip: 'text',
@@ -82,13 +82,13 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
         {/* Карточки целей */}
         <div
-          className={`w-full max-w-[1080px] mx-auto flex-none md:flex-1 grid ${compact ? 'gap-3 md:gap-3.5' : 'gap-3 md:gap-5'} md:min-h-0 auto-rows-max items-start content-start md:content-center`}
+          className={`w-full max-w-[1080px] mx-auto flex-none md:flex-1 grid ${compact ? 'gap-3 md:gap-3' : 'gap-3 md:gap-5'} md:min-h-0 auto-rows-max items-start content-start`}
           style={{ gridTemplateColumns: `repeat(${isMobile ? 1 : cols}, minmax(0, 1fr))` }}
         >
           {goals.map((g, i) => (
             <div
               key={g.title}
-              className={`goal-card group relative rounded-[22px] ${compact ? 'p-3.5 md:px-4 md:py-3.5' : 'p-4 md:p-5'} flex flex-col gap-2 org-in overflow-hidden`}
+              className={`goal-card group relative rounded-[22px] ${compact ? 'p-3.5 md:px-3.5 md:py-3' : 'p-4 md:p-5'} flex flex-col gap-1.5 org-in overflow-hidden`}
               style={{
                 background: 'linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(250,248,255,0.92) 100%)',
                 backdropFilter: 'blur(10px)',
@@ -164,7 +164,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
           {/* Экономический эффект — акцентный блок */}
           {slide.impacts && slide.impacts.length > 0 && (
             <div
-              className="relative rounded-[26px] p-4 md:px-4 md:py-3.5 flex flex-col gap-2 org-in overflow-hidden"
+              className="relative rounded-[22px] p-4 md:px-3.5 md:py-3 flex flex-col gap-2 org-in overflow-hidden"
               style={{
                 background: 'linear-gradient(155deg, #2e1065 0%, #5b21b6 42%, #1e1b4b 100%)',
                 boxShadow: '0 22px 50px rgba(46,16,101,0.5)',
@@ -196,25 +196,27 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     Экономический эффект
                   </span>
                 </span>
-                <p className="text-[15px] md:text-[19px] font-black text-white leading-tight">
+                <p className="text-[14px] md:text-[16px] font-black text-white leading-tight">
                   {slide.impactGoal}
                 </p>
               </div>
 
-              <div className="relative grid grid-cols-2 gap-2 md:gap-2.5">
+              <div className="relative space-y-1">
                 {slide.impacts.map((it) => (
                   <div
                     key={it.label}
-                    className="relative rounded-2xl px-2.5 py-1.5 flex flex-col gap-0.5 overflow-hidden"
+                    className="relative rounded-xl px-2.5 py-1 flex items-center gap-2 overflow-hidden"
                     style={{
                       background: 'rgba(255,255,255,0.09)',
                       border: '1px solid rgba(255,255,255,0.14)',
-                      backdropFilter: 'blur(6px)',
                     }}
                   >
-                    <Icon name={it.icon ?? 'Coins'} size={15} className="text-cyan-300" />
+                    <Icon name={it.icon ?? 'Coins'} size={14} className="text-cyan-300 flex-shrink-0" />
+                    <p className="text-[10px] md:text-[11px] text-white/60 leading-snug flex-1 min-w-0">
+                      {it.label}
+                    </p>
                     <p
-                      className="text-[17px] md:text-[20px] font-black leading-none tracking-tight"
+                      className="text-[14px] md:text-[16px] font-black leading-none tracking-tight whitespace-nowrap"
                       style={{
                         background: 'linear-gradient(90deg, #a7f3d0 0%, #67e8f9 100%)',
                         WebkitBackgroundClip: 'text',
@@ -223,9 +225,6 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                       }}
                     >
                       {it.value}
-                    </p>
-                    <p className="text-[10px] md:text-[11px] text-white/55 leading-snug">
-                      {it.label}
                     </p>
                   </div>
                 ))}
@@ -242,6 +241,40 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
             </div>
           )}
         </div>
+
+        {/* Целевые показатели */}
+        {slide.kpis && slide.kpis.length > 0 && (
+          <div
+            className="w-full max-w-[1080px] mx-auto mt-3 md:mt-4 org-in"
+            style={{ animationDelay: `${300 + goals.length * 110}ms` }}
+          >
+            <div className="flex items-center gap-2.5 mb-2">
+              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-violet-200" />
+              <p className="text-[9px] md:text-[10px] font-bold text-violet-500 tracking-[0.22em] uppercase whitespace-nowrap">
+                {slide.kpiTitle ?? 'Целевые показатели'}
+              </p>
+              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-violet-200" />
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-1.5 md:gap-2">
+              {slide.kpis.map((k) => (
+                <div
+                  key={k.label}
+                  className="flex items-center gap-1.5 rounded-full bg-white/85 border border-violet-100 pl-2 pr-3 py-1"
+                  style={{ boxShadow: '0 3px 10px rgba(124,58,237,0.07)' }}
+                >
+                  <Icon name={k.icon ?? 'Gauge'} size={13} className="text-violet-400 flex-shrink-0" />
+                  <span className="text-[11px] md:text-[12px] font-extrabold text-violet-700 whitespace-nowrap">
+                    {k.value}
+                  </span>
+                  <span className="text-[9px] md:text-[10px] text-slate-400 whitespace-nowrap">
+                    {k.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

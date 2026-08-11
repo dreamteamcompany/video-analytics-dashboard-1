@@ -29,6 +29,13 @@ export interface Goal {
   metricNote?: string;
 }
 
+export interface KpiItem {
+  icon?: string;
+  label: string;
+  value: string;
+  note?: string;
+}
+
 export interface ImpactItem {
   icon?: string;
   label: string;
@@ -57,6 +64,8 @@ export interface Slide {
   goalsYear?: string;
   impactGoal?: string;
   impacts?: ImpactItem[];
+  kpiTitle?: string;
+  kpis?: KpiItem[];
   conclusion?: string;
 }
 
@@ -180,7 +189,17 @@ export const slides: Slide[] = [
       { icon: 'Sparkles', label: 'AI-агенты подразделениям', value: '30+ млн ₽' },
       { icon: 'ChartLine', label: 'Рост платных услуг', value: '+5%' },
     ],
-
+    kpiTitle: 'Целевые показатели службы',
+    kpis: [
+      { icon: 'Timer', label: 'Реакция на критичный инцидент', value: '≤ 5 мин' },
+      { icon: 'Wrench', label: 'Решение критичного инцидента', value: '≤ 1 часа' },
+      { icon: 'Clock', label: 'Среднее время решения заявки', value: '≤ 4 часов' },
+      { icon: 'FileCheck', label: 'Соблюдение SLA', value: '≥ 98%' },
+      { icon: 'CircleCheck', label: 'Решено на первой линии', value: '≥ 70%' },
+      { icon: 'Star', label: 'Оценка внутренних клиентов', value: '≥ 4.7 / 5' },
+      { icon: 'Activity', label: 'Доступность ключевых систем', value: '99,9%' },
+      { icon: 'RefreshCw', label: 'Повторные обращения', value: '≤ 5%' },
+    ],
   },
   {
     id: 'med-systems',
