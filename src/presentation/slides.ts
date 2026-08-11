@@ -27,8 +27,6 @@ export interface Goal {
   effect?: string;
   metric?: string;
   metricNote?: string;
-  money?: string;
-  moneyNote?: string;
 }
 
 export interface ImpactItem {
@@ -58,8 +56,6 @@ export interface Slide {
   goals?: Goal[];
   goalsYear?: string;
   impactGoal?: string;
-  impactTotal?: string;
-  impactTotalNote?: string;
   impacts?: ImpactItem[];
   conclusion?: string;
 }
@@ -142,8 +138,6 @@ export const slides: Slide[] = [
         metric: '−50%',
         metricNote: 'инцидентов',
         text: 'ML прогнозирует отказы за 2–4 часа и сам запускает профилактику.',
-        money: '300+ млн ₽',
-        moneyNote: 'сохранённая выручка в год',
         effect: 'Проактив вместо «пожарной команды»',
       },
       {
@@ -152,8 +146,6 @@ export const slides: Slide[] = [
         metric: 'IT ↔ ₽',
         metricNote: 'связь видна руководству',
         text: 'В дашбордах — потерянные пациенты, задержки отчётности, простой касс.',
-        money: '+5%',
-        moneyNote: 'к выручке платных услуг',
         effect: 'IT — партнёр бизнеса, а не статья расходов',
       },
       {
@@ -162,8 +154,6 @@ export const slides: Slide[] = [
         metric: '3',
         metricNote: 'взаимозаменяемых инженера',
         text: '«Школа поддержки»: рост L1 → L2 и освоение смежного стека.',
-        money: '−2 найма',
-        moneyNote: 'экономия ФОТ ~4 млн ₽/год',
         effect: 'Нет риска «одного эксперта»',
       },
       {
@@ -172,8 +162,6 @@ export const slides: Slide[] = [
         metric: '−80%',
         metricNote: 'повторных инцидентов',
         text: 'Нейросеть находит глубинные причины и предлагает изменения архитектуры.',
-        money: '40+ млн ₽',
-        moneyNote: 'сокращение расходов в год',
         effect: 'Экономия времени 5+ инженеров',
       },
       {
@@ -182,19 +170,15 @@ export const slides: Slide[] = [
         metric: '15 мин',
         metricNote: 'порог простоя → компенсация',
         text: 'SLO на каждый бизнес-процесс: запись, выписка, выплаты.',
-        money: '30+ млн ₽',
-        moneyNote: 'экономия подразделений',
         effect: 'Прямая подотчётность IT перед бизнесом',
       },
     ],
     impactGoal: 'Поддержка — не затраты, а центр генерации прибыли',
-    impactTotal: '370+ млн ₽',
-    impactTotalNote: 'совокупный эффект для бизнеса в год',
     impacts: [
-      { icon: 'ShieldCheck', label: 'Сохранённая выручка от простоев', value: '300+ млн ₽' },
-      { icon: 'Bot', label: 'Снижение операционных расходов', value: '40+ млн ₽' },
-      { icon: 'Sparkles', label: 'AI-агенты для подразделений', value: '30+ млн ₽' },
-      { icon: 'ChartLine', label: 'Рост выручки платных услуг', value: '+5%' },
+      { icon: 'ShieldCheck', label: 'Простои предотвращены', value: '300+ млн ₽' },
+      { icon: 'Bot', label: 'Автоматизация расходов', value: '40+ млн ₽' },
+      { icon: 'Sparkles', label: 'AI-агенты подразделениям', value: '30+ млн ₽' },
+      { icon: 'ChartLine', label: 'Рост платных услуг', value: '+5%' },
     ],
     conclusion: 'Каждый пункт измерим и защитим перед финансовым директором',
   },

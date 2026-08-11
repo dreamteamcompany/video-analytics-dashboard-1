@@ -118,24 +118,8 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                 {g.text}
               </p>
 
-              {g.money && (
-                <div className="relative mt-auto flex items-center gap-2.5 rounded-2xl bg-emerald-50 border border-emerald-100 px-3 py-2">
-                  <Icon name="Wallet" size={18} className="text-emerald-600 flex-shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-[16px] md:text-[19px] font-black text-emerald-600 leading-none">
-                      {g.money}
-                    </p>
-                    {g.moneyNote && (
-                      <p className="text-[10px] md:text-[11px] font-semibold text-emerald-700/70 leading-snug mt-0.5">
-                        {g.moneyNote}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
               {(g.effect || g.result) && (
-                <div className={`relative ${g.money ? '' : 'mt-auto'} pt-2.5 border-t border-slate-100 flex items-center gap-2`}>
+                <div className="relative mt-auto pt-2.5 border-t border-slate-100 flex items-center gap-2">
                   <Icon name="ArrowRight" size={14} className="text-violet-400 flex-shrink-0" />
                   <p className={`${dense ? 'text-[11px] md:text-[12px]' : 'text-[12px] md:text-[13px]'} font-semibold text-violet-600 leading-snug`}>
                     {g.effect ?? g.result}
@@ -148,7 +132,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
           {/* Экономический эффект — акцентный блок */}
           {slide.impacts && slide.impacts.length > 0 && (
             <div
-              className="relative rounded-3xl p-4 md:px-5 md:py-3.5 flex flex-col gap-2 org-in overflow-hidden"
+              className="relative rounded-3xl p-4 md:px-5 md:py-4 flex flex-col gap-2.5 org-in overflow-hidden"
               style={{
                 background: 'linear-gradient(150deg, #3b0764 0%, #5b21b6 45%, #312e81 100%)',
                 boxShadow: '0 16px 40px rgba(59,7,100,0.42)',
@@ -170,44 +154,26 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
               />
 
               <div className="relative">
-                <p className="text-[9px] md:text-[10px] font-bold text-cyan-300 tracking-[0.24em] uppercase mb-1">
-                  Ценность для бизнеса
+                <p className="text-[9px] md:text-[10px] font-bold text-cyan-300 tracking-[0.24em] uppercase mb-1.5">
+                  Экономический эффект
                 </p>
-                <p className="text-[13px] md:text-[15px] font-semibold text-white/75 leading-snug">
+                <p className="text-[15px] md:text-xl font-extrabold text-white leading-tight">
                   {slide.impactGoal}
                 </p>
               </div>
 
-              {slide.impactTotal && (
-                <div className="relative rounded-2xl bg-white/10 border border-white/15 px-3 py-2">
-                  <p
-                    className="text-[26px] md:text-[30px] font-black leading-none"
-                    style={{
-                      background: 'linear-gradient(90deg, #6ee7b7 0%, #67e8f9 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
-                    {slide.impactTotal}
-                  </p>
-                  {slide.impactTotalNote && (
-                    <p className="text-[10px] md:text-[11px] font-semibold text-white/60 uppercase tracking-wide mt-1">
-                      {slide.impactTotalNote}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              <div className="relative space-y-1">
+              <div className="relative grid grid-cols-2 gap-2 md:gap-2.5">
                 {slide.impacts.map((it) => (
-                  <div key={it.label} className="flex items-center gap-2">
-                    <Icon name={it.icon ?? 'Coins'} size={13} className="text-cyan-300 flex-shrink-0" />
-                    <p className="text-[10px] md:text-[11px] text-white/55 leading-snug flex-1 min-w-0">
-                      {it.label}
-                    </p>
-                    <p className="text-[11px] md:text-[13px] font-extrabold text-white whitespace-nowrap">
+                  <div
+                    key={it.label}
+                    className="rounded-2xl bg-white/10 border border-white/10 px-2.5 py-2 flex flex-col gap-0.5"
+                  >
+                    <Icon name={it.icon ?? 'Coins'} size={16} className="text-cyan-300" />
+                    <p className="text-[16px] md:text-[20px] font-black text-white leading-none">
                       {it.value}
+                    </p>
+                    <p className="text-[10px] md:text-[11px] text-white/55 leading-snug">
+                      {it.label}
                     </p>
                   </div>
                 ))}
@@ -215,8 +181,8 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
               {slide.conclusion && (
                 <div className="relative mt-auto pt-2 border-t border-white/15 flex items-center gap-2">
-                  <Icon name="ShieldCheck" size={13} className="text-cyan-300 flex-shrink-0" />
-                  <p className="text-[10px] md:text-[11px] text-white/60 leading-snug">
+                  <Icon name="ShieldCheck" size={14} className="text-cyan-300 flex-shrink-0" />
+                  <p className="text-[11px] md:text-[12px] text-white/70 leading-snug">
                     {slide.conclusion}
                   </p>
                 </div>
