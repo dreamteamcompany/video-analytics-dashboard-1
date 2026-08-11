@@ -38,19 +38,19 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-8 lg:px-12 pt-4 sm:pt-5 pb-6 md:pb-5 min-h-0 overflow-y-auto md:overflow-hidden">
         {/* Заголовок */}
-        <div className="flex-shrink-0 flex flex-col md:flex-row md:items-end md:justify-between gap-2 md:gap-6 mb-3 md:mb-4 max-w-[1180px] w-full mx-auto">
+        <div className="flex-shrink-0 flex flex-col md:flex-row md:items-end md:justify-between gap-2 md:gap-6 mb-3 md:mb-4 max-w-[1320px] w-full mx-auto">
           <div className="flex flex-col items-center md:items-start gap-1.5">
             {slide.badge && (
               <span
-                className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-white text-[12px] md:text-[13px] font-semibold"
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-white text-[14px] md:text-[16px] font-semibold"
                 style={{ background: HEADER_GRADIENT, boxShadow: '0 6px 18px rgba(124,58,237,0.32)' }}
               >
-                <Icon name={slide.badgeIcon ?? 'Target'} size={15} className="flex-shrink-0" />
+                <Icon name={slide.badgeIcon ?? 'Target'} size={18} className="flex-shrink-0" />
                 {slide.badge}
               </span>
             )}
             <h2
-              className="text-2xl md:text-[34px] font-black leading-none tracking-tight text-center md:text-left"
+              className="text-3xl md:text-[40px] font-black leading-none tracking-tight text-center md:text-left"
               style={{
                 background: 'linear-gradient(100deg, #1e1b4b 0%, #6d28d9 55%, #db2777 100%)',
                 WebkitBackgroundClip: 'text',
@@ -66,7 +66,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
             <div className="hidden md:flex items-center gap-3">
               <span className="h-px w-20 bg-gradient-to-r from-transparent to-violet-300" />
               <span
-                className="text-[26px] font-black leading-none tracking-tight"
+                className="text-[32px] font-black leading-none tracking-tight"
                 style={{
                   background: VALUE_GRADIENT,
                   WebkitBackgroundClip: 'text',
@@ -82,8 +82,8 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
         {/* Основная сетка */}
         <div
-          className={`w-full max-w-[1180px] mx-auto flex-none md:flex-1 md:min-h-0 grid gap-3 md:gap-4 ${
-            hasAside ? 'md:grid-cols-[1.42fr_1fr]' : ''
+          className={`w-full max-w-[1320px] mx-auto flex-none md:flex-1 md:min-h-0 grid gap-3 md:gap-4 ${
+            hasAside ? 'md:grid-cols-[1.5fr_1fr]' : ''
           }`}
         >
           {/* Цели */}
@@ -104,27 +104,27 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
                 <div className="relative flex-shrink-0">
                   <div
-                    className="w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center"
+                    className="w-11 h-11 md:w-[52px] md:h-[52px] rounded-xl flex items-center justify-center"
                     style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.28)' }}
                   >
-                    <Icon name={g.icon ?? 'Target'} size={20} className="text-white" />
+                    <Icon name={g.icon ?? 'Target'} size={24} className="text-white" />
                   </div>
-                  <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-white border border-violet-200 flex items-center justify-center text-[10px] font-black text-violet-600">
+                  <span className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-white border border-violet-200 flex items-center justify-center text-[12px] font-black text-violet-600">
                     {i + 1}
                   </span>
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] md:text-[14px] font-bold text-slate-800 leading-tight">
+                  <p className="text-[15px] md:text-[17px] font-bold text-slate-800 leading-tight">
                     {g.title}
                   </p>
-                  <p className="text-[10px] md:text-[11px] text-slate-400 leading-snug mt-0.5 line-clamp-2">
+                  <p className="text-[12px] md:text-[13px] text-slate-500 leading-snug mt-1 line-clamp-2">
                     {g.text}
                   </p>
                   {(g.effect || g.result) && (
-                    <span className="inline-flex items-center gap-1 mt-1 rounded-md bg-violet-50 px-1.5 py-0.5">
-                      <Icon name="Check" size={10} className="text-violet-500 flex-shrink-0" />
-                      <span className="text-[10px] md:text-[11px] font-bold text-violet-700 leading-none">
+                    <span className="inline-flex items-center gap-1.5 mt-1.5 rounded-md bg-violet-50 px-2 py-1">
+                      <Icon name="Check" size={13} className="text-violet-500 flex-shrink-0" />
+                      <span className="text-[12px] md:text-[13px] font-bold text-violet-700 leading-none">
                         {g.effect ?? g.result}
                       </span>
                     </span>
@@ -132,9 +132,9 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                 </div>
 
                 {g.metric && (
-                  <div className="flex-shrink-0 text-right pl-1 w-[76px] md:w-[104px]">
+                  <div className="flex-shrink-0 text-right pl-1 w-[84px] md:w-[118px]">
                     <p
-                      className="text-[20px] md:text-[24px] font-black leading-none tracking-tight"
+                      className="text-[22px] md:text-[28px] font-black leading-none tracking-tight"
                       style={{
                         background: VALUE_GRADIENT,
                         WebkitBackgroundClip: 'text',
@@ -145,7 +145,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                       {g.metric}
                     </p>
                     {g.metricNote && (
-                      <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-[0.06em] leading-tight mt-1">
+                      <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-[0.04em] leading-tight mt-1">
                         {g.metricNote}
                       </p>
                     )}
@@ -173,13 +173,13 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                   />
                   <div className="relative">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 py-1">
-                      <Icon name="TrendingUp" size={11} className="text-cyan-300" />
-                      <span className="text-[9px] font-bold text-cyan-300 tracking-[0.18em] uppercase">
+                      <Icon name="TrendingUp" size={13} className="text-cyan-300" />
+                      <span className="text-[11px] font-bold text-cyan-300 tracking-[0.16em] uppercase">
                         Экономический эффект
                       </span>
                     </span>
                     {slide.impactGoal && (
-                      <p className="text-[13px] md:text-[15px] font-black text-white leading-tight mt-2">
+                      <p className="text-[16px] md:text-[18px] font-black text-white leading-tight mt-2">
                         {slide.impactGoal}
                       </p>
                     )}
@@ -192,12 +192,12 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                         className="flex items-center gap-2 rounded-lg px-2.5 py-1.5"
                         style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
                       >
-                        <Icon name={it.icon ?? 'Coins'} size={13} className="text-cyan-300 flex-shrink-0" />
-                        <p className="text-[10px] md:text-[11px] text-white/60 leading-snug flex-1 min-w-0">
+                        <Icon name={it.icon ?? 'Coins'} size={16} className="text-cyan-300 flex-shrink-0" />
+                        <p className="text-[12px] md:text-[13px] text-white/70 leading-snug flex-1 min-w-0">
                           {it.label}
                         </p>
                         <p
-                          className="text-[13px] md:text-[15px] font-black leading-none whitespace-nowrap"
+                          className="text-[16px] md:text-[18px] font-black leading-none whitespace-nowrap"
                           style={{
                             background: 'linear-gradient(90deg, #a7f3d0 0%, #67e8f9 100%)',
                             WebkitBackgroundClip: 'text',
@@ -222,8 +222,8 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                   }}
                 >
                   <div className="flex items-center gap-2 mb-2.5">
-                    <Icon name="Gauge" size={14} className="text-violet-500 flex-shrink-0" />
-                    <p className="text-[9px] md:text-[10px] font-bold text-violet-500 tracking-[0.18em] uppercase">
+                    <Icon name="Gauge" size={17} className="text-violet-500 flex-shrink-0" />
+                    <p className="text-[11px] md:text-[12px] font-bold text-violet-500 tracking-[0.16em] uppercase">
                       {slide.kpiTitle ?? 'Целевые показатели'}
                     </p>
                   </div>
@@ -234,13 +234,13 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                       return (
                         <div key={k.label}>
                           <div className="flex items-baseline justify-between gap-1">
-                            <span className="text-[10px] md:text-[11px] text-slate-500 font-medium leading-tight truncate">
+                            <span className="text-[12px] md:text-[13px] text-slate-500 font-medium leading-tight truncate">
                               {k.label}
                             </span>
-                            <span className="text-[13px] md:text-[15px] font-black text-violet-700 leading-none whitespace-nowrap">
+                            <span className="text-[16px] md:text-[18px] font-black text-violet-700 leading-none whitespace-nowrap">
                               {k.value}
                               {k.note && (
-                                <span className="text-[9px] font-bold text-slate-400 ml-0.5">{k.note}</span>
+                                <span className="text-[11px] font-bold text-slate-400 ml-0.5">{k.note}</span>
                               )}
                             </span>
                           </div>
@@ -261,9 +261,9 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
         </div>
 
         {slide.conclusion && (
-          <div className="w-full max-w-[1180px] mx-auto mt-3 flex items-center justify-center gap-2">
-            <Icon name="ShieldCheck" size={13} className="text-violet-400 flex-shrink-0" />
-            <p className="text-[10px] md:text-[11px] text-slate-400 leading-snug text-center">
+          <div className="w-full max-w-[1320px] mx-auto mt-3 flex items-center justify-center gap-2">
+            <Icon name="ShieldCheck" size={16} className="text-violet-400 flex-shrink-0" />
+            <p className="text-[12px] md:text-[13px] text-slate-500 leading-snug text-center">
               {slide.conclusion}
             </p>
           </div>
