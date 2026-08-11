@@ -82,13 +82,13 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
         {/* Карточки целей */}
         <div
-          className={`flex-none md:flex-1 grid ${compact ? 'gap-3 md:gap-4' : 'gap-3 md:gap-5'} md:min-h-0 auto-rows-max md:auto-rows-auto content-start md:content-stretch`}
+          className={`flex-none md:flex-1 grid ${compact ? 'gap-3 md:gap-4' : 'gap-3 md:gap-5'} md:min-h-0 auto-rows-max items-start content-start md:content-center`}
           style={{ gridTemplateColumns: `repeat(${isMobile ? 1 : cols}, minmax(0, 1fr))` }}
         >
           {goals.map((g, i) => (
             <div
               key={g.title}
-              className={`goal-card group relative rounded-[26px] ${compact ? 'p-4 md:p-5' : 'p-4 md:p-6'} flex flex-col gap-3 org-in overflow-hidden`}
+              className={`goal-card group relative rounded-[22px] ${compact ? 'p-3.5 md:px-4 md:py-3.5' : 'p-4 md:p-5'} flex flex-col gap-2 org-in overflow-hidden`}
               style={{
                 background: 'linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(250,248,255,0.92) 100%)',
                 backdropFilter: 'blur(10px)',
@@ -97,7 +97,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
               }}
             >
               <span
-                className="absolute -right-2 -top-5 text-[86px] md:text-[104px] font-black leading-none select-none pointer-events-none italic"
+                className="absolute -right-1 -top-4 text-[64px] md:text-[76px] font-black leading-none select-none pointer-events-none italic"
                 style={{
                   background: 'linear-gradient(180deg, rgba(124,58,237,0.13) 0%, rgba(124,58,237,0) 78%)',
                   WebkitBackgroundClip: 'text',
@@ -108,28 +108,22 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                 {i + 1}
               </span>
 
-              <div className="relative flex items-start gap-3">
-                <div className="relative flex-shrink-0">
-                  <div
-                    className="absolute inset-0 rounded-2xl blur-md opacity-60"
-                    style={{ background: HEADER_GRADIENT }}
-                  />
-                  <div
-                    className="relative w-11 h-11 md:w-[52px] md:h-[52px] rounded-2xl flex items-center justify-center"
-                    style={{ background: HEADER_GRADIENT }}
-                  >
-                    <Icon name={g.icon ?? 'Target'} size={24} className="text-white" />
-                  </div>
+              <div className="relative flex items-center gap-2.5">
+                <div
+                  className="w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.3)' }}
+                >
+                  <Icon name={g.icon ?? 'Target'} size={19} className="text-white" />
                 </div>
-                <p className={`${dense ? 'text-[15px] md:text-[17px]' : 'text-[15px] md:text-xl'} font-bold text-slate-800 leading-tight pt-1.5 pr-6`}>
+                <p className="text-[13px] md:text-[15px] font-bold text-slate-800 leading-tight pr-5">
                   {g.title}
                 </p>
               </div>
 
               {g.metric && (
-                <div className="relative flex items-baseline gap-2 flex-wrap">
+                <div className="relative flex items-baseline gap-1.5 flex-wrap">
                   <span
-                    className={`${dense ? 'text-[30px] md:text-[36px]' : 'text-4xl md:text-5xl'} font-black leading-none tracking-tight`}
+                    className="text-[24px] md:text-[28px] font-black leading-none tracking-tight"
                     style={{
                       background: 'linear-gradient(120deg, #7c3aed 0%, #6366f1 45%, #ec4899 100%)',
                       WebkitBackgroundClip: 'text',
@@ -140,24 +134,26 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     {g.metric}
                   </span>
                   {g.metricNote && (
-                    <span className="text-[10px] md:text-[12px] font-bold text-slate-400 uppercase tracking-[0.12em]">
+                    <span className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-[0.1em]">
                       {g.metricNote}
                     </span>
                   )}
                 </div>
               )}
 
-              <p className={`relative ${dense ? 'text-[12px] md:text-[13px]' : 'text-[13px] md:text-[15px]'} text-slate-500 leading-relaxed`}>
+              <p className="relative text-[11px] md:text-[12px] text-slate-400 leading-snug">
                 {g.text}
               </p>
 
               {(g.effect || g.result) && (
                 <div
-                  className="relative mt-auto flex items-center gap-2 rounded-2xl px-3 py-2"
-                  style={{ background: 'linear-gradient(90deg, rgba(124,58,237,0.09) 0%, rgba(236,72,153,0.06) 100%)' }}
+                  className="relative mt-auto flex items-center gap-2 rounded-xl px-2.5 py-2"
+                  style={{
+                    background: 'linear-gradient(100deg, rgba(124,58,237,0.11) 0%, rgba(236,72,153,0.09) 100%)',
+                    borderLeft: '3px solid #7c3aed',
+                  }}
                 >
-                  <Icon name="Sparkles" size={14} className="text-violet-500 flex-shrink-0" />
-                  <p className={`${dense ? 'text-[11px] md:text-[12px]' : 'text-[12px] md:text-[13px]'} font-semibold text-violet-700 leading-snug`}>
+                  <p className="text-[12px] md:text-[14px] font-extrabold text-violet-800 leading-snug">
                     {g.effect ?? g.result}
                   </p>
                 </div>
