@@ -34,6 +34,7 @@ export interface KpiItem {
   label: string;
   value: string;
   note?: string;
+  progress?: number;
 }
 
 export interface ImpactItem {
@@ -191,14 +192,14 @@ export const slides: Slide[] = [
     ],
     kpiTitle: 'Целевые показатели службы',
     kpis: [
-      { icon: 'Timer', label: 'Реакция на критичный инцидент', value: '≤ 5 мин' },
-      { icon: 'Wrench', label: 'Решение критичного инцидента', value: '≤ 1 часа' },
-      { icon: 'Clock', label: 'Среднее время решения заявки', value: '≤ 4 часов' },
-      { icon: 'FileCheck', label: 'Соблюдение SLA', value: '≥ 98%' },
-      { icon: 'CircleCheck', label: 'Решено на первой линии', value: '≥ 70%' },
-      { icon: 'Star', label: 'Оценка внутренних клиентов', value: '≥ 4.7 / 5' },
-      { icon: 'Activity', label: 'Доступность ключевых систем', value: '99,9%' },
-      { icon: 'RefreshCw', label: 'Повторные обращения', value: '≤ 5%' },
+      { icon: 'FileCheck', label: 'Соблюдение SLA', value: '98', note: '%', progress: 98 },
+      { icon: 'Activity', label: 'Доступность систем', value: '99,9', note: '%', progress: 99.9 },
+      { icon: 'CircleCheck', label: 'Решено на 1-й линии', value: '70', note: '%', progress: 70 },
+      { icon: 'Star', label: 'Оценка клиентов', value: '4.7', note: 'из 5', progress: 94 },
+      { icon: 'Timer', label: 'Реакция на аварию', value: '5', note: 'мин', progress: 92 },
+      { icon: 'Wrench', label: 'Решение аварии', value: '1', note: 'час', progress: 88 },
+      { icon: 'Clock', label: 'Решение заявки', value: '4', note: 'часа', progress: 80 },
+      { icon: 'RefreshCw', label: 'Повторные заявки', value: '5', note: '%', progress: 95 },
     ],
   },
   {

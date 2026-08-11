@@ -245,7 +245,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
         {/* Целевые показатели */}
         {slide.kpis && slide.kpis.length > 0 && (
           <div
-            className="w-full max-w-[1080px] mx-auto mt-3 md:mt-4 org-in"
+            className="w-full max-w-[1080px] mx-auto mt-3 md:mt-5 pt-1 org-in"
             style={{ animationDelay: `${300 + goals.length * 110}ms` }}
           >
             <div className="flex items-center gap-2.5 mb-2">
@@ -256,22 +256,56 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
               <span className="h-px flex-1 bg-gradient-to-l from-transparent to-violet-200" />
             </div>
 
-            <div className="flex flex-wrap justify-center gap-1.5 md:gap-2">
-              {slide.kpis.map((k) => (
-                <div
-                  key={k.label}
-                  className="flex items-center gap-1.5 rounded-full bg-white/85 border border-violet-100 pl-2 pr-3 py-1"
-                  style={{ boxShadow: '0 3px 10px rgba(124,58,237,0.07)' }}
-                >
-                  <Icon name={k.icon ?? 'Gauge'} size={13} className="text-violet-400 flex-shrink-0" />
-                  <span className="text-[11px] md:text-[12px] font-extrabold text-violet-700 whitespace-nowrap">
-                    {k.value}
-                  </span>
-                  <span className="text-[9px] md:text-[10px] text-slate-400 whitespace-nowrap">
-                    {k.label}
-                  </span>
-                </div>
-              ))}
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-1.5 md:gap-2">
+              {slide.kpis.map((k, ki) => {
+                const pct = Math.max(0, Math.min(100, k.progress ?? 100));
+                const r = 20;
+                const c = 2 * Math.PI * r;
+                return (
+                  <div
+                    key={k.label}
+                    className="rounded-2xl bg-white/85 border border-violet-100 px-1 py-2 flex flex-col items-center gap-1.5"
+                    style={{ boxShadow: '0 3px 12px rgba(124,58,237,0.08)' }}
+                  >
+                    <div className="relative w-[58px] h-[58px]">
+                      <svg viewBox="0 0 48 48" className="w-full h-full -rotate-90">
+                        <defs>
+                          <linearGradient id={`kpiG${ki}`} x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stopColor="#7c3aed" />
+                            <stop offset="100%" stopColor="#ec4899" />
+                          </linearGradient>
+                        </defs>
+                        <circle cx="24" cy="24" r={r} fill="none" stroke="#ede9fe" strokeWidth="5" />
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r={r}
+                          fill="none"
+                          stroke={`url(#kpiG${ki})`}
+                          strokeWidth="5"
+                          strokeLinecap="round"
+                          strokeDasharray={c}
+                          strokeDashoffset={c - (c * pct) / 100}
+                          style={{ transition: 'stroke-dashoffset 1.2s ease' }}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-[15px] font-black text-violet-700 leading-none">
+                          {k.value}
+                        </span>
+                        {k.note && (
+                          <span className="text-[8px] font-bold text-slate-400 leading-none mt-0.5">
+                            {k.note}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-[9px] md:text-[10px] text-slate-500 leading-tight text-center font-semibold px-0.5">
+                      {k.label}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
