@@ -82,7 +82,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
         {/* Карточки целей */}
         <div
-          className={`flex-none md:flex-1 grid ${compact ? 'gap-3 md:gap-4' : 'gap-3 md:gap-5'} md:min-h-0 auto-rows-max items-start content-start md:content-center`}
+          className={`w-full max-w-[1080px] mx-auto flex-none md:flex-1 grid ${compact ? 'gap-3 md:gap-3.5' : 'gap-3 md:gap-5'} md:min-h-0 auto-rows-max items-start content-start md:content-center`}
           style={{ gridTemplateColumns: `repeat(${isMobile ? 1 : cols}, minmax(0, 1fr))` }}
         >
           {goals.map((g, i) => (
