@@ -44,9 +44,15 @@ export interface ImpactItem {
   note?: string;
 }
 
+export interface EcoItem {
+  icon?: string;
+  title: string;
+  note?: string;
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -70,6 +76,10 @@ export interface Slide {
   kpiTitle?: string;
   kpis?: KpiItem[];
   conclusion?: string;
+  coreTitle?: string;
+  coreNote?: string;
+  coreIcon?: string;
+  ecoItems?: EcoItem[];
 }
 
 export const slides: Slide[] = [
@@ -671,6 +681,28 @@ export const slides: Slide[] = [
       { icon: 'Workflow', label: 'Корректировки процессов', value: 'по', note: 'итогам аудита', progress: 80 },
       { icon: 'Sparkles', label: 'Новые ИИ-продукты', value: '2', note: 'минимум', progress: 100 },
       { icon: 'Network', label: 'Оцифровка процессов', value: 'все', note: 'отделы', progress: 90 },
+    ],
+  },
+  {
+    id: 'ai-ecosystem',
+    type: 'ecosystem',
+    theme: 'light',
+    badge: 'Проектное управление',
+    badgeIcon: 'ClipboardList',
+    title: 'Экосистема ИИ-продуктов',
+    subtitle: 'Единое ИИ-ядро компании, вокруг которого работают сервисы для каждого направления.',
+    coreTitle: 'ИИ-ядро компании',
+    coreNote: 'единые данные и модели',
+    coreIcon: 'BrainCircuit',
+    ecoItems: [
+      { icon: 'Headphones', title: 'ИИ-помощник поддержки', note: 'разбор и маршрутизация заявок' },
+      { icon: 'Stethoscope', title: 'ИИ для медицинских систем', note: 'помощь врачу с документами' },
+      { icon: 'PhoneCall', title: 'ИИ-обработка звонков', note: 'запись, разбор, качество сервиса' },
+      { icon: 'FileText', title: 'ИИ-документооборот', note: 'подготовка и проверка документов' },
+      { icon: 'ChartColumn', title: 'ИИ-аналитика и BI', note: 'отчёты и прогнозы по данным' },
+      { icon: 'ShieldCheck', title: 'ИИ в безопасности', note: 'выявление аномалий и угроз' },
+      { icon: 'Users', title: 'ИИ для HR и обучения', note: 'подбор и адаптация сотрудников' },
+      { icon: 'MessageSquare', title: 'ИИ-чат для пациентов', note: 'запись и ответы 24/7' },
     ],
   },
 ];
