@@ -220,7 +220,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                   <div className="relative">
                     <span className="inline-flex items-center gap-1.5">
                       <Icon name="TrendingUp" size={14} className="text-emerald-300" />
-                      <span className="text-[10px] md:text-[clamp(10px,1.25vh,12.5px)] font-bold text-emerald-300 tracking-[0.14em] uppercase">
+                      <span className="text-[11px] md:text-[clamp(11px,1.5vh,14px)] font-bold text-emerald-300 tracking-[0.14em] uppercase">
                         Экономический эффект
                       </span>
                     </span>
@@ -238,8 +238,8 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                         className="flex items-start gap-2 rounded-lg px-2.5 py-1.5"
                         style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}
                       >
-                        <Icon name={it.icon ?? 'Coins'} size={16} className="text-emerald-300 flex-shrink-0" />
-                        <p className="text-[11px] md:text-[clamp(11px,1.4vh,14px)] font-semibold text-white/90 leading-snug flex-1 min-w-0">
+                        <Icon name={it.icon ?? 'Coins'} size={18} className="text-emerald-300 flex-shrink-0" />
+                        <p className="text-[13px] md:text-[clamp(13px,1.8vh,17px)] font-semibold text-white/90 leading-snug flex-1 min-w-0">
                           {it.label}
                         </p>
                         {it.value && (
@@ -268,7 +268,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Icon name="Gauge" size={14} className="text-violet-500 flex-shrink-0" />
-                    <p className="text-[10px] md:text-[clamp(10px,1.3vh,13px)] font-bold text-violet-500 tracking-[0.12em] uppercase">
+                    <p className="text-[11px] md:text-[clamp(11px,1.5vh,14px)] font-bold text-violet-500 tracking-[0.12em] uppercase">
                       {slide.kpiTitle ?? 'Целевые показатели'}
                     </p>
                   </div>
@@ -283,17 +283,17 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                         className="min-w-0 min-h-0 rounded-lg bg-violet-50/60 border border-violet-100 px-2.5 py-1 flex flex-col justify-center gap-0.5"
                       >
                         <div className="flex items-start gap-1 min-w-0">
-                          <Icon name={k.icon ?? 'Check'} size={12} className="text-violet-400 flex-shrink-0 mt-[1px]" />
-                          <span className="flex-1 min-w-0 text-[10px] md:text-[clamp(10px,1.2vh,12.5px)] text-slate-500 font-semibold leading-[1.15]">
+                          <Icon name={k.icon ?? 'Check'} size={14} className="text-violet-400 flex-shrink-0 mt-[1px]" />
+                          <span className="flex-1 min-w-0 text-[12px] md:text-[clamp(12px,1.6vh,15px)] text-slate-600 font-semibold leading-[1.2]">
                             {k.label}
                           </span>
                         </div>
-                        <div className="flex items-baseline gap-0.5 leading-none">
-                          <span className="text-[17px] md:text-[clamp(17px,2.2vh,23px)] font-black text-violet-700 leading-none">
+                        <div className="flex items-baseline gap-1 leading-none">
+                          <span className="text-[19px] md:text-[clamp(19px,2.6vh,27px)] font-black text-violet-700 leading-none">
                             {k.value}
                           </span>
                           {k.note && (
-                            <span className="text-[10px] md:text-[clamp(10px,1.2vh,12.5px)] font-bold text-slate-400">{k.note}</span>
+                            <span className="text-[11px] md:text-[clamp(11px,1.5vh,14px)] font-bold text-slate-400">{k.note}</span>
                           )}
                         </div>
                       </div>
