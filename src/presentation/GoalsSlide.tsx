@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 
 const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%)';
 const VALUE_GRADIENT = 'linear-gradient(120deg, #7c3aed 0%, #6366f1 45%, #ec4899 100%)';
+const VALUE_LABEL_GRADIENT = 'linear-gradient(90deg, #059669 0%, #10b981 55%, #14b8a6 100%)';
 
 const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
   <div
@@ -25,8 +26,18 @@ const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
         {goal.title}
       </p>
       {(goal.effect || goal.result) && (
-        <div className="mt-1 rounded-md bg-violet-50 px-2 py-0.5 text-[10px] md:text-[clamp(10px,1.4vh,14.5px)] leading-snug text-slate-600 line-clamp-2">
-          <span className="font-bold text-violet-700">Ценность для бизнеса:</span>{' '}
+        <div className="mt-1 rounded-md bg-emerald-50/70 px-2 py-0.5 text-[10px] md:text-[clamp(10px,1.4vh,14.5px)] leading-snug text-slate-600 line-clamp-2">
+          <span
+            className="font-black"
+            style={{
+              background: VALUE_LABEL_GRADIENT,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Ценность для бизнеса:
+          </span>{' '}
           {goal.effect ?? goal.result}
         </div>
       )}
