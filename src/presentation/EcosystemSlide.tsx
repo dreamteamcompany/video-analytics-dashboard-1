@@ -20,7 +20,7 @@ const Card = ({
   showNum?: boolean;
 }) => (
   <div
-    className={`flex items-center gap-3 org-in ${side === 'left' ? 'flex-row' : 'flex-row-reverse'}`}
+    className={`w-full flex items-center gap-3 org-in ${side === 'left' ? 'flex-row' : 'flex-row-reverse'}`}
     style={{ animationDelay: `${delay}ms`, marginLeft: side === 'left' ? offset : undefined, marginRight: side === 'right' ? offset : undefined }}
   >
     <div
@@ -42,15 +42,16 @@ const Card = ({
     </div>
 
     {showNum && (
-      <div className="hidden lg:flex items-center gap-1.5 flex-shrink-0">
-        {side === 'right' && <span className="w-7 border-t border-dashed border-violet-300" />}
+      <div className={`hidden lg:flex flex-1 items-center gap-1.5 ${side === 'left' ? 'flex-row' : 'flex-row-reverse'}`}>
+        <span className="w-7 flex-shrink-0 border-t border-dashed border-violet-300" />
         <span
-          className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black text-white"
+          className="w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center text-[11px] font-black text-white"
           style={{ background: HEADER_GRADIENT, boxShadow: '0 4px 12px rgba(124,58,237,0.3)' }}
         >
           {String(num).padStart(2, '0')}
         </span>
-        {side === 'left' && <span className="w-7 border-t border-dashed border-violet-300" />}
+        <span className="flex-1 border-t border-dashed border-violet-300" />
+        <span className="w-1.5 h-1.5 flex-shrink-0 rounded-full bg-violet-500" />
       </div>
     )}
   </div>
@@ -133,7 +134,7 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
 
           {/* Схема */}
           <div className="flex-1 min-h-0 flex flex-col justify-center">
-            <div className="grid gap-3 md:grid-cols-[auto_1fr_auto] items-center">
+            <div className="grid gap-0 md:grid-cols-[1fr_auto_1fr] items-center">
               <div className="flex flex-col gap-2 md:gap-2.5 items-start">
                 {left.map((it, i) => (
                   <Card
@@ -211,24 +212,30 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
             {/* Нижний ряд под ядром */}
             <div className="grid md:grid-cols-2 gap-3 md:gap-6 justify-items-center mt-2 md:-mt-1">
               {bottomLeft && (
-                <div className="md:justify-self-end md:mr-4 flex flex-col items-center gap-1">
+                <div className="md:justify-self-end md:mr-4 flex flex-col items-center">
+                  <span className="hidden lg:block w-1.5 h-1.5 rounded-full bg-violet-500" />
+                  <span className="hidden lg:block h-5 border-l border-dashed border-violet-300" />
                   <span
                     className="hidden lg:flex w-8 h-8 rounded-full items-center justify-center text-[11px] font-black text-white"
                     style={{ background: HEADER_GRADIENT, boxShadow: '0 4px 12px rgba(124,58,237,0.3)' }}
                   >
                     04
                   </span>
+                  <span className="hidden lg:block h-4 border-l border-dashed border-violet-300" />
                   <Card item={bottomLeft} num={4} side="left" delay={420} showNum={false} />
                 </div>
               )}
               {bottomRight && (
-                <div className="md:justify-self-start md:ml-4 flex flex-col items-center gap-1">
+                <div className="md:justify-self-start md:ml-4 flex flex-col items-center">
+                  <span className="hidden lg:block w-1.5 h-1.5 rounded-full bg-violet-500" />
+                  <span className="hidden lg:block h-5 border-l border-dashed border-violet-300" />
                   <span
                     className="hidden lg:flex w-8 h-8 rounded-full items-center justify-center text-[11px] font-black text-white"
                     style={{ background: HEADER_GRADIENT, boxShadow: '0 4px 12px rgba(124,58,237,0.3)' }}
                   >
                     08
                   </span>
+                  <span className="hidden lg:block h-4 border-l border-dashed border-violet-300" />
                   <Card item={bottomRight} num={8} side="right" delay={480} showNum={false} />
                 </div>
               )}
