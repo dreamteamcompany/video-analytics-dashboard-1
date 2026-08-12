@@ -277,20 +277,20 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     {kpis.map((k) => (
                       <div
                         key={k.label}
-                        className="min-w-0 min-h-0 rounded-lg bg-violet-50/60 border border-violet-100 px-2.5 py-1 flex flex-col justify-center"
+                        className="min-w-0 min-h-0 rounded-lg bg-violet-50/60 border border-violet-100 px-2.5 py-1 flex flex-col justify-center gap-0.5"
                       >
-                        <div className="flex items-center gap-1 min-w-0">
-                          <Icon name={k.icon ?? 'Check'} size={12} className="text-violet-400 flex-shrink-0" />
-                          <span className="text-[10px] md:text-[clamp(10px,1.25vh,13px)] text-slate-500 font-semibold leading-none truncate">
+                        <div className="flex items-start gap-1 min-w-0">
+                          <Icon name={k.icon ?? 'Check'} size={12} className="text-violet-400 flex-shrink-0 mt-[1px]" />
+                          <span className="flex-1 min-w-0 text-[10px] md:text-[clamp(10px,1.2vh,12.5px)] text-slate-500 font-semibold leading-[1.15]">
                             {k.label}
                           </span>
                         </div>
-                        <div className="flex items-baseline gap-0.5 leading-none mt-1">
-                          <span className="text-[18px] md:text-[clamp(18px,2.4vh,25px)] font-black text-violet-700 leading-none">
+                        <div className="flex items-baseline gap-0.5 leading-none">
+                          <span className="text-[17px] md:text-[clamp(17px,2.2vh,23px)] font-black text-violet-700 leading-none">
                             {k.value}
                           </span>
                           {k.note && (
-                            <span className="text-[10px] md:text-[clamp(10px,1.25vh,13px)] font-bold text-slate-400">{k.note}</span>
+                            <span className="text-[10px] md:text-[clamp(10px,1.2vh,12.5px)] font-bold text-slate-400">{k.note}</span>
                           )}
                         </div>
                       </div>

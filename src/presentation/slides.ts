@@ -211,7 +211,7 @@ export const slides: Slide[] = [
     kpis: [
       { icon: 'FileCheck', label: 'Соблюдение SLA', value: '98', note: '%', progress: 98 },
       { icon: 'Activity', label: 'Доступность систем', value: '99,9', note: '%', progress: 99.9 },
-      { icon: 'CircleCheck', label: 'Решено на 1-й линии', value: '70', note: '%', progress: 70 },
+      { icon: 'CircleCheck', label: 'Решено 1-й линией', value: '70', note: '%', progress: 70 },
       { icon: 'Star', label: 'Оценка клиентов', value: '4.7', note: 'из 5', progress: 94 },
       { icon: 'Timer', label: 'Реакция на аварию', value: '5', note: 'мин', progress: 92 },
       { icon: 'Clock', label: 'Решение заявки', value: '4', note: 'часа', progress: 80 },
