@@ -1,22 +1,69 @@
-import { Slide } from './slides';
+import { Slide, EcoItem } from './slides';
 import Icon from '@/components/ui/icon';
 
 const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%)';
 const VALUE_GRADIENT = 'linear-gradient(120deg, #7c3aed 0%, #6366f1 45%, #ec4899 100%)';
 
+const Card = ({
+  item,
+  num,
+  side,
+  delay,
+}: {
+  item: EcoItem;
+  num: number;
+  side: 'left' | 'right';
+  delay: number;
+}) => (
+  <div
+    className={`flex items-center gap-3 org-in ${side === 'left' ? 'flex-row' : 'flex-row-reverse'}`}
+    style={{ animationDelay: `${delay}ms` }}
+  >
+    <div
+      className="flex-1 min-w-0 rounded-2xl bg-white border border-violet-100 px-3.5 py-3 flex items-center gap-3 transition-shadow hover:shadow-lg"
+      style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.1)' }}
+    >
+      <div
+        className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
+        style={{ background: 'linear-gradient(135deg,#ede9fe,#fae8ff)' }}
+      >
+        <Icon name={item.icon ?? 'Sparkles'} size={22} className="text-violet-600" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[13.5px] lg:text-[15px] font-bold text-[#1e1b4b] leading-tight">{item.title}</p>
+        {item.note && (
+          <p className="text-[11px] lg:text-[12.5px] text-slate-500 leading-tight mt-0.5">{item.note}</p>
+        )}
+      </div>
+    </div>
+
+    <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
+      {side === 'right' && (
+        <span className="w-8 border-t border-dashed border-violet-300" />
+      )}
+      <span
+        className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black text-white"
+        style={{ background: HEADER_GRADIENT, boxShadow: '0 4px 12px rgba(124,58,237,0.3)' }}
+      >
+        {String(num).padStart(2, '0')}
+      </span>
+      {side === 'left' && <span className="w-8 border-t border-dashed border-violet-300" />}
+    </div>
+  </div>
+);
+
 const EcosystemSlide = ({ slide }: { slide: Slide }) => {
   const items = slide.ecoItems ?? [];
-  const n = items.length || 1;
-  const titleParts = (slide.title ?? '').split(/(\d{4})/);
-
-  const rx = 34;
-  const ry = 33;
-  const angle = (i: number) => (i / n) * 2 * Math.PI - Math.PI / 2;
+  const benefits = slide.ecoBenefits ?? [];
+  const half = Math.ceil(items.length / 2);
+  const left = items.slice(0, half);
+  const right = items.slice(half);
+  const titleParts = (slide.subtitle ?? '').split(/(ИИ-ядро компании)/);
 
   return (
     <div
       className="h-full flex flex-col overflow-hidden relative"
-      style={{ background: 'linear-gradient(135deg, #ffffff 0%, #fafaff 45%, #f3edfd 75%, #fdf0f7 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #ffffff 0%, #faf8ff 45%, #f3edfd 75%, #fdf0f7 100%)' }}
     >
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
@@ -25,8 +72,8 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
             backgroundImage:
               'linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px)',
             backgroundSize: '46px 46px',
-            maskImage: 'radial-gradient(ellipse at 50% 50%, #000 25%, transparent 78%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, #000 25%, transparent 78%)',
+            maskImage: 'radial-gradient(ellipse at 50% 45%, #000 20%, transparent 76%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at 50% 45%, #000 20%, transparent 76%)',
           }}
         />
         <div
@@ -39,148 +86,135 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
         />
       </div>
 
-      <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-6 lg:px-8 pt-4 pb-4 min-h-0 overflow-y-auto md:overflow-hidden">
-        <div className="w-full max-w-[1400px] mx-auto flex flex-col flex-1 min-h-0 md:relative">
-          <div className="flex-shrink-0 flex flex-col items-center gap-2 mb-2 md:absolute md:inset-x-0 md:top-0 md:z-20 md:pointer-events-none">
+      <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-6 lg:px-10 pt-4 pb-3 min-h-0 overflow-y-auto md:overflow-hidden">
+        <div className="w-full max-w-[1500px] mx-auto flex flex-col flex-1 min-h-0">
+          {/* Шапка */}
+          <div className="flex-shrink-0 flex flex-col items-center gap-2 mb-3">
             {slide.badge && (
               <span
-                className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-white text-[12px] md:text-[14px] font-semibold"
+                className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-white text-[12px] md:text-[14px] font-semibold"
                 style={{ background: HEADER_GRADIENT, boxShadow: '0 6px 18px rgba(124,58,237,0.32)' }}
               >
                 <Icon name={slide.badgeIcon ?? 'Sparkles'} size={16} className="flex-shrink-0" />
                 {slide.badge}
               </span>
             )}
-            <h2 className="text-3xl md:text-[38px] font-black leading-none tracking-tight text-center text-[#1e1b4b]">
-              {titleParts.map((part, i) =>
-                /^\d{4}$/.test(part) ? (
-                  <span
-                    key={i}
-                    style={{
-                      background: VALUE_GRADIENT,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
-                    {part}
-                  </span>
-                ) : (
-                  <span key={i}>{part}</span>
-                ),
-              )}
+            <h2 className="text-3xl md:text-[44px] font-black leading-none tracking-tight text-center text-[#1e1b4b]">
+              {slide.title}
             </h2>
             {slide.subtitle && (
-              <p className="text-[12px] md:text-[14px] text-slate-500 leading-snug max-w-[620px] text-center">
-                {slide.subtitle}
+              <p className="text-[12.5px] md:text-[15px] text-slate-500 leading-snug max-w-[720px] text-center">
+                {titleParts.map((part, i) =>
+                  part === 'ИИ-ядро компании' ? (
+                    <span
+                      key={i}
+                      className="font-bold"
+                      style={{
+                        background: VALUE_GRADIENT,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
+                      {part}
+                    </span>
+                  ) : (
+                    <span key={i}>{part}</span>
+                  ),
+                )}
               </p>
             )}
           </div>
 
-          {/* Круговая схема — десктоп */}
-          <div className="hidden md:flex md:absolute md:inset-0 min-h-0 items-center justify-center">
-            <div className="relative w-full h-full">
-              <svg
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-                className="absolute inset-0 w-full h-full pointer-events-none"
-              >
-                {items.map((_, i) => {
-                  const a = angle(i);
-                  return (
-                    <line
-                      key={i}
-                      x1={50 + Math.cos(a) * rx * 0.4}
-                      y1={50 + Math.sin(a) * ry * 0.4}
-                      x2={50 + Math.cos(a) * rx * 0.78}
-                      y2={50 + Math.sin(a) * ry * 0.78}
-                      stroke="rgba(124,58,237,0.28)"
-                      strokeWidth="1.5"
-                      strokeDasharray="5 5"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  );
-                })}
-              </svg>
+          {/* Схема */}
+          <div className="flex-1 min-h-0 grid gap-3 md:gap-4 md:grid-cols-[1fr_auto_1fr] items-center">
+            <div className="flex flex-col gap-2.5 md:gap-3">
+              {left.map((it, i) => (
+                <Card key={it.title} item={it} num={i + 1} side="left" delay={140 + i * 70} />
+              ))}
+            </div>
 
+            {/* Ядро */}
+            <div className="relative flex items-center justify-center py-2">
               <div
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex flex-col items-center justify-center text-center px-4 org-in"
+                className="absolute rounded-full"
                 style={{
-                  width: 'min(28vh, 210px)',
-                  height: 'min(28vh, 210px)',
+                  width: 'min(42vh, 340px)',
+                  height: 'min(42vh, 340px)',
+                  border: '1px dashed rgba(124,58,237,0.25)',
+                }}
+              />
+              <div
+                className="absolute rounded-full"
+                style={{
+                  width: 'min(35vh, 285px)',
+                  height: 'min(35vh, 285px)',
+                  border: '1px solid rgba(124,58,237,0.18)',
+                }}
+              />
+              <div
+                className="relative rounded-full flex flex-col items-center justify-center text-center px-6 org-in"
+                style={{
+                  width: 'min(28vh, 230px)',
+                  height: 'min(28vh, 230px)',
                   background: HEADER_GRADIENT,
-                  boxShadow: '0 14px 40px rgba(124,58,237,0.4)',
+                  boxShadow: '0 18px 50px rgba(124,58,237,0.38)',
                 }}
               >
-                <Icon name={slide.coreIcon ?? 'BrainCircuit'} size={28} className="text-white mb-1" />
-                <p className="text-white font-black text-[13px] lg:text-[15px] leading-tight">{slide.coreTitle}</p>
+                <div
+                  className="absolute inset-0 rounded-full pointer-events-none"
+                  style={{
+                    backgroundImage:
+                      'radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1px)',
+                    backgroundSize: '9px 9px',
+                    opacity: 0.35,
+                  }}
+                />
+                <Icon name={slide.coreIcon ?? 'BrainCircuit'} size={34} className="text-white mb-2 relative" />
+                <p className="relative text-white font-black text-[14px] lg:text-[17px] leading-tight">
+                  {slide.coreTitle}
+                </p>
                 {slide.coreNote && (
-                  <p className="text-white/75 text-[10px] lg:text-[11px] leading-tight mt-0.5">{slide.coreNote}</p>
+                  <p className="relative text-white/75 text-[10.5px] lg:text-[12px] leading-tight mt-1">
+                    {slide.coreNote}
+                  </p>
                 )}
               </div>
-
-              {items.map((it, i) => {
-                const a = angle(i);
-                const x = 50 + Math.cos(a) * rx;
-                const y = 50 + Math.sin(a) * ry;
-                return (
-                  <div
-                    key={it.title}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 org-in"
-                    style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${140 + i * 70}ms` }}
-                  >
-                    <div
-                      className="w-[168px] lg:w-[186px] h-[104px] lg:h-[112px] rounded-2xl bg-white/95 border border-violet-100 px-2.5 py-2 flex flex-col items-center justify-center text-center transition-shadow hover:shadow-lg"
-                      style={{ boxShadow: '0 6px 18px rgba(124,58,237,0.12)' }}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-xl flex items-center justify-center mb-1 flex-shrink-0"
-                        style={{ background: 'linear-gradient(135deg,#ede9fe,#fae8ff)' }}
-                      >
-                        <Icon name={it.icon ?? 'Sparkles'} size={17} className="text-violet-600" />
-                      </div>
-                      <p className="text-[11.5px] lg:text-[13px] font-bold text-slate-800 leading-tight line-clamp-2">
-                        {it.title}
-                      </p>
-                      {it.note && (
-                        <p className="text-[9.5px] lg:text-[10.5px] text-slate-500 leading-tight mt-0.5 line-clamp-2">
-                          {it.note}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
             </div>
-          </div>
 
-          {/* Мобильная версия */}
-          <div className="md:hidden flex flex-col gap-2.5 mt-2">
-            <div
-              className="rounded-2xl px-4 py-3 flex items-center gap-3"
-              style={{ background: HEADER_GRADIENT, boxShadow: '0 10px 26px rgba(124,58,237,0.3)' }}
-            >
-              <Icon name={slide.coreIcon ?? 'BrainCircuit'} size={26} className="text-white flex-shrink-0" />
-              <div>
-                <p className="text-white font-black text-[14px] leading-tight">{slide.coreTitle}</p>
-                {slide.coreNote && <p className="text-white/75 text-[11px]">{slide.coreNote}</p>}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {items.map((it) => (
-                <div key={it.title} className="rounded-xl bg-white/95 border border-violet-100 px-2.5 py-2 text-center">
-                  <div
-                    className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center mb-1"
-                    style={{ background: 'linear-gradient(135deg,#ede9fe,#fae8ff)' }}
-                  >
-                    <Icon name={it.icon ?? 'Sparkles'} size={17} className="text-violet-600" />
-                  </div>
-                  <p className="text-[11.5px] font-bold text-slate-800 leading-tight">{it.title}</p>
-                  {it.note && <p className="text-[10px] text-slate-500 leading-tight mt-0.5">{it.note}</p>}
-                </div>
+            <div className="flex flex-col gap-2.5 md:gap-3">
+              {right.map((it, i) => (
+                <Card key={it.title} item={it} num={half + i + 1} side="right" delay={140 + i * 70} />
               ))}
             </div>
           </div>
+
+          {/* Преимущества */}
+          {benefits.length > 0 && (
+            <div
+              className="flex-shrink-0 mt-3 rounded-2xl bg-white/85 border border-violet-100 px-3 py-2.5 grid grid-cols-2 lg:grid-cols-4 gap-2.5"
+              style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.09)' }}
+            >
+              {benefits.map((b) => (
+                <div key={b.title} className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg,#ede9fe,#fae8ff)' }}
+                  >
+                    <Icon name={b.icon ?? 'Sparkles'} size={19} className="text-violet-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[12.5px] lg:text-[13.5px] font-bold text-[#1e1b4b] leading-tight">
+                      {b.title}
+                    </p>
+                    {b.note && (
+                      <p className="text-[10.5px] lg:text-[11.5px] text-slate-500 leading-tight">{b.note}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -50,6 +50,12 @@ export interface EcoItem {
   note?: string;
 }
 
+export interface EcoBenefit {
+  icon?: string;
+  title: string;
+  note?: string;
+}
+
 export interface Slide {
   id: string;
   type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem';
@@ -80,6 +86,7 @@ export interface Slide {
   coreNote?: string;
   coreIcon?: string;
   ecoItems?: EcoItem[];
+  ecoBenefits?: EcoBenefit[];
 }
 
 export const slides: Slide[] = [
@@ -692,17 +699,23 @@ export const slides: Slide[] = [
     title: 'Экосистема ИИ-продуктов',
     subtitle: 'Единое ИИ-ядро компании, вокруг которого работают сервисы для каждого направления.',
     coreTitle: 'ИИ-ядро компании',
-    coreNote: 'единые данные и модели',
+    coreNote: 'Единые данные и модели',
     coreIcon: 'BrainCircuit',
     ecoItems: [
-      { icon: 'Headphones', title: 'ИИ-помощник поддержки', note: 'разбор и маршрутизация заявок' },
-      { icon: 'Stethoscope', title: 'ИИ для медицинских систем', note: 'помощь врачу с документами' },
-      { icon: 'PhoneCall', title: 'ИИ-обработка звонков', note: 'запись, разбор, качество сервиса' },
-      { icon: 'FileText', title: 'ИИ-документооборот', note: 'подготовка и проверка документов' },
-      { icon: 'ChartColumn', title: 'ИИ-аналитика и BI', note: 'отчёты и прогнозы по данным' },
-      { icon: 'ShieldCheck', title: 'ИИ в безопасности', note: 'выявление аномалий и угроз' },
-      { icon: 'Users', title: 'ИИ для HR и обучения', note: 'подбор и адаптация сотрудников' },
-      { icon: 'MessageSquare', title: 'ИИ-чат для пациентов', note: 'запись и ответы 24/7' },
+      { icon: 'MessageSquare', title: 'ИИ-чат для клиентов', note: 'Запись и ответы 24/7' },
+      { icon: 'Users', title: 'ИИ для HR и обучения', note: 'Подбор и адаптация сотрудников' },
+      { icon: 'ShieldCheck', title: 'ИИ в безопасности', note: 'Выявление аномалий и угроз' },
+      { icon: 'ChartColumn', title: 'ИИ-аналитика и BI', note: 'Отчёты и прогнозы по данным' },
+      { icon: 'Headphones', title: 'ИИ-помощник поддержки', note: 'Разбор и маршрутизация заявок' },
+      { icon: 'Stethoscope', title: 'ИИ для медицинских систем', note: 'Помощь врачу с документами' },
+      { icon: 'PhoneCall', title: 'ИИ-обработка звонков', note: 'Запись, разбор, качество сервиса' },
+      { icon: 'FileText', title: 'ИИ-документооборот', note: 'Подготовка и проверка документов' },
+    ],
+    ecoBenefits: [
+      { icon: 'Rocket', title: 'Скорость внедрения', note: 'Быстрый запуск новых ИИ-решений' },
+      { icon: 'TrendingUp', title: 'Масштабируемость', note: 'Лёгкое расширение экосистемы' },
+      { icon: 'ShieldCheck', title: 'Безопасность данных', note: 'Единые стандарты защиты и контроля' },
+      { icon: 'PiggyBank', title: 'Коммерческий потенциал', note: 'Готовые продукты для рынка' },
     ],
   },
 ];
