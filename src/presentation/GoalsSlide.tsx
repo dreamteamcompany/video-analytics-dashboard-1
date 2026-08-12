@@ -49,7 +49,7 @@ const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
     </div>
 
     {(goal.effect || goal.result) && (
-      <div className="rounded-lg bg-emerald-50/70 border border-emerald-100 px-2.5 py-1.5 text-[10px] md:text-[clamp(10px,1.45vh,15px)] leading-snug text-slate-600 line-clamp-2">
+      <div className="rounded-lg bg-emerald-50/70 border border-emerald-100 px-3 py-2 text-[12px] md:text-[clamp(12px,1.85vh,19px)] leading-snug text-slate-600 line-clamp-2">
         <span
           className="font-black"
           style={{
