@@ -703,7 +703,7 @@ export const slides: Slide[] = [
     coreIcon: 'BrainCircuit',
     ecoItems: [
       { icon: 'MessageSquare', title: 'Юна AI', note: 'Запись и ответы 24/7' },
-      { icon: 'Users', title: 'ИИ для HR и обучения', note: 'Подбор и адаптация сотрудников' },
+      { icon: 'Users', title: 'AI-тренажёры (обучение)', note: 'Подбор и адаптация сотрудников' },
       { icon: 'ShieldCheck', title: 'ИИ в безопасности', note: 'Выявление аномалий и угроз' },
       { icon: 'ChartColumn', title: 'ИИ-аналитика и BI', note: 'Отчёты и прогнозы по данным' },
       { icon: 'Headphones', title: 'ИИ-помощник поддержки', note: 'Разбор и маршрутизация заявок' },
