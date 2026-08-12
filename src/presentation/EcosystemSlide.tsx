@@ -238,16 +238,16 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
           {/* Преимущества */}
           {benefits.length > 0 && (
             <div
-              className="flex-shrink-0 mt-2.5 rounded-2xl bg-white/85 border border-violet-100 px-3 py-2.5 grid grid-cols-2 lg:grid-cols-4 gap-2.5"
+              className="flex-shrink-0 mt-2.5 rounded-2xl bg-white/85 border border-violet-100 px-4 py-6 grid grid-cols-2 lg:grid-cols-4 gap-3"
               style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.09)' }}
             >
               {benefits.map((b) => (
                 <div key={b.title} className="flex items-center gap-2.5 min-w-0">
                   <div
-                    className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center"
+                    className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center"
                     style={{ background: 'linear-gradient(135deg,#ede9fe,#fae8ff)' }}
                   >
-                    <Icon name={b.icon ?? 'Sparkles'} size={19} className="text-violet-600" />
+                    <Icon name={b.icon ?? 'Sparkles'} size={22} className="text-violet-600" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-[12.5px] lg:text-[13.5px] font-bold text-[#1e1b4b] leading-tight">
