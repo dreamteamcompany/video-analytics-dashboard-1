@@ -209,7 +209,7 @@ export const slides: Slide[] = [
     ],
     kpiTitle: 'Ключевые показатели службы',
     kpis: [
-      { icon: 'FileCheck', label: 'Соблюдение SLA', value: '98', note: '%', progress: 98 },
+      { icon: 'FileCheck', label: 'Соблюдение SLA', value: '99', note: '%', progress: 99 },
       { icon: 'Activity', label: 'Доступность систем', value: '99,9', note: '%', progress: 99.9 },
       { icon: 'CircleCheck', label: 'Решено 1-й линией', value: '70', note: '%', progress: 70 },
       { icon: 'Star', label: 'Оценка сотрудников', value: '5', note: 'из 5', progress: 100 },
