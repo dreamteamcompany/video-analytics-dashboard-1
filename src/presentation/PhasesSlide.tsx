@@ -4,6 +4,7 @@ import Icon from '@/components/ui/icon';
 const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%)';
 const STAGE_TWO_GRADIENT = 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%)';
 const OUTCOME_GRADIENT = 'linear-gradient(135deg, #059669 0%, #10b981 55%, #14b8a6 100%)';
+const WARNING_GRADIENT = 'linear-gradient(135deg, #f59e0b 0%, #f97316 55%, #ea580c 100%)';
 
 const PhaseCard = ({ phase, index }: { phase: PhaseItem; index: number }) => {
   const gradient = index === 0 ? HEADER_GRADIENT : STAGE_TWO_GRADIENT;
@@ -158,10 +159,13 @@ const PhasesSlide = ({ slide }: { slide: Slide }) => {
 
           {slide.phasesFooter && (
             <div
-              className="flex-shrink-0 mt-3 rounded-xl px-4 py-3 text-center text-white text-[13px] md:text-[17px] font-bold org-in"
-              style={{ background: OUTCOME_GRADIENT, boxShadow: '0 8px 22px rgba(16,185,129,0.3)', animationDelay: '600ms' }}
+              className="flex-shrink-0 mt-3 rounded-xl px-4 py-3 flex items-center justify-center gap-3 text-white text-[13px] md:text-[17px] font-bold org-in"
+              style={{ background: WARNING_GRADIENT, boxShadow: '0 8px 22px rgba(234,88,12,0.32)', animationDelay: '600ms' }}
             >
-              {slide.phasesFooter}
+              <div className="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                <Icon name="TriangleAlert" size={20} className="text-white" />
+              </div>
+              <span className="text-center">{slide.phasesFooter}</span>
             </div>
           )}
         </div>
