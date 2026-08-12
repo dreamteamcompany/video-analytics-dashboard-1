@@ -235,24 +235,26 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     {impacts.map((it) => (
                       <div
                         key={it.label}
-                        className="flex items-center gap-2 rounded-lg px-2.5 py-1"
+                        className="flex items-start gap-2 rounded-lg px-2.5 py-1.5"
                         style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}
                       >
-                        <Icon name={it.icon ?? 'Coins'} size={15} className="text-emerald-300 flex-shrink-0" />
-                        <p className="text-[11px] md:text-[clamp(11px,1.45vh,14.5px)] text-white/75 leading-snug flex-1 min-w-0">
+                        <Icon name={it.icon ?? 'Coins'} size={16} className="text-emerald-300 flex-shrink-0" />
+                        <p className="text-[11px] md:text-[clamp(11px,1.4vh,14px)] font-semibold text-white/90 leading-snug flex-1 min-w-0">
                           {it.label}
                         </p>
-                        <p
-                          className="text-[14px] md:text-[clamp(14px,1.9vh,19px)] font-black leading-none whitespace-nowrap"
-                          style={{
-                            background: 'linear-gradient(90deg, #6ee7b7 0%, #34d399 55%, #5eead4 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            backgroundClip: 'text',
-                          }}
-                        >
-                          {it.value}
-                        </p>
+                        {it.value && (
+                          <p
+                            className="text-[14px] md:text-[clamp(14px,1.9vh,19px)] font-black leading-none whitespace-nowrap"
+                            style={{
+                              background: 'linear-gradient(90deg, #6ee7b7 0%, #34d399 55%, #5eead4 100%)',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              backgroundClip: 'text',
+                            }}
+                          >
+                            {it.value}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -261,27 +263,27 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
 
               {kpis.length > 0 && (
                 <div
-                  className="relative flex-1 rounded-2xl bg-white/95 border border-violet-100 px-3.5 py-3 org-in md:min-h-0 flex flex-col"
+                  className="relative flex-1 overflow-hidden rounded-2xl bg-white/95 border border-violet-100 px-3.5 py-2.5 org-in md:min-h-0 flex flex-col"
                   style={{ boxShadow: '0 4px 16px rgba(124,58,237,0.07)' }}
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon name="Gauge" size={15} className="text-violet-500 flex-shrink-0" />
-                    <p className="text-[10px] md:text-[clamp(10px,1.35vh,13.5px)] font-bold text-violet-500 tracking-[0.12em] uppercase">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Icon name="Gauge" size={14} className="text-violet-500 flex-shrink-0" />
+                    <p className="text-[10px] md:text-[clamp(10px,1.25vh,12.5px)] font-bold text-violet-500 tracking-[0.12em] uppercase">
                       {slide.kpiTitle ?? 'Целевые показатели'}
                     </p>
                   </div>
 
-                  <div className="flex-1 min-h-0 flex flex-col justify-between gap-0.5">
+                  <div className="flex-1 min-h-0 grid grid-cols-2 gap-x-3 gap-y-0.5 content-between">
                     {kpis.map((k) => (
-                      <div key={k.label} className="border-b border-violet-50 pb-0.5 last:border-0">
-                        <div className="flex items-center gap-2">
-                          <Icon name={k.icon ?? 'Check'} size={15} className="text-violet-400 flex-shrink-0" />
-                          <span className="text-[11px] md:text-[clamp(11px,1.45vh,14.5px)] text-slate-600 font-medium leading-tight flex-1 truncate">
+                      <div key={k.label} className="min-w-0 border-b border-violet-50 pb-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <Icon name={k.icon ?? 'Check'} size={13} className="text-violet-400 flex-shrink-0" />
+                          <span className="text-[10px] md:text-[clamp(10px,1.2vh,12.5px)] text-slate-600 font-medium leading-tight flex-1 truncate">
                             {k.label}
                           </span>
-                          <span className="text-[13px] md:text-[clamp(13px,1.8vh,18px)] font-black text-violet-700 leading-none whitespace-nowrap">
+                          <span className="text-[12px] md:text-[clamp(12px,1.5vh,15px)] font-black text-violet-700 leading-none whitespace-nowrap">
                             {k.value}
-                            {k.note && <span className="text-[10px] md:text-[clamp(10px,1.2vh,12px)] font-bold text-slate-400 ml-0.5">{k.note}</span>}
+                            {k.note && <span className="text-[9px] md:text-[clamp(9px,1.05vh,11px)] font-bold text-slate-400 ml-0.5">{k.note}</span>}
                           </span>
                         </div>
                       </div>

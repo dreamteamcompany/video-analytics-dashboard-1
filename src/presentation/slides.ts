@@ -40,7 +40,7 @@ export interface KpiItem {
 export interface ImpactItem {
   icon?: string;
   label: string;
-  value: string;
+  value?: string;
   note?: string;
 }
 
@@ -202,10 +202,10 @@ export const slides: Slide[] = [
     ],
     impactGoal: 'Поддержка — не затраты, а центр генерации прибыли',
     impacts: [
-      { icon: 'ShieldCheck', label: 'Простои предотвращены', value: '300+ млн ₽' },
-      { icon: 'Bot', label: 'Автоматизация расходов', value: '40+ млн ₽' },
-      { icon: 'Sparkles', label: 'AI-агенты подразделениям', value: '30+ млн ₽' },
-      { icon: 'ChartLine', label: 'Рост платных услуг', value: '+5%' },
+      { icon: 'ShieldCheck', label: 'Сбои не доходят до бизнеса — простои и потери предотвращены' },
+      { icon: 'Bot', label: 'Автоматизация снимает рутину — растём без роста штата' },
+      { icon: 'GraduationCap', label: 'Своя сильная команда вместо дорогого подряда' },
+      { icon: 'ClipboardCheck', label: 'SLA с ответственностью — надёжность, за которую отвечаем' },
     ],
     kpiTitle: 'Ключевые показатели службы',
     kpis: [
