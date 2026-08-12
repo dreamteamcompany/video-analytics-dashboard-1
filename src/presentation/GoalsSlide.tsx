@@ -192,7 +192,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
           </div>
 
           {/* Основная сетка */}
-          <div className="flex-none md:flex-1 md:min-h-0 grid gap-2.5 md:grid-cols-[1fr_1fr_0.62fr]">
+          <div className="flex-none md:flex-1 md:min-h-0 grid gap-2.5 md:grid-cols-[0.85fr_0.85fr_1fr]">
             <div className="flex flex-col gap-1.5 md:min-h-0 md:overflow-hidden">
               {left.map((g, i) => (
                 <GoalCard key={g.title} goal={g} index={i} />
@@ -280,9 +280,9 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     {kpis.map((k) => (
                       <div
                         key={k.label}
-                        className="min-w-0 min-h-0 rounded-lg bg-violet-50/60 border border-violet-100 px-2.5 py-1 flex flex-col justify-center gap-0.5"
+                        className="min-w-0 min-h-0 rounded-lg bg-violet-50/60 border border-violet-100 px-2.5 py-1.5 flex flex-col justify-center gap-1"
                       >
-                        <div className="flex items-start gap-1 min-w-0">
+                        <div className="flex items-start gap-1.5 min-w-0">
                           <Icon name={k.icon ?? 'Check'} size={14} className="text-violet-400 flex-shrink-0 mt-[1px]" />
                           <span className="flex-1 min-w-0 text-[12px] md:text-[clamp(12px,1.6vh,15px)] text-slate-600 font-semibold leading-[1.2]">
                             {k.label}
