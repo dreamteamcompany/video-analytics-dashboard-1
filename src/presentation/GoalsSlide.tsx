@@ -273,7 +273,10 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     </p>
                   </div>
 
-                  <div className="flex-1 min-h-0 grid grid-cols-2 grid-rows-3 gap-1.5">
+                  <div
+                    className="flex-1 min-h-0 grid grid-cols-2 gap-1.5"
+                    style={{ gridTemplateRows: `repeat(${Math.ceil(kpis.length / 2)}, minmax(0, 1fr))` }}
+                  >
                     {kpis.map((k) => (
                       <div
                         key={k.label}
