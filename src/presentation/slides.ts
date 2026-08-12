@@ -56,9 +56,17 @@ export interface EcoBenefit {
   note?: string;
 }
 
+export interface IndicatorItem {
+  icon?: string;
+  title: string;
+  metric: string;
+  metricNote?: string;
+  note?: string;
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -87,6 +95,8 @@ export interface Slide {
   coreIcon?: string;
   ecoItems?: EcoItem[];
   ecoBenefits?: EcoBenefit[];
+  indicators?: IndicatorItem[];
+  indicatorsFooter?: string;
 }
 
 export const slides: Slide[] = [
@@ -717,5 +727,73 @@ export const slides: Slide[] = [
       { icon: 'ShieldCheck', title: 'Безопасность данных', note: 'Единые стандарты защиты и контроля' },
       { icon: 'PiggyBank', title: 'Коммерческий потенциал', note: 'Готовые продукты для рынка' },
     ],
+  },
+  {
+    id: 'success-indicators',
+    type: 'indicators',
+    theme: 'light',
+    badge: 'Контрольные точки',
+    badgeIcon: 'Gauge',
+    title: 'Индикаторы правильного направления IT-департамента',
+    subtitle: 'Что руководство увидит к концу 2026 года — простые признаки того, что в IT всё в порядке.',
+    indicators: [
+      {
+        icon: 'ShieldCheck',
+        title: 'Системы работают без простоев',
+        metric: '99,5%',
+        metricNote: 'доступность сервисов',
+        note: 'Бизнес не останавливается из-за сбоев ИТ.',
+      },
+      {
+        icon: 'Timer',
+        title: 'Заявки решаются быстро',
+        metric: '< 4 ч',
+        metricNote: 'среднее время решения',
+        note: 'Сотрудники не ждут помощь днями.',
+      },
+      {
+        icon: 'LayoutDashboard',
+        title: 'Все обращения — в единой системе',
+        metric: '100%',
+        metricNote: 'заявок в Service Desk',
+        note: 'Ничего не теряется, видна вся картина.',
+      },
+      {
+        icon: 'Sparkles',
+        title: 'ИИ-продукты запущены и работают',
+        metric: '2+',
+        metricNote: 'продукта в эксплуатации',
+        note: 'ИИ приносит пользу, а не остаётся идеей.',
+      },
+      {
+        icon: 'Network',
+        title: 'Процессы отделов оцифрованы',
+        metric: 'все',
+        metricNote: 'отделы компании',
+        note: 'Работа прозрачна и не зависит от людей.',
+      },
+      {
+        icon: 'Users',
+        title: 'Команда укомплектована и стабильна',
+        metric: '0',
+        metricNote: 'критичных вакансий',
+        note: 'Ключевые роли закрыты, знания не теряются.',
+      },
+      {
+        icon: 'Lock',
+        title: 'Инциденты безопасности под контролем',
+        metric: '0',
+        metricNote: 'критичных инцидентов',
+        note: 'Данные компании защищены.',
+      },
+      {
+        icon: 'Wallet',
+        title: 'ИТ-бюджет предсказуем',
+        metric: '±5%',
+        metricNote: 'отклонение от плана',
+        note: 'Никаких внезапных трат и сюрпризов.',
+      },
+    ],
+    indicatorsFooter: 'Если эти показатели достигнуты — IT-департамент движется в правильном направлении.',
   },
 ];
