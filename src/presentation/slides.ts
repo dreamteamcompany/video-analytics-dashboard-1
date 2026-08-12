@@ -696,7 +696,7 @@ export const slides: Slide[] = [
     theme: 'light',
     badge: 'Проектное управление',
     badgeIcon: 'ClipboardList',
-    title: 'Экосистема ИИ-продуктов',
+    title: 'Цели на 2027 год',
     subtitle: 'Единое ИИ-ядро компании, вокруг которого работают сервисы для каждого направления.',
     coreTitle: 'ИИ-ядро компании',
     coreNote: 'Единые данные и модели',
