@@ -697,7 +697,7 @@ export const slides: Slide[] = [
     badge: 'Проектное управление',
     badgeIcon: 'ClipboardList',
     title: 'Цели на 2027 год',
-    subtitle: 'Единое ИИ-ядро компании, вокруг которого работают сервисы для каждого направления.',
+    subtitle: 'Выход ИИ-продуктов на рынок и самоокупаемость.',
     coreTitle: 'ИИ-ядро компании',
     coreNote: 'Единые данные и модели',
     coreIcon: 'BrainCircuit',
