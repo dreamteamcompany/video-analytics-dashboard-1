@@ -209,12 +209,12 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                 >
                   <div
                     className="aurora-a absolute -top-20 -right-16 w-56 h-56 rounded-full pointer-events-none"
-                    style={{ background: 'radial-gradient(circle, rgba(236,72,153,0.42) 0%, transparent 68%)' }}
+                    style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.4) 0%, transparent 68%)' }}
                   />
                   <div className="relative">
                     <span className="inline-flex items-center gap-1.5">
-                      <Icon name="TrendingUp" size={14} className="text-cyan-300" />
-                      <span className="text-[10px] md:text-[clamp(10px,1.25vh,12.5px)] font-bold text-cyan-300 tracking-[0.14em] uppercase">
+                      <Icon name="TrendingUp" size={14} className="text-emerald-300" />
+                      <span className="text-[10px] md:text-[clamp(10px,1.25vh,12.5px)] font-bold text-emerald-300 tracking-[0.14em] uppercase">
                         Экономический эффект
                       </span>
                     </span>
@@ -230,16 +230,16 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                       <div
                         key={it.label}
                         className="flex items-center gap-2 rounded-lg px-2.5 py-1"
-                        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+                        style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)' }}
                       >
-                        <Icon name={it.icon ?? 'Coins'} size={15} className="text-cyan-300 flex-shrink-0" />
+                        <Icon name={it.icon ?? 'Coins'} size={15} className="text-emerald-300 flex-shrink-0" />
                         <p className="text-[11px] md:text-[clamp(11px,1.45vh,14.5px)] text-white/75 leading-snug flex-1 min-w-0">
                           {it.label}
                         </p>
                         <p
                           className="text-[14px] md:text-[clamp(14px,1.9vh,19px)] font-black leading-none whitespace-nowrap"
                           style={{
-                            background: 'linear-gradient(90deg, #a7f3d0 0%, #67e8f9 100%)',
+                            background: 'linear-gradient(90deg, #6ee7b7 0%, #34d399 55%, #5eead4 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
