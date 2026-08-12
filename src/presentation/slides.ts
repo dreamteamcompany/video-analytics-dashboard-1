@@ -141,9 +141,9 @@ export const slides: Slide[] = [
     theme: 'light',
     badge: 'Техническая поддержка',
     badgeIcon: 'Headphones',
-    title: 'Цели на 2026 год',
+    title: 'Цели на 2027 год',
     subtitle: 'От поддержки инцидентов — к предотвращению проблем — к созданию ценности для бизнеса.',
-    goalsYear: '2026',
+    goalsYear: '2027',
     goalsImage: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/files/a0899ba2-4e2c-4909-9a02-9fe76c9e0a67.jpg',
     goals: [
       {
