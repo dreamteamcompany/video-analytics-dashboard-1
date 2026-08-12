@@ -702,7 +702,7 @@ export const slides: Slide[] = [
     coreNote: 'Единые данные и модели',
     coreIcon: 'BrainCircuit',
     ecoItems: [
-      { icon: 'MessageSquare', title: 'ИИ-чат для клиентов', note: 'Запись и ответы 24/7' },
+      { icon: 'MessageSquare', title: 'Юна AI', note: 'Запись и ответы 24/7' },
       { icon: 'Users', title: 'ИИ для HR и обучения', note: 'Подбор и адаптация сотрудников' },
       { icon: 'ShieldCheck', title: 'ИИ в безопасности', note: 'Выявление аномалий и угроз' },
       { icon: 'ChartColumn', title: 'ИИ-аналитика и BI', note: 'Отчёты и прогнозы по данным' },
