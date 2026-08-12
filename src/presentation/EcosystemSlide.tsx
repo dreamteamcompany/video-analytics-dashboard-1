@@ -181,35 +181,36 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
                   <div
                     className="absolute inset-0 rounded-full pointer-events-none"
                     style={{
-                      backgroundImage: 'radial-gradient(rgba(255,255,255,0.85) 1px, transparent 1.2px)',
+                      backgroundImage: 'radial-gradient(rgba(255,255,255,0.9) 1px, transparent 1.2px)',
                       backgroundSize: '7px 7px',
-                      opacity: 0.3,
-                      maskImage: 'radial-gradient(circle at 50% 50%, #000 55%, rgba(0,0,0,0.25) 85%, transparent 100%)',
+                      opacity: 0.55,
+                      maskImage:
+                        'radial-gradient(circle at 50% 50%, transparent 42%, rgba(0,0,0,0.45) 66%, #000 88%, #000 100%)',
                       WebkitMaskImage:
-                        'radial-gradient(circle at 50% 50%, #000 55%, rgba(0,0,0,0.25) 85%, transparent 100%)',
+                        'radial-gradient(circle at 50% 50%, transparent 42%, rgba(0,0,0,0.45) 66%, #000 88%, #000 100%)',
                     }}
                   />
                   {/* меридианы */}
-                  {[18, 36, 50, 64, 82].map((w) => (
+                  {[62, 84].map((w) => (
                     <span
                       key={`m-${w}`}
                       className="absolute rounded-[50%] pointer-events-none"
                       style={{
                         width: `${w}%`,
                         height: '100%',
-                        border: '1px solid rgba(255,255,255,0.13)',
+                        border: '1px solid rgba(255,255,255,0.14)',
                       }}
                     />
                   ))}
                   {/* параллели */}
-                  {[18, 36, 50, 64, 82].map((h) => (
+                  {[62, 84].map((h) => (
                     <span
                       key={`p-${h}`}
                       className="absolute rounded-[50%] pointer-events-none"
                       style={{
                         width: '100%',
                         height: `${h}%`,
-                        border: '1px solid rgba(255,255,255,0.11)',
+                        border: '1px solid rgba(255,255,255,0.12)',
                       }}
                     />
                   ))}
