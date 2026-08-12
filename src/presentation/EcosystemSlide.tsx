@@ -9,8 +9,9 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
   const n = items.length || 1;
   const titleParts = (slide.title ?? '').split(/(\d{4})/);
 
-  const rx = 36;
-  const ry = 31;
+  const rx = 34;
+  const ry = 40;
+  const angle = (i: number) => (i / n) * 2 * Math.PI - Math.PI / 2;
 
   return (
     <div
@@ -84,28 +85,18 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
                 preserveAspectRatio="none"
                 className="absolute inset-0 w-full h-full pointer-events-none"
               >
-                <ellipse
-                  cx="50"
-                  cy="50"
-                  rx={rx}
-                  ry={ry}
-                  fill="none"
-                  stroke="rgba(124,58,237,0.2)"
-                  strokeWidth="1.5"
-                  strokeDasharray="6 6"
-                  vectorEffect="non-scaling-stroke"
-                />
                 {items.map((_, i) => {
-                  const a = (i / n) * 2 * Math.PI - Math.PI / 2;
+                  const a = angle(i);
                   return (
                     <line
                       key={i}
-                      x1={50 + Math.cos(a) * rx * 0.42}
-                      y1={50 + Math.sin(a) * ry * 0.42}
-                      x2={50 + Math.cos(a) * rx * 0.95}
-                      y2={50 + Math.sin(a) * ry * 0.95}
-                      stroke="rgba(124,58,237,0.22)"
+                      x1={50 + Math.cos(a) * rx * 0.4}
+                      y1={50 + Math.sin(a) * ry * 0.4}
+                      x2={50 + Math.cos(a) * rx * 0.78}
+                      y2={50 + Math.sin(a) * ry * 0.78}
+                      stroke="rgba(124,58,237,0.28)"
                       strokeWidth="1.5"
+                      strokeDasharray="5 5"
                       vectorEffect="non-scaling-stroke"
                     />
                   );
@@ -129,7 +120,7 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
               </div>
 
               {items.map((it, i) => {
-                const a = (i / n) * 2 * Math.PI - Math.PI / 2;
+                const a = angle(i);
                 const x = 50 + Math.cos(a) * rx;
                 const y = 50 + Math.sin(a) * ry;
                 return (
@@ -139,18 +130,22 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
                     style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${140 + i * 70}ms` }}
                   >
                     <div
-                      className="w-[152px] lg:w-[178px] rounded-2xl bg-white/95 border border-violet-100 px-2.5 py-2 text-center transition-shadow hover:shadow-lg"
+                      className="w-[168px] lg:w-[186px] h-[104px] lg:h-[112px] rounded-2xl bg-white/95 border border-violet-100 px-2.5 py-2 flex flex-col items-center justify-center text-center transition-shadow hover:shadow-lg"
                       style={{ boxShadow: '0 6px 18px rgba(124,58,237,0.12)' }}
                     >
                       <div
-                        className="mx-auto w-8 h-8 rounded-xl flex items-center justify-center mb-1"
+                        className="w-8 h-8 rounded-xl flex items-center justify-center mb-1 flex-shrink-0"
                         style={{ background: 'linear-gradient(135deg,#ede9fe,#fae8ff)' }}
                       >
                         <Icon name={it.icon ?? 'Sparkles'} size={17} className="text-violet-600" />
                       </div>
-                      <p className="text-[11.5px] lg:text-[13px] font-bold text-slate-800 leading-tight">{it.title}</p>
+                      <p className="text-[11.5px] lg:text-[13px] font-bold text-slate-800 leading-tight line-clamp-2">
+                        {it.title}
+                      </p>
                       {it.note && (
-                        <p className="text-[9.5px] lg:text-[10.5px] text-slate-500 leading-tight mt-0.5">{it.note}</p>
+                        <p className="text-[9.5px] lg:text-[10.5px] text-slate-500 leading-tight mt-0.5 line-clamp-2">
+                          {it.note}
+                        </p>
                       )}
                     </div>
                   </div>
