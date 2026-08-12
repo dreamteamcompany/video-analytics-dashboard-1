@@ -709,7 +709,7 @@ export const slides: Slide[] = [
       { icon: 'Headphones', title: 'ИИ-помощник поддержки', note: 'Разбор и маршрутизация заявок' },
       { icon: 'Stethoscope', title: 'ИИ для медицинских систем', note: 'Помощь врачу с документами' },
       { icon: 'PhoneCall', title: 'ИИ-обработка звонков', note: 'Запись, разбор, качество сервиса' },
-      { icon: 'FileText', title: 'ИИ-документооборот', note: 'Подготовка и проверка документов' },
+      { icon: 'ShoppingCart', title: 'AI-закупки', note: 'Подготовка и проверка документов' },
     ],
     ecoBenefits: [
       { icon: 'Rocket', title: 'Скорость внедрения', note: 'Быстрый запуск новых ИИ-решений' },
