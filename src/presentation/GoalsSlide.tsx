@@ -71,18 +71,23 @@ const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
           <Icon name="Info" size={13} className="text-violet-400" />
         </span>
         <div
-          className="absolute inset-0 flex items-center gap-2.5 px-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none"
+          className="absolute inset-0 overflow-hidden flex flex-col justify-center gap-2 px-4 py-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none"
           style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%)' }}
         >
-          <Icon name={goal.icon ?? 'Target'} size={20} className="text-white/80 flex-shrink-0" />
-          <div className="min-w-0">
-            <p className="text-[11px] md:text-[clamp(11px,1.45vh,15px)] font-black text-white leading-tight">
+          <div className="flex items-center gap-2.5">
+            <div
+              className="flex-shrink-0 w-9 h-9 md:w-[42px] md:h-[42px] rounded-xl flex items-center justify-center"
+              style={{ background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.25)' }}
+            >
+              <Icon name={goal.icon ?? 'Target'} size={20} className="text-white" />
+            </div>
+            <p className="min-w-0 flex-1 text-[12px] md:text-[clamp(12px,1.75vh,18px)] font-black text-white leading-tight line-clamp-2">
               {goal.title}
             </p>
-            <p className="text-[10px] md:text-[clamp(10px,1.4vh,14.5px)] text-white/85 leading-snug mt-0.5">
-              {goal.text}
-            </p>
           </div>
+          <p className="text-[11px] md:text-[clamp(11px,1.6vh,16.5px)] text-white/90 leading-snug">
+            {goal.text}
+          </p>
         </div>
       </>
     )}
