@@ -167,23 +167,61 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
                   }}
                 />
                 <div
-                  className="relative rounded-full flex flex-col items-center justify-center text-center px-6 org-in"
+                  className="relative rounded-full flex flex-col items-center justify-center text-center px-6 org-in overflow-hidden"
                   style={{
                     width: 'min(26vh, 220px)',
                     height: 'min(26vh, 220px)',
-                    background: HEADER_GRADIENT,
-                    boxShadow: '0 18px 50px rgba(124,58,237,0.38)',
+                    background:
+                      'radial-gradient(circle at 34% 26%, #a78bfa 0%, #7c3aed 42%, #5b21b6 74%, #4c1d95 100%)',
+                    boxShadow:
+                      '0 18px 50px rgba(124,58,237,0.4), inset -14px -18px 40px rgba(30,10,70,0.55), inset 12px 14px 34px rgba(196,181,253,0.35)',
                   }}
                 >
+                  {/* точечная текстура сферы */}
                   <div
                     className="absolute inset-0 rounded-full pointer-events-none"
                     style={{
-                      backgroundImage: 'radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1px)',
-                      backgroundSize: '9px 9px',
-                      opacity: 0.35,
+                      backgroundImage: 'radial-gradient(rgba(255,255,255,0.85) 1px, transparent 1.2px)',
+                      backgroundSize: '7px 7px',
+                      opacity: 0.3,
+                      maskImage: 'radial-gradient(circle at 50% 50%, #000 55%, rgba(0,0,0,0.25) 85%, transparent 100%)',
+                      WebkitMaskImage:
+                        'radial-gradient(circle at 50% 50%, #000 55%, rgba(0,0,0,0.25) 85%, transparent 100%)',
                     }}
                   />
-                  <Icon name={slide.coreIcon ?? 'BrainCircuit'} size={32} className="text-white mb-1.5 relative" />
+                  {/* меридианы */}
+                  {[18, 36, 50, 64, 82].map((w) => (
+                    <span
+                      key={`m-${w}`}
+                      className="absolute rounded-[50%] pointer-events-none"
+                      style={{
+                        width: `${w}%`,
+                        height: '100%',
+                        border: '1px solid rgba(255,255,255,0.13)',
+                      }}
+                    />
+                  ))}
+                  {/* параллели */}
+                  {[18, 36, 50, 64, 82].map((h) => (
+                    <span
+                      key={`p-${h}`}
+                      className="absolute rounded-[50%] pointer-events-none"
+                      style={{
+                        width: '100%',
+                        height: `${h}%`,
+                        border: '1px solid rgba(255,255,255,0.11)',
+                      }}
+                    />
+                  ))}
+                  {/* блик */}
+                  <div
+                    className="absolute inset-0 rounded-full pointer-events-none"
+                    style={{
+                      background:
+                        'radial-gradient(circle at 32% 22%, rgba(255,255,255,0.32) 0%, transparent 42%)',
+                    }}
+                  />
+                  <Icon name={slide.coreIcon ?? 'BrainCircuit'} size={32} className="text-white mb-1.5 relative drop-shadow" />
                   <p className="relative text-white font-black text-[14px] lg:text-[17px] leading-tight">
                     {slide.coreTitle}
                   </p>
