@@ -10,7 +10,7 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
   const titleParts = (slide.title ?? '').split(/(\d{4})/);
 
   const rx = 34;
-  const ry = 40;
+  const ry = 33;
   const angle = (i: number) => (i / n) * 2 * Math.PI - Math.PI / 2;
 
   return (
@@ -40,8 +40,8 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-6 lg:px-8 pt-4 pb-4 min-h-0 overflow-y-auto md:overflow-hidden">
-        <div className="w-full max-w-[1400px] mx-auto flex flex-col flex-1 min-h-0">
-          <div className="flex-shrink-0 flex flex-col items-center gap-2 mb-2">
+        <div className="w-full max-w-[1400px] mx-auto flex flex-col flex-1 min-h-0 md:relative">
+          <div className="flex-shrink-0 flex flex-col items-center gap-2 mb-2 md:absolute md:inset-x-0 md:top-0 md:z-20 md:pointer-events-none">
             {slide.badge && (
               <span
                 className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-white text-[12px] md:text-[14px] font-semibold"
@@ -78,7 +78,7 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
           </div>
 
           {/* Круговая схема — десктоп */}
-          <div className="hidden md:flex flex-1 min-h-0 items-center justify-center">
+          <div className="hidden md:flex md:absolute md:inset-0 min-h-0 items-center justify-center">
             <div className="relative w-full h-full">
               <svg
                 viewBox="0 0 100 100"
