@@ -207,7 +207,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
             <div className="flex flex-col gap-2.5 md:min-h-0 md:overflow-hidden">
               {impacts.length > 0 && (
                 <div
-                  className="relative rounded-2xl px-3.5 py-3 overflow-hidden org-in"
+                  className="relative flex-shrink-0 rounded-2xl px-3.5 py-2.5 overflow-hidden org-in"
                   style={{
                     background: 'linear-gradient(155deg, #2e1065 0%, #5b21b6 45%, #1e1b4b 100%)',
                     boxShadow: '0 18px 42px rgba(46,16,101,0.42)',
@@ -225,13 +225,13 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                       </span>
                     </span>
                     {slide.impactGoal && (
-                      <p className="text-[15px] md:text-[clamp(15px,2.1vh,21px)] font-black text-white leading-tight mt-2">
+                      <p className="text-[15px] md:text-[clamp(15px,1.95vh,19.5px)] font-black text-white leading-tight mt-1.5">
                         {slide.impactGoal}
                       </p>
                     )}
                   </div>
 
-                  <div className="relative mt-2.5 space-y-1.5">
+                  <div className="relative mt-2 space-y-1">
                     {impacts.map((it) => (
                       <div
                         key={it.label}
@@ -273,18 +273,25 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                     </p>
                   </div>
 
-                  <div className="flex-1 min-h-0 grid grid-cols-2 gap-x-3 gap-y-0.5 content-between">
+                  <div className="flex-1 min-h-0 grid grid-cols-2 grid-rows-4 gap-1">
                     {kpis.map((k) => (
-                      <div key={k.label} className="min-w-0 border-b border-violet-50 pb-0.5">
-                        <div className="flex items-center gap-1.5">
-                          <Icon name={k.icon ?? 'Check'} size={13} className="text-violet-400 flex-shrink-0" />
-                          <span className="text-[10px] md:text-[clamp(10px,1.2vh,12.5px)] text-slate-600 font-medium leading-tight flex-1 truncate">
+                      <div
+                        key={k.label}
+                        className="min-w-0 min-h-0 rounded-lg bg-violet-50/60 border border-violet-100 px-2 py-0.5 flex flex-col justify-center"
+                      >
+                        <div className="flex items-center gap-1 min-w-0">
+                          <Icon name={k.icon ?? 'Check'} size={10} className="text-violet-400 flex-shrink-0" />
+                          <span className="text-[9px] md:text-[clamp(9px,1vh,10.5px)] text-slate-500 font-semibold leading-none truncate">
                             {k.label}
                           </span>
-                          <span className="text-[12px] md:text-[clamp(12px,1.5vh,15px)] font-black text-violet-700 leading-none whitespace-nowrap">
+                        </div>
+                        <div className="flex items-baseline gap-0.5 leading-none mt-0.5">
+                          <span className="text-[15px] md:text-[clamp(15px,1.85vh,19px)] font-black text-violet-700 leading-none">
                             {k.value}
-                            {k.note && <span className="text-[9px] md:text-[clamp(9px,1.05vh,11px)] font-bold text-slate-400 ml-0.5">{k.note}</span>}
                           </span>
+                          {k.note && (
+                            <span className="text-[9px] md:text-[clamp(9px,1vh,10.5px)] font-bold text-slate-400">{k.note}</span>
+                          )}
                         </div>
                       </div>
                     ))}
