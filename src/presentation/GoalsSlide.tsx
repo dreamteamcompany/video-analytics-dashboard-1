@@ -268,29 +268,29 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Icon name="Gauge" size={14} className="text-violet-500 flex-shrink-0" />
-                    <p className="text-[10px] md:text-[clamp(10px,1.25vh,12.5px)] font-bold text-violet-500 tracking-[0.12em] uppercase">
+                    <p className="text-[10px] md:text-[clamp(10px,1.3vh,13px)] font-bold text-violet-500 tracking-[0.12em] uppercase">
                       {slide.kpiTitle ?? 'Целевые показатели'}
                     </p>
                   </div>
 
-                  <div className="flex-1 min-h-0 grid grid-cols-2 grid-rows-4 gap-1">
+                  <div className="flex-1 min-h-0 grid grid-cols-2 grid-rows-3 gap-1.5">
                     {kpis.map((k) => (
                       <div
                         key={k.label}
-                        className="min-w-0 min-h-0 rounded-lg bg-violet-50/60 border border-violet-100 px-2 py-0.5 flex flex-col justify-center"
+                        className="min-w-0 min-h-0 rounded-lg bg-violet-50/60 border border-violet-100 px-2.5 py-1 flex flex-col justify-center"
                       >
                         <div className="flex items-center gap-1 min-w-0">
-                          <Icon name={k.icon ?? 'Check'} size={10} className="text-violet-400 flex-shrink-0" />
-                          <span className="text-[9px] md:text-[clamp(9px,1vh,10.5px)] text-slate-500 font-semibold leading-none truncate">
+                          <Icon name={k.icon ?? 'Check'} size={12} className="text-violet-400 flex-shrink-0" />
+                          <span className="text-[10px] md:text-[clamp(10px,1.25vh,13px)] text-slate-500 font-semibold leading-none truncate">
                             {k.label}
                           </span>
                         </div>
-                        <div className="flex items-baseline gap-0.5 leading-none mt-0.5">
-                          <span className="text-[15px] md:text-[clamp(15px,1.85vh,19px)] font-black text-violet-700 leading-none">
+                        <div className="flex items-baseline gap-0.5 leading-none mt-1">
+                          <span className="text-[18px] md:text-[clamp(18px,2.4vh,25px)] font-black text-violet-700 leading-none">
                             {k.value}
                           </span>
                           {k.note && (
-                            <span className="text-[9px] md:text-[clamp(9px,1vh,10.5px)] font-bold text-slate-400">{k.note}</span>
+                            <span className="text-[10px] md:text-[clamp(10px,1.25vh,13px)] font-bold text-slate-400">{k.note}</span>
                           )}
                         </div>
                       </div>
