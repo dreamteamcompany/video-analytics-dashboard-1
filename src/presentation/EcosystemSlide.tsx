@@ -24,7 +24,7 @@ const Card = ({
     style={{ animationDelay: `${delay}ms`, marginLeft: side === 'left' ? offset : undefined, marginRight: side === 'right' ? offset : undefined }}
   >
     <div
-      className="w-[300px] lg:w-[352px] flex-shrink-0 rounded-2xl bg-white border border-violet-100 px-3.5 py-3 flex items-center gap-3 transition-shadow hover:shadow-lg"
+      className="w-[300px] lg:w-[352px] flex-shrink-0 rounded-2xl bg-white border border-violet-100 px-3.5 py-6 flex items-center gap-3 transition-shadow hover:shadow-lg"
       style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.1)' }}
     >
       <div
@@ -134,7 +134,7 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
           {/* Схема */}
           <div className="flex-1 min-h-0 flex flex-col justify-center">
             <div className="grid gap-3 md:grid-cols-[auto_1fr_auto] items-center">
-              <div className="flex flex-col gap-3 md:gap-4 items-start">
+              <div className="flex flex-col gap-2 md:gap-2.5 items-start">
                 {left.map((it, i) => (
                   <Card
                     key={it.title}
@@ -194,7 +194,7 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 md:gap-4 items-end">
+              <div className="flex flex-col gap-2 md:gap-2.5 items-end">
                 {right.map((it, i) => (
                   <Card
                     key={it.title}
@@ -238,7 +238,7 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
           {/* Преимущества */}
           {benefits.length > 0 && (
             <div
-              className="flex-shrink-0 mt-2.5 rounded-2xl bg-white/85 border border-violet-100 px-4 py-11 grid grid-cols-2 lg:grid-cols-4 gap-3"
+              className="flex-shrink-0 mt-2.5 rounded-2xl bg-white/85 border border-violet-100 px-4 py-8 grid grid-cols-2 lg:grid-cols-4 gap-3"
               style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.09)' }}
             >
               {benefits.map((b) => (
