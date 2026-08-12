@@ -6,7 +6,7 @@ const VALUE_GRADIENT = 'linear-gradient(120deg, #7c3aed 0%, #6366f1 45%, #ec4899
 
 const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
   <div
-    className="goal-row relative flex-1 min-h-0 overflow-hidden flex items-center gap-2 rounded-xl bg-white/95 border border-violet-100 px-2 py-1.5 org-in"
+    className="goal-row group relative flex-1 min-h-0 overflow-hidden flex items-center gap-2 rounded-xl bg-white/95 border border-violet-100 px-2 py-1.5 org-in cursor-pointer transition-shadow hover:shadow-lg"
     style={{ boxShadow: '0 4px 14px rgba(124,58,237,0.08)', animationDelay: `${120 + index * 60}ms` }}
   >
     <span className="flex-shrink-0 w-5 text-center text-[18px] md:text-[22px] font-black text-violet-500 leading-none">
@@ -21,14 +21,13 @@ const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
     </div>
 
     <div className="min-w-0 flex-1">
-      <p className="text-[12px] md:text-[clamp(12px,1.65vh,17px)] font-bold text-slate-800 leading-tight line-clamp-2">{goal.title}</p>
-      <p className="text-[10px] md:text-[clamp(10px,1.35vh,14px)] text-slate-500 leading-snug mt-0.5 line-clamp-2">{goal.text}</p>
+      <p className="text-[13px] md:text-[clamp(13px,1.85vh,19px)] font-bold text-slate-800 leading-tight line-clamp-2">
+        {goal.title}
+      </p>
       {(goal.effect || goal.result) && (
-        <div className="mt-1 rounded-md bg-violet-50 px-2 py-0.5 text-[9.5px] md:text-[clamp(9.5px,1.3vh,13.5px)] leading-snug text-slate-600 line-clamp-2">
-          <span>
-            <span className="font-bold text-violet-700">Ценность для бизнеса:</span>{' '}
-            {goal.effect ?? goal.result}
-          </span>
+        <div className="mt-1 rounded-md bg-violet-50 px-2 py-0.5 text-[10px] md:text-[clamp(10px,1.4vh,14.5px)] leading-snug text-slate-600 line-clamp-2">
+          <span className="font-bold text-violet-700">Ценность для бизнеса:</span>{' '}
+          {goal.effect ?? goal.result}
         </div>
       )}
     </div>
@@ -52,6 +51,28 @@ const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
           </p>
         )}
       </div>
+    )}
+
+    {goal.text && (
+      <>
+        <span className="absolute top-1.5 right-1.5 opacity-40 group-hover:opacity-0 transition-opacity">
+          <Icon name="Info" size={13} className="text-violet-400" />
+        </span>
+        <div
+          className="absolute inset-0 flex items-center gap-2.5 px-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none"
+          style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%)' }}
+        >
+          <Icon name={goal.icon ?? 'Target'} size={20} className="text-white/80 flex-shrink-0" />
+          <div className="min-w-0">
+            <p className="text-[11px] md:text-[clamp(11px,1.45vh,15px)] font-black text-white leading-tight">
+              {goal.title}
+            </p>
+            <p className="text-[10px] md:text-[clamp(10px,1.4vh,14.5px)] text-white/85 leading-snug mt-0.5">
+              {goal.text}
+            </p>
+          </div>
+        </div>
+      </>
     )}
   </div>
 );
