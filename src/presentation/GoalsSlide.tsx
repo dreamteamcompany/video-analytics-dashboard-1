@@ -7,60 +7,61 @@ const VALUE_LABEL_GRADIENT = 'linear-gradient(90deg, #059669 0%, #10b981 55%, #1
 
 const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
   <div
-    className="goal-row group relative flex-1 min-h-0 overflow-hidden flex items-center gap-2 rounded-xl bg-white/95 border border-violet-100 px-2 py-1.5 org-in cursor-pointer transition-shadow hover:shadow-lg"
+    className="goal-row group relative flex-1 min-h-0 overflow-hidden flex flex-col justify-center gap-2 rounded-xl bg-white/95 border border-violet-100 px-3 py-2.5 org-in cursor-pointer transition-shadow hover:shadow-lg"
     style={{ boxShadow: '0 4px 14px rgba(124,58,237,0.08)', animationDelay: `${120 + index * 60}ms` }}
   >
-    <span className="flex-shrink-0 w-5 text-center text-[18px] md:text-[22px] font-black text-violet-500 leading-none">
-      {index + 1}
-    </span>
+    <div className="flex items-center gap-2.5">
+      <span className="flex-shrink-0 w-5 text-center text-[18px] md:text-[22px] font-black text-violet-500 leading-none">
+        {index + 1}
+      </span>
 
-    <div
-      className="flex-shrink-0 w-10 h-10 md:w-[46px] md:h-[46px] rounded-xl flex items-center justify-center"
-      style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.3)' }}
-    >
-      <Icon name={goal.icon ?? 'Target'} size={22} className="text-white" />
-    </div>
+      <div
+        className="flex-shrink-0 w-10 h-10 md:w-[46px] md:h-[46px] rounded-xl flex items-center justify-center"
+        style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.3)' }}
+      >
+        <Icon name={goal.icon ?? 'Target'} size={22} className="text-white" />
+      </div>
 
-    <div className="min-w-0 flex-1">
-      <p className="text-[13px] md:text-[clamp(13px,1.85vh,19px)] font-bold text-slate-800 leading-tight line-clamp-2">
+      <p className="min-w-0 flex-1 text-[13px] md:text-[clamp(13px,1.9vh,20px)] font-bold text-slate-800 leading-tight line-clamp-2">
         {goal.title}
       </p>
-      {(goal.effect || goal.result) && (
-        <div className="mt-1 rounded-md bg-emerald-50/70 px-2 py-0.5 text-[10px] md:text-[clamp(10px,1.4vh,14.5px)] leading-snug text-slate-600 line-clamp-2">
-          <span
-            className="font-black"
+
+      {goal.metric && (
+        <div className="flex-shrink-0 text-center w-[92px] md:w-[132px]">
+          <p
+            className="text-[19px] md:text-[clamp(19px,3.2vh,32px)] font-black leading-none tracking-tight"
             style={{
-              background: VALUE_LABEL_GRADIENT,
+              background: VALUE_GRADIENT,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
             }}
           >
-            Ценность для бизнеса:
-          </span>{' '}
-          {goal.effect ?? goal.result}
+            {goal.metric}
+          </p>
+          {goal.metricNote && (
+            <p className="text-[9px] md:text-[clamp(9px,1.25vh,12.5px)] font-semibold text-slate-400 leading-tight mt-1">
+              {goal.metricNote}
+            </p>
+          )}
         </div>
       )}
     </div>
 
-    {goal.metric && (
-      <div className="flex-shrink-0 text-center w-[92px] md:w-[132px]">
-        <p
-          className="text-[19px] md:text-[clamp(19px,3.2vh,32px)] font-black leading-none tracking-tight"
+    {(goal.effect || goal.result) && (
+      <div className="rounded-lg bg-emerald-50/70 border border-emerald-100 px-2.5 py-1.5 text-[10px] md:text-[clamp(10px,1.45vh,15px)] leading-snug text-slate-600 line-clamp-2">
+        <span
+          className="font-black"
           style={{
-            background: VALUE_GRADIENT,
+            background: VALUE_LABEL_GRADIENT,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}
         >
-          {goal.metric}
-        </p>
-        {goal.metricNote && (
-          <p className="text-[9px] md:text-[clamp(9px,1.25vh,12.5px)] font-semibold text-slate-400 leading-tight mt-1">
-            {goal.metricNote}
-          </p>
-        )}
+          Ценность для бизнеса:
+        </span>{' '}
+        {goal.effect ?? goal.result}
       </div>
     )}
 
