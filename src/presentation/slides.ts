@@ -64,9 +64,19 @@ export interface IndicatorItem {
   note?: string;
 }
 
+export interface PhaseItem {
+  stage: string;
+  period: string;
+  title: string;
+  icon?: string;
+  summary: string;
+  points: { icon?: string; text: string }[];
+  outcome?: string;
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -97,6 +107,8 @@ export interface Slide {
   ecoBenefits?: EcoBenefit[];
   indicators?: IndicatorItem[];
   indicatorsFooter?: string;
+  phases?: PhaseItem[];
+  phasesFooter?: string;
 }
 
 export const slides: Slide[] = [
@@ -795,5 +807,47 @@ export const slides: Slide[] = [
       },
     ],
     indicatorsFooter: 'Если эти показатели достигнуты — IT-департамент движется в правильном направлении.',
+  },
+  {
+    id: 'development-phases',
+    type: 'phases',
+    theme: 'light',
+    badge: 'Дорожная карта',
+    badgeIcon: 'Route',
+    title: 'Два этапа развития IT-департамента',
+    subtitle: 'Сначала наводим порядок внутри, затем выводим ИИ-продукты на рынок.',
+    phases: [
+      {
+        stage: 'Этап 1',
+        period: 'к концу 2026 года',
+        title: 'Наведение порядка и оздоровление IT',
+        icon: 'Wrench',
+        summary: 'Выстраиваем процессы, обновляем команду и делаем ИТ управляемым и предсказуемым.',
+        points: [
+          { icon: 'Workflow', text: 'Налаживание и выстраивание рабочих процессов' },
+          { icon: 'UserPlus', text: 'Подбор нового персонала и замена неэффективных сотрудников' },
+          { icon: 'HeartPulse', text: 'Оздоровление ИТ: аудит систем, устранение слабых мест' },
+          { icon: 'LayoutDashboard', text: 'Единая система заявок и прозрачность работы' },
+          { icon: 'Sparkles', text: 'Первые ИИ-продукты в работе, крупный — наполовину готов' },
+        ],
+        outcome: 'ИТ работает стабильно, понятно и без ручного героизма.',
+      },
+      {
+        stage: 'Этап 2',
+        period: 'к концу 2027 года',
+        title: 'Рост и выход ИИ-продуктов на рынок',
+        icon: 'Rocket',
+        summary: 'На готовом фундаменте масштабируем ИИ-экосистему и делаем её самоокупаемой.',
+        points: [
+          { icon: 'BrainCircuit', text: 'Единое ИИ-ядро компании и экосистема продуктов' },
+          { icon: 'TrendingUp', text: 'Масштабирование решений на все направления бизнеса' },
+          { icon: 'ShoppingCart', text: 'Вывод ИИ-продуктов на внешний рынок' },
+          { icon: 'PiggyBank', text: 'Самоокупаемость: ИТ зарабатывает, а не только тратит' },
+          { icon: 'ShieldCheck', text: 'Единые стандарты качества и безопасности' },
+        ],
+        outcome: 'ИТ становится источником дохода и конкурентного преимущества.',
+      },
+    ],
+    phasesFooter: 'Второй этап возможен только после честно пройденного первого.',
   },
 ];
