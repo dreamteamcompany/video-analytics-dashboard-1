@@ -123,10 +123,30 @@ const PhasesSlide = ({ slide }: { slide: Slide }) => {
             )}
           </div>
 
-          <div className="flex-1 min-h-0 grid gap-3 md:grid-cols-2">
-            {phases.map((p, i) => (
-              <PhaseCard key={p.stage} phase={p} index={i} />
-            ))}
+          <div className="flex-1 min-h-0 grid gap-3 md:gap-0 md:grid-cols-[1fr_auto_1fr]">
+            {phases[0] && <PhaseCard phase={phases[0]} index={0} />}
+
+            <div className="flex md:flex-col items-center justify-center gap-2 md:px-3 py-1 md:py-0">
+              <span className="hidden md:block flex-1 w-px bg-gradient-to-b from-transparent to-violet-300" />
+              <div className="flex md:flex-col items-center gap-1.5">
+                <span className="text-[9.5px] md:text-[11px] font-bold text-violet-500 uppercase tracking-wider md:[writing-mode:vertical-rl] md:rotate-180">
+                  Фундамент
+                </span>
+                <div
+                  className="w-9 h-9 md:w-11 md:h-11 rounded-full flex items-center justify-center org-in"
+                  style={{ background: HEADER_GRADIENT, boxShadow: '0 6px 18px rgba(124,58,237,0.35)', animationDelay: '420ms' }}
+                >
+                  <Icon name="ArrowRight" size={20} className="text-white md:hidden" />
+                  <Icon name="ArrowRight" size={22} className="text-white hidden md:block" />
+                </div>
+                <span className="text-[9.5px] md:text-[11px] font-bold text-fuchsia-500 uppercase tracking-wider md:[writing-mode:vertical-rl] md:rotate-180">
+                  Рост
+                </span>
+              </div>
+              <span className="hidden md:block flex-1 w-px bg-gradient-to-t from-transparent to-fuchsia-300" />
+            </div>
+
+            {phases[1] && <PhaseCard phase={phases[1]} index={1} />}
           </div>
 
           {slide.phasesFooter && (
