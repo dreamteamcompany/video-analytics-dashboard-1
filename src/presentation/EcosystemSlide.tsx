@@ -238,7 +238,7 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
           {/* Преимущества */}
           {benefits.length > 0 && (
             <div
-              className="flex-shrink-0 mt-2.5 rounded-2xl bg-white/85 border border-violet-100 px-4 py-6 grid grid-cols-2 lg:grid-cols-4 gap-3"
+              className="flex-shrink-0 mt-2.5 rounded-2xl bg-white/85 border border-violet-100 px-4 py-11 grid grid-cols-2 lg:grid-cols-4 gap-3"
               style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.09)' }}
             >
               {benefits.map((b) => (
