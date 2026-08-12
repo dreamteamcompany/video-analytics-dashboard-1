@@ -716,7 +716,7 @@ export const slides: Slide[] = [
       { icon: 'Users', title: 'AI-тренажёры (обучение)', note: 'Подбор и адаптация сотрудников' },
       { icon: 'Cctv', title: 'AI-видеонаблюдение', note: 'Выявление аномалий и угроз' },
       { icon: 'ChartColumn', title: 'ИИ-аналитика и BI', note: 'Отчёты и прогнозы по данным' },
-      { icon: 'Headphones', title: 'ИИ-помощник поддержки', note: 'Разбор и маршрутизация заявок' },
+      { icon: 'UserSearch', title: 'AI-подбор персонала', note: 'Отбор и оценка кандидатов' },
       { icon: 'Stethoscope', title: 'ИИ для медицинских систем', note: 'Помощь врачу с документами' },
       { icon: 'PhoneCall', title: 'ИИ-обработка звонков', note: 'Запись, разбор, качество сервиса' },
       { icon: 'ShoppingCart', title: 'AI-закупки', note: 'Подготовка и проверка документов' },
