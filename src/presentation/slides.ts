@@ -214,7 +214,7 @@ export const slides: Slide[] = [
       { icon: 'CircleCheck', label: 'Решено 1-й линией', value: '70', note: '%', progress: 70 },
       { icon: 'Star', label: 'Оценка сотрудников', value: '5', note: 'из 5', progress: 100 },
       { icon: 'Timer', label: 'Реакция на аварию', value: '5', note: 'мин', progress: 92 },
-      { icon: 'Clock', label: 'Решение заявки', value: '4', note: 'часа', progress: 80 },
+      { icon: 'Clock', label: 'Первый ответ', value: '15', note: 'мин', progress: 90 },
     ],
   },
   {
