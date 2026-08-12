@@ -24,19 +24,19 @@ const Card = ({
     style={{ animationDelay: `${delay}ms`, marginLeft: side === 'left' ? offset : undefined, marginRight: side === 'right' ? offset : undefined }}
   >
     <div
-      className="w-[300px] lg:w-[352px] flex-shrink-0 rounded-2xl bg-white border border-violet-100 px-3.5 py-6 flex items-center gap-3 transition-shadow hover:shadow-lg"
+      className="w-[300px] lg:w-[390px] flex-shrink-0 rounded-2xl bg-white border border-violet-100 px-3.5 py-6 flex items-center gap-3 transition-shadow hover:shadow-lg"
       style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.1)' }}
     >
       <div
-        className="flex-shrink-0 w-11 h-11 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center"
+        className="flex-shrink-0 w-12 h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center"
         style={{ background: 'linear-gradient(135deg,#ede9fe,#fae8ff)' }}
       >
-        <Icon name={item.icon ?? 'Sparkles'} size={23} className="text-violet-600" />
+        <Icon name={item.icon ?? 'Sparkles'} size={27} className="text-violet-600" />
       </div>
       <div className="min-w-0">
-        <p className="text-[13.5px] lg:text-[15px] font-bold text-[#1e1b4b] leading-tight">{item.title}</p>
+        <p className="text-[15px] lg:text-[17.5px] font-bold text-[#1e1b4b] leading-tight">{item.title}</p>
         {item.note && (
-          <p className="text-[11px] lg:text-[12.5px] text-slate-500 leading-snug mt-0.5">{item.note}</p>
+          <p className="text-[12.5px] lg:text-[14.5px] text-slate-500 leading-snug mt-1">{item.note}</p>
         )}
       </div>
     </div>
@@ -296,11 +296,11 @@ const EcosystemSlide = ({ slide }: { slide: Slide }) => {
                     <Icon name={b.icon ?? 'Sparkles'} size={22} className="text-violet-600" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[12.5px] lg:text-[13.5px] font-bold text-[#1e1b4b] leading-tight">
+                    <p className="text-[13.5px] lg:text-[15.5px] font-bold text-[#1e1b4b] leading-tight">
                       {b.title}
                     </p>
                     {b.note && (
-                      <p className="text-[10.5px] lg:text-[11.5px] text-slate-500 leading-tight">{b.note}</p>
+                      <p className="text-[11.5px] lg:text-[13px] text-slate-500 leading-snug mt-0.5">{b.note}</p>
                     )}
                   </div>
                 </div>
