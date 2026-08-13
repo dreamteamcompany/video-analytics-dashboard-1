@@ -5,7 +5,37 @@ const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b
 const VALUE_GRADIENT = 'linear-gradient(120deg, #7c3aed 0%, #6366f1 45%, #ec4899 100%)';
 const VALUE_LABEL_GRADIENT = 'linear-gradient(90deg, #059669 0%, #10b981 55%, #14b8a6 100%)';
 
-const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: boolean }) => (
+const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: boolean }) => {
+  const titleLen = (goal.title ?? '').length;
+  const long = titleLen > 42;
+  const veryLong = titleLen > 62;
+
+  const titleSize = dense
+    ? veryLong
+      ? 'text-[10px] md:text-[clamp(10px,1.1vh,11.5px)]'
+      : long
+        ? 'text-[10.5px] md:text-[clamp(10.5px,1.22vh,12.5px)]'
+        : 'text-[11.5px] md:text-[clamp(11.5px,1.35vh,14px)]'
+    : veryLong
+      ? 'text-[11px] md:text-[clamp(11px,1.35vh,14.5px)]'
+      : long
+        ? 'text-[12px] md:text-[clamp(12px,1.5vh,16px)]'
+        : 'text-[13px] md:text-[clamp(13px,1.7vh,18px)]';
+
+  const metricLen = (goal.metric ?? '').length;
+  const metricSize = dense
+    ? metricLen > 9
+      ? 'text-[10.5px] md:text-[clamp(10.5px,1.4vh,14px)]'
+      : metricLen > 6
+        ? 'text-[12px] md:text-[clamp(12px,1.7vh,17px)]'
+        : 'text-[15px] md:text-[clamp(15px,2.1vh,22px)]'
+    : metricLen > 9
+      ? 'text-[12px] md:text-[clamp(12px,1.75vh,18px)]'
+      : metricLen > 6
+        ? 'text-[14px] md:text-[clamp(14px,2.1vh,22px)]'
+        : 'text-[18px] md:text-[clamp(18px,2.8vh,29px)]';
+
+  return (
   <div
     className={`goal-row group relative flex-1 min-h-0 overflow-hidden flex flex-col justify-center rounded-xl bg-white/95 border border-violet-100 org-in cursor-pointer transition-shadow hover:shadow-lg ${
       dense ? 'gap-1 px-2.5 py-1.5' : 'gap-1.5 px-3 py-2'
@@ -26,22 +56,14 @@ const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: b
         <Icon name={goal.icon ?? 'Target'} size={dense ? 17 : 21} className="text-white" />
       </div>
 
-      <p
-        className={`min-w-0 flex-1 font-bold text-slate-800 leading-tight ${
-          dense
-            ? 'line-clamp-2 text-[11.5px] md:text-[clamp(11.5px,1.35vh,14px)]'
-            : 'line-clamp-2 text-[13px] md:text-[clamp(13px,1.7vh,18px)]'
-        }`}
-      >
+      <p className={`min-w-0 flex-1 font-bold text-slate-800 leading-tight line-clamp-3 ${titleSize}`}>
         {goal.title}
       </p>
 
       {goal.metric && (
-        <div className={`flex-shrink-0 text-center ${dense ? 'w-[84px] md:w-[112px]' : 'w-[92px] md:w-[132px]'}`}>
+        <div className={`flex-shrink-0 text-center ${dense ? 'w-[80px] md:w-[104px]' : 'w-[88px] md:w-[120px]'}`}>
           <p
-            className={`font-black leading-none tracking-tight ${
-              dense ? 'text-[15px] md:text-[clamp(15px,2.1vh,22px)]' : 'text-[18px] md:text-[clamp(18px,2.8vh,29px)]'
-            }`}
+            className={`font-black leading-tight tracking-tight break-words ${metricSize}`}
             style={{
               background: VALUE_GRADIENT,
               WebkitBackgroundClip: 'text',
@@ -66,10 +88,10 @@ const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: b
 
     {(goal.effect || goal.result) && (
       <div
-        className={`flex-shrink-0 rounded-lg bg-emerald-50/70 border border-emerald-100 leading-snug text-slate-600 ${
+        className={`flex-shrink-0 rounded-lg bg-emerald-50/70 border border-emerald-100 leading-snug text-slate-600 line-clamp-2 ${
           dense
-            ? 'px-2.5 py-1 text-[10px] md:text-[clamp(10px,1.15vh,12.5px)]'
-            : 'px-3 py-1.5 text-[11.5px] md:text-[clamp(11.5px,1.4vh,14.5px)]'
+            ? 'px-2.5 py-1 text-[9.5px] md:text-[clamp(9.5px,1.05vh,11.5px)]'
+            : 'px-3 py-1.5 text-[11px] md:text-[clamp(11px,1.3vh,13.5px)]'
         }`}
       >
         <span
@@ -114,7 +136,8 @@ const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: b
       </>
     )}
   </div>
-);
+  );
+};
 
 const GoalsSlide = ({ slide }: { slide: Slide }) => {
   const goals = slide.goals ?? [];
