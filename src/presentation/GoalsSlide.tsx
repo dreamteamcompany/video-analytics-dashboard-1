@@ -27,8 +27,10 @@ const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: b
       </div>
 
       <p
-        className={`min-w-0 flex-1 font-bold text-slate-800 leading-tight line-clamp-2 ${
-          dense ? 'text-[12px] md:text-[clamp(12px,1.55vh,16px)]' : 'text-[13px] md:text-[clamp(13px,1.9vh,20px)]'
+        className={`min-w-0 flex-1 font-bold text-slate-800 leading-tight ${
+          dense
+            ? 'line-clamp-3 text-[12px] md:text-[clamp(12px,1.5vh,15px)]'
+            : 'line-clamp-2 text-[13px] md:text-[clamp(13px,1.9vh,20px)]'
         }`}
       >
         {goal.title}
