@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
@@ -11,12 +11,40 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
-const DutiesOverlay = ({ title, duties, onClose }: { title: string; duties: string[]; onClose: () => void }) =>
+const useDutiesToggle = (enabled: boolean) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: Event) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('pointermove', close);
+    return () => {
+      document.removeEventListener('pointerdown', close);
+      document.removeEventListener('pointermove', close);
+    };
+  }, [open]);
+
+  return {
+    open: enabled && open,
+    ref,
+    handlers: enabled
+      ? {
+          onMouseEnter: () => setOpen(true),
+          onMouseLeave: () => setOpen(false),
+          onClick: () => setOpen((v) => !v),
+        }
+      : {},
+    close: () => setOpen(false),
+  };
+};
+
+const DutiesOverlay = ({ title, duties }: { title: string; duties: string[] }) =>
   createPortal(
-    <div
-      className="fixed inset-0 z-[90] flex items-center justify-center p-4 md:p-10 duties-fade"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 md:p-10 duties-fade pointer-events-none">
       <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[3px]" />
       <div
         className={`relative rounded-3xl flex flex-col gap-2 px-6 py-5 text-left max-h-full overflow-auto ${duties.length > 7 ? 'w-[min(1060px,94vw)]' : 'w-[min(620px,92vw)]'}`}
@@ -47,12 +75,11 @@ const DutiesOverlay = ({ title, duties, onClose }: { title: string; duties: stri
 const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, delay = 0 }: {
   role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; delay?: number;
 }) => {
-  const [open, setOpen] = useState(false);
+  const { open, ref, handlers } = useDutiesToggle(!!duties?.length);
   return (
   <div
-    onMouseEnter={() => duties?.length && setOpen(true)}
-    onMouseLeave={() => setOpen(false)}
-    onClick={() => duties?.length && setOpen((v) => !v)}
+    ref={ref}
+    {...handlers}
     className={`group relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length ? 'cursor-pointer' : ''} ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
     style={{
       boxShadow: CARD_SHADOW,
@@ -133,7 +160,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
         <span className="absolute top-1.5 right-1.5 opacity-40">
           <Icon name="Info" size={13} className="text-violet-400" />
         </span>
-        {open && <DutiesOverlay title={role} duties={duties} onClose={() => setOpen(false)} />}
+        {open && <DutiesOverlay title={role} duties={duties} />}
       </>
     )}
   </div>
@@ -161,7 +188,7 @@ const StatCard = ({ icon, value, label, delay }: {
 
 const OrgSlide = ({ slide }: { slide: Slide }) => {
   const isMobile = useIsMobile();
-  const [headOpen, setHeadOpen] = useState(false);
+  const headDuties = useDutiesToggle(!!slide.head?.duties?.length);
   const allPeople = slide.columns?.flatMap((c) => c.people) ?? [];
   const total = allPeople.length + (slide.head ? 1 : 0);
   const vacancies = allPeople.filter((p) => p.vacancy).length;
@@ -260,9 +287,8 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               <Icon name="Crown" size={22} className="text-violet-500 hidden md:block" />
             </div>
             <div
-              onMouseEnter={() => slide.head?.duties?.length && setHeadOpen(true)}
-              onMouseLeave={() => setHeadOpen(false)}
-              onClick={() => slide.head?.duties?.length && setHeadOpen((v) => !v)}
+              ref={headDuties.ref}
+              {...headDuties.handlers}
               className={`group relative rounded-3xl bg-white px-6 sm:px-20 pt-5 md:pt-4 pb-3 md:pb-2.5 text-center flex flex-col items-center ${slide.head.duties?.length ? 'cursor-pointer' : ''}`}
               style={{ boxShadow: '0 8px 30px rgba(124,58,237,0.12), 0 2px 6px rgba(15,23,42,0.06)' }}
             >
@@ -296,12 +322,8 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   <span className="absolute top-2 right-2 opacity-40">
                     <Icon name="Info" size={14} className="text-violet-400" />
                   </span>
-                  {headOpen && (
-                    <DutiesOverlay
-                      title={slide.head.role}
-                      duties={slide.head.duties}
-                      onClose={() => setHeadOpen(false)}
-                    />
+                  {headDuties.open && (
+                    <DutiesOverlay title={slide.head.role} duties={slide.head.duties} />
                   )}
                 </>
               )}
