@@ -75,9 +75,24 @@ export interface PhaseItem {
   outcome?: string;
 }
 
+export interface HandoffSide {
+  badge: string;
+  title: string;
+  icon?: string;
+  points: string[];
+}
+
+export interface HandoffStep {
+  icon?: string;
+  step: string;
+  title: string;
+  text: string;
+  owner: string;
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -88,7 +103,7 @@ export interface Slide {
   badge?: string;
   badgeIcon?: string;
   columnsLabel?: string;
-  head?: { role: string; name?: string; salary: string; photo?: string; vacancy?: boolean };
+  head?: { role: string; name?: string; salary: string; photo?: string; vacancy?: boolean; duties?: string[] };
   columns?: OrgColumn[];
   payroll?: string;
   payrollNote?: string;
@@ -110,6 +125,13 @@ export interface Slide {
   indicatorsFooter?: string;
   phases?: PhaseItem[];
   phasesFooter?: string;
+  handoffLeft?: HandoffSide;
+  handoffRight?: HandoffSide;
+  handoffForward?: string;
+  handoffBack?: string;
+  handoffSteps?: HandoffStep[];
+  handoffResult?: string;
+  handoffResultNote?: string;
 }
 
 export const slides: Slide[] = [
@@ -1064,6 +1086,48 @@ export const slides: Slide[] = [
       { icon: 'Sparkles', label: 'Новые ИИ-продукты', value: '2', note: 'минимум', progress: 100 },
       { icon: 'Network', label: 'Оцифровка процессов', value: 'все', note: 'отделы', progress: 90 },
     ],
+  },
+  {
+    id: 'pmo-dev-handoff',
+    type: 'handoff',
+    theme: 'light',
+    badge: 'Как работают две службы вместе',
+    badgeIcon: 'ArrowLeftRight',
+    title: 'Проектный офис → ТЗ → Разработка',
+    subtitle: 'Проектное управление ставит задачу и принимает результат, разработка её реализует.',
+    handoffLeft: {
+      badge: 'Ставит задачу',
+      title: 'Служба проектного управления',
+      icon: 'ClipboardList',
+      points: [
+        'Собирает потребность бизнеса',
+        'Описывает процесс и требования',
+        'Готовит техническое задание',
+        'Контролирует сроки и принимает результат',
+      ],
+    },
+    handoffRight: {
+      badge: 'Выполняет задачу',
+      title: 'Служба разработки цифровых решений',
+      icon: 'Code',
+      points: [
+        'Оценивает сроки и ресурсы по ТЗ',
+        'Разрабатывает решение: веб, ИИ, BI',
+        'Тестирует и выпускает в работу',
+        'Поддерживает и развивает сервис',
+      ],
+    },
+    handoffForward: 'Техническое задание',
+    handoffBack: 'Готовое решение и приёмка',
+    handoffSteps: [
+      { icon: 'Lightbulb', step: '1', title: 'Потребность бизнеса', text: 'Отдел или руководство формулирует задачу.', owner: 'Заказчик' },
+      { icon: 'FileText', step: '2', title: 'Анализ и ТЗ', text: 'Проектный офис разбирает процесс и пишет чёткое задание.', owner: 'Проектное управление' },
+      { icon: 'Code', step: '3', title: 'Разработка', text: 'Команда реализует решение по согласованному ТЗ.', owner: 'Разработка' },
+      { icon: 'ShieldCheck', step: '4', title: 'Тест и приёмка', text: 'Проверка качества и сверка с задачей заказчика.', owner: 'QA + Проектный офис' },
+      { icon: 'Rocket', step: '5', title: 'Запуск и поддержка', text: 'Сервис работает, у него есть владелец и развитие.', owner: 'Разработка' },
+    ],
+    handoffResult: 'Никаких задач «на словах» — всё через ТЗ, с ответственным и сроком',
+    handoffResultNote: 'Бизнес получает предсказуемый результат: задача поставлена документом, выполнена командой и принята по факту.',
   },
   {
     id: 'ai-ecosystem',

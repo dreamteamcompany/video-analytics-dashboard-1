@@ -5,6 +5,7 @@ import GoalsSlide from './GoalsSlide';
 import EcosystemSlide from './EcosystemSlide';
 import IndicatorsSlide from './IndicatorsSlide';
 import PhasesSlide from './PhasesSlide';
+import HandoffSlide from './HandoffSlide';
 
 const TitleSlide = ({ slide }: { slide: Slide }) => (
   <div className="h-full flex flex-col items-center justify-center text-center px-6 sm:px-12">
@@ -85,6 +86,7 @@ const SlideView = ({ slide }: { slide: Slide }) => (
     {slide.type === 'ecosystem' && <EcosystemSlide slide={slide} />}
     {slide.type === 'indicators' && <IndicatorsSlide slide={slide} />}
     {slide.type === 'phases' && <PhasesSlide slide={slide} />}
+    {slide.type === 'handoff' && <HandoffSlide slide={slide} />}
   </div>
 );
 
