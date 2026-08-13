@@ -233,7 +233,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               <Icon name="Crown" size={22} className="text-violet-500 hidden md:block" />
             </div>
             <div
-              className="rounded-3xl bg-white px-6 sm:px-20 pt-5 md:pt-4 pb-3 md:pb-2.5 text-center flex flex-col items-center"
+              className={`group relative overflow-hidden rounded-3xl bg-white px-6 sm:px-20 pt-5 md:pt-4 pb-3 md:pb-2.5 text-center flex flex-col items-center ${slide.head.duties?.length ? 'cursor-pointer' : ''}`}
               style={{ boxShadow: '0 8px 30px rgba(124,58,237,0.12), 0 2px 6px rgba(15,23,42,0.06)' }}
             >
               {slide.head.photo && (
@@ -260,6 +260,30 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               <p className="text-base md:text-2xl font-bold text-violet-600 leading-tight mt-1.5">
                 {slide.head.salary}
               </p>
+
+              {slide.head.duties && slide.head.duties.length > 0 && (
+                <>
+                  <span className="absolute top-2 right-2 opacity-40 group-hover:opacity-0 transition-opacity">
+                    <Icon name="Info" size={14} className="text-violet-400" />
+                  </span>
+                  <div
+                    className="absolute inset-0 overflow-hidden flex flex-col justify-center gap-1.5 px-5 py-3 text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none"
+                    style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%)' }}
+                  >
+                    <p className="text-[10px] md:text-[12px] font-black text-white/70 tracking-[0.12em] uppercase leading-none">
+                      Зона ответственности
+                    </p>
+                    <div className="flex flex-col gap-0.5 min-h-0 overflow-hidden">
+                      {slide.head.duties.map((d) => (
+                        <div key={d} className="flex items-start gap-1.5">
+                          <Icon name="Check" size={12} className="text-emerald-300 flex-shrink-0 mt-[3px]" />
+                          <p className="text-[10px] md:text-[12.5px] text-white/90 leading-snug">{d}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
