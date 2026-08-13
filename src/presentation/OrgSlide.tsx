@@ -270,7 +270,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                     <Icon name="Info" size={14} className="text-violet-400" />
                   </span>
                   <div
-                    className="absolute left-0 right-0 top-0 min-h-full rounded-3xl flex flex-col justify-center gap-1.5 px-5 py-4 text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none z-30"
+                    className="absolute left-1/2 -translate-x-1/2 top-0 w-[min(880px,92vw)] min-h-full rounded-3xl flex flex-col justify-center gap-1.5 px-5 py-4 text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none z-30"
                     style={{
                       background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%)',
                       boxShadow: '0 18px 44px rgba(76,29,149,0.35)',
@@ -279,9 +279,9 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                     <p className="text-[10px] md:text-[12px] font-black text-white/70 tracking-[0.12em] uppercase leading-none">
                       Зона ответственности
                     </p>
-                    <div className="flex flex-col gap-0.5">
+                    <div className={`gap-x-5 gap-y-0.5 ${slide.head.duties.length > 8 ? 'columns-2' : 'flex flex-col'}`}>
                       {slide.head.duties.map((d) => (
-                        <div key={d} className="flex items-start gap-1.5">
+                        <div key={d} className="flex items-start gap-1.5 break-inside-avoid">
                           <Icon name="Check" size={12} className="text-emerald-300 flex-shrink-0 mt-[3px]" />
                           <p className="text-[10px] md:text-[12.5px] text-white/90 leading-snug">{d}</p>
                         </div>
