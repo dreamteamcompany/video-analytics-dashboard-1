@@ -138,11 +138,12 @@ export const slides: Slide[] = [
   {
     id: 'title',
     type: 'title',
+    theme: 'light',
     title: 'IT-Департамент',
-    subtitle: 'Команда мечты',
+    subtitle: 'Структура, команда и планы развития',
     author: 'Роберт Лалиев',
     year: '2026',
-    logo: '',
+    logo: '/logo-team.png',
   },
   {
     id: 'director',

@@ -6,43 +6,61 @@ import EcosystemSlide from './EcosystemSlide';
 import IndicatorsSlide from './IndicatorsSlide';
 import PhasesSlide from './PhasesSlide';
 import HandoffSlide from './HandoffSlide';
+import LightBackdrop from './LightBackdrop';
 
 const TitleSlide = ({ slide }: { slide: Slide }) => (
-  <div className="h-full flex flex-col items-center justify-center text-center px-6 sm:px-12">
-    {slide.logo ? (
-      <img
-        src={slide.logo}
-        alt={slide.subtitle || 'Логотип'}
-        className="h-24 sm:h-32 lg:h-40 object-contain mb-8 drop-shadow-2xl"
-      />
-    ) : (
-      <div className="mb-6 sm:mb-8 flex flex-col items-center">
-        <div className="w-20 h-20 sm:w-32 sm:h-32 rounded-3xl bg-white/15 backdrop-blur-sm border border-white/25 flex items-center justify-center shadow-2xl">
-          <Icon name="Users" size={44} className="text-white/90 sm:hidden" />
-          <Icon name="Users" size={56} className="text-white/90 hidden sm:block" />
+  <div
+    className="h-full relative overflow-hidden flex flex-col items-center justify-center text-center px-6 sm:px-12"
+    style={{
+      background: 'linear-gradient(135deg, #ffffff 0%, #fafaff 45%, #f3edfd 75%, #fdf0f7 100%)',
+    }}
+  >
+    <LightBackdrop />
+
+    <div className="relative z-10 flex flex-col items-center">
+      <div
+        className="org-drop rounded-3xl bg-white px-8 sm:px-16 py-6 sm:py-9 flex flex-col items-center"
+        style={{ boxShadow: '0 8px 30px rgba(124,58,237,0.12), 0 2px 6px rgba(15,23,42,0.06)' }}
+      >
+        <img
+          src={slide.logo || '/logo-team.png'}
+          alt={slide.subtitle || 'Команда мечты'}
+          className="h-12 sm:h-20 lg:h-24 object-contain"
+        />
+
+        <h1 className="mt-5 sm:mt-8 text-4xl sm:text-7xl lg:text-8xl font-extrabold text-slate-900 tracking-tight">
+          {slide.title}
+        </h1>
+
+        <div
+          className="mt-5 sm:mt-7 w-20 sm:w-28 h-1.5 rounded-full"
+          style={{ background: 'linear-gradient(90deg, #7c3aed 0%, #6366f1 100%)' }}
+        />
+
+        <div className="mt-5 sm:mt-7 space-y-1.5">
+          {slide.author && (
+            <p className="text-xl sm:text-2xl font-semibold text-slate-700">{slide.author}</p>
+          )}
+          {slide.year && (
+            <p className="text-sm sm:text-base text-violet-500 tracking-[0.3em] font-bold">
+              {slide.year}
+            </p>
+          )}
         </div>
-        {slide.subtitle && (
-          <p className="mt-4 sm:mt-5 text-base sm:text-2xl font-semibold text-white/90 tracking-wide">
-            {slide.subtitle}
-          </p>
-        )}
       </div>
-    )}
 
-    <h1 className="text-4xl sm:text-7xl lg:text-8xl font-extrabold text-white tracking-tight drop-shadow-lg">
-      {slide.title}
-    </h1>
-
-    <div className="mt-6 sm:mt-8 w-20 sm:w-24 h-1.5 rounded-full bg-gradient-to-r from-cyan-300 to-fuchsia-300" />
-
-    <div className="mt-6 sm:mt-10 space-y-2">
-      {slide.author && (
-        <p className="text-xl sm:text-2xl text-white/85 font-medium">{slide.author}</p>
-      )}
-      {slide.year && (
-        <p className="text-base sm:text-lg text-white/60 tracking-[0.3em] font-semibold">
-          {slide.year}
-        </p>
+      {slide.subtitle && (
+        <span
+          className="org-drop mt-5 sm:mt-7 inline-flex items-center gap-2 sm:gap-2.5 rounded-full px-5 py-2.5 sm:px-7 sm:py-3 text-white text-[13px] sm:text-lg font-semibold"
+          style={{
+            background: 'linear-gradient(90deg, #6d28d9 0%, #7c3aed 50%, #6366f1 100%)',
+            boxShadow: '0 8px 24px rgba(124,58,237,0.35)',
+            animationDelay: '180ms',
+          }}
+        >
+          <Icon name="LayoutGrid" size={18} className="flex-shrink-0" />
+          <span className="leading-snug">{slide.subtitle}</span>
+        </span>
       )}
     </div>
   </div>
