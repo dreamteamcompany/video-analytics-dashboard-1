@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -9,11 +11,49 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
+const DutiesOverlay = ({ title, duties, onClose }: { title: string; duties: string[]; onClose: () => void }) =>
+  createPortal(
+    <div
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4 md:p-10 duties-fade"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[3px]" />
+      <div
+        className={`relative rounded-3xl flex flex-col gap-2 px-6 py-5 text-left max-h-full overflow-auto ${duties.length > 7 ? 'w-[min(1060px,94vw)]' : 'w-[min(620px,92vw)]'}`}
+        style={{
+          background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%)',
+          boxShadow: '0 24px 60px rgba(15,23,42,0.45)',
+        }}
+      >
+        <div>
+          <p className="text-[10px] md:text-[12px] font-black text-white/60 tracking-[0.14em] uppercase leading-none">
+            Зона ответственности
+          </p>
+          <p className="text-base md:text-2xl font-bold text-white leading-snug mt-1">{title}</p>
+        </div>
+        <div className={`gap-x-7 ${duties.length > 7 ? 'columns-2' : 'flex flex-col'}`}>
+          {duties.map((d) => (
+            <div key={d} className="flex items-start gap-2 break-inside-avoid mb-1.5">
+              <Icon name="Check" size={14} className="text-emerald-300 flex-shrink-0 mt-[3px]" />
+              <p className="text-[12px] md:text-[15px] text-white/90 leading-snug">{d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+
 const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, delay = 0 }: {
   role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; delay?: number;
-}) => (
+}) => {
+  const [open, setOpen] = useState(false);
+  return (
   <div
-    className={`group relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] hover:z-40 min-h-[72px] md:min-h-[var(--mh)] ${duties?.length ? 'cursor-pointer' : ''} ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
+    onMouseEnter={() => duties?.length && setOpen(true)}
+    onMouseLeave={() => setOpen(false)}
+    onClick={() => duties?.length && setOpen((v) => !v)}
+    className={`group relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length ? 'cursor-pointer' : ''} ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
@@ -90,32 +130,15 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
 
     {duties && duties.length > 0 && (
       <>
-        <span className="absolute top-1.5 right-1.5 opacity-40 group-hover:opacity-0 transition-opacity">
+        <span className="absolute top-1.5 right-1.5 opacity-40">
           <Icon name="Info" size={13} className="text-violet-400" />
         </span>
-        <div
-          className="absolute left-0 right-0 top-0 min-h-full rounded-2xl flex flex-col justify-center gap-1.5 px-4 py-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none z-30"
-          style={{
-            background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%)',
-            boxShadow: '0 18px 44px rgba(76,29,149,0.35)',
-          }}
-        >
-          <p className="text-[11px] md:text-[13px] font-black text-white/70 tracking-[0.12em] uppercase leading-none">
-            Зона ответственности
-          </p>
-          <div className="flex flex-col gap-1">
-            {duties.map((d) => (
-              <div key={d} className="flex items-start gap-1.5">
-                <Icon name="Check" size={13} className="text-emerald-300 flex-shrink-0 mt-[2px]" />
-                <p className="text-[11px] md:text-[13.5px] text-white/90 leading-snug">{d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {open && <DutiesOverlay title={role} duties={duties} onClose={() => setOpen(false)} />}
       </>
     )}
   </div>
-);
+  );
+};
 
 const StatCard = ({ icon, value, label, delay }: {
   icon: string; value: string; label: string; delay: number;
@@ -138,6 +161,7 @@ const StatCard = ({ icon, value, label, delay }: {
 
 const OrgSlide = ({ slide }: { slide: Slide }) => {
   const isMobile = useIsMobile();
+  const [headOpen, setHeadOpen] = useState(false);
   const allPeople = slide.columns?.flatMap((c) => c.people) ?? [];
   const total = allPeople.length + (slide.head ? 1 : 0);
   const vacancies = allPeople.filter((p) => p.vacancy).length;
@@ -227,7 +251,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
         )}
 
         {slide.head && (
-          <div className="relative org-drop w-full md:w-auto">
+          <div className="relative org-drop w-full md:w-auto z-0 hover:z-[60]">
             <div
               className="absolute left-1/2 -top-3.5 md:-top-4 -translate-x-1/2 w-9 h-9 md:w-11 md:h-11 rounded-full bg-white flex items-center justify-center z-10"
               style={{ boxShadow: '0 4px 14px rgba(124,58,237,0.22)' }}
@@ -236,7 +260,10 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               <Icon name="Crown" size={22} className="text-violet-500 hidden md:block" />
             </div>
             <div
-              className={`group relative rounded-3xl bg-white px-6 sm:px-20 pt-5 md:pt-4 pb-3 md:pb-2.5 text-center flex flex-col items-center hover:z-40 ${slide.head.duties?.length ? 'cursor-pointer' : ''}`}
+              onMouseEnter={() => slide.head?.duties?.length && setHeadOpen(true)}
+              onMouseLeave={() => setHeadOpen(false)}
+              onClick={() => slide.head?.duties?.length && setHeadOpen((v) => !v)}
+              className={`group relative rounded-3xl bg-white px-6 sm:px-20 pt-5 md:pt-4 pb-3 md:pb-2.5 text-center flex flex-col items-center ${slide.head.duties?.length ? 'cursor-pointer' : ''}`}
               style={{ boxShadow: '0 8px 30px rgba(124,58,237,0.12), 0 2px 6px rgba(15,23,42,0.06)' }}
             >
               {slide.head.photo && (
@@ -266,28 +293,16 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
 
               {slide.head.duties && slide.head.duties.length > 0 && (
                 <>
-                  <span className="absolute top-2 right-2 opacity-40 group-hover:opacity-0 transition-opacity">
+                  <span className="absolute top-2 right-2 opacity-40">
                     <Icon name="Info" size={14} className="text-violet-400" />
                   </span>
-                  <div
-                    className="absolute left-1/2 -translate-x-1/2 top-0 w-[min(880px,92vw)] min-h-full rounded-3xl flex flex-col justify-center gap-1.5 px-5 py-4 text-left opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none z-30"
-                    style={{
-                      background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%)',
-                      boxShadow: '0 18px 44px rgba(76,29,149,0.35)',
-                    }}
-                  >
-                    <p className="text-[10px] md:text-[12px] font-black text-white/70 tracking-[0.12em] uppercase leading-none">
-                      Зона ответственности
-                    </p>
-                    <div className={`gap-x-5 gap-y-0.5 ${slide.head.duties.length > 8 ? 'columns-2' : 'flex flex-col'}`}>
-                      {slide.head.duties.map((d) => (
-                        <div key={d} className="flex items-start gap-1.5 break-inside-avoid">
-                          <Icon name="Check" size={12} className="text-emerald-300 flex-shrink-0 mt-[3px]" />
-                          <p className="text-[10px] md:text-[12.5px] text-white/90 leading-snug">{d}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  {headOpen && (
+                    <DutiesOverlay
+                      title={slide.head.role}
+                      duties={slide.head.duties}
+                      onClose={() => setHeadOpen(false)}
+                    />
+                  )}
                 </>
               )}
             </div>
