@@ -8,29 +8,29 @@ const VALUE_LABEL_GRADIENT = 'linear-gradient(90deg, #059669 0%, #10b981 55%, #1
 const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: boolean }) => (
   <div
     className={`goal-row group relative flex-1 min-h-0 overflow-hidden flex flex-col justify-center rounded-xl bg-white/95 border border-violet-100 org-in cursor-pointer transition-shadow hover:shadow-lg ${
-      dense ? 'gap-1 px-2.5 py-1.5' : 'gap-2 px-3 py-2.5'
+      dense ? 'gap-1 px-2.5 py-1.5' : 'gap-1.5 px-3 py-2'
     }`}
     style={{ boxShadow: '0 4px 14px rgba(124,58,237,0.08)', animationDelay: `${120 + index * 60}ms` }}
   >
-    <div className="flex-shrink-0 flex items-center gap-2.5">
+    <div className="min-h-0 flex items-center gap-2.5">
       <span className="flex-shrink-0 w-5 text-center text-[18px] md:text-[22px] font-black text-violet-500 leading-none">
         {index + 1}
       </span>
 
       <div
         className={`flex-shrink-0 rounded-xl flex items-center justify-center ${
-          dense ? 'w-9 h-9 md:w-[38px] md:h-[38px]' : 'w-10 h-10 md:w-[46px] md:h-[46px]'
+          dense ? 'w-8 h-8 md:w-[34px] md:h-[34px]' : 'w-10 h-10 md:w-[42px] md:h-[42px]'
         }`}
         style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.3)' }}
       >
-        <Icon name={goal.icon ?? 'Target'} size={dense ? 19 : 22} className="text-white" />
+        <Icon name={goal.icon ?? 'Target'} size={dense ? 17 : 21} className="text-white" />
       </div>
 
       <p
         className={`min-w-0 flex-1 font-bold text-slate-800 leading-tight ${
           dense
-            ? 'line-clamp-3 text-[12px] md:text-[clamp(12px,1.5vh,15px)]'
-            : 'line-clamp-2 text-[13px] md:text-[clamp(13px,1.9vh,20px)]'
+            ? 'line-clamp-2 text-[11.5px] md:text-[clamp(11.5px,1.35vh,14px)]'
+            : 'line-clamp-2 text-[13px] md:text-[clamp(13px,1.7vh,18px)]'
         }`}
       >
         {goal.title}
@@ -40,7 +40,7 @@ const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: b
         <div className={`flex-shrink-0 text-center ${dense ? 'w-[84px] md:w-[112px]' : 'w-[92px] md:w-[132px]'}`}>
           <p
             className={`font-black leading-none tracking-tight ${
-              dense ? 'text-[17px] md:text-[clamp(17px,2.5vh,25px)]' : 'text-[19px] md:text-[clamp(19px,3.2vh,32px)]'
+              dense ? 'text-[15px] md:text-[clamp(15px,2.1vh,22px)]' : 'text-[18px] md:text-[clamp(18px,2.8vh,29px)]'
             }`}
             style={{
               background: VALUE_GRADIENT,
@@ -53,8 +53,8 @@ const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: b
           </p>
           {goal.metricNote && (
             <p
-              className={`font-semibold text-slate-400 leading-tight mt-1 ${
-                dense ? 'text-[8.5px] md:text-[clamp(8.5px,1.05vh,10.5px)]' : 'text-[9px] md:text-[clamp(9px,1.25vh,12.5px)]'
+              className={`font-semibold text-slate-400 leading-tight mt-0.5 line-clamp-2 ${
+                dense ? 'text-[8px] md:text-[clamp(8px,0.92vh,9.5px)]' : 'text-[8.5px] md:text-[clamp(8.5px,1.1vh,11px)]'
               }`}
             >
               {goal.metricNote}
@@ -66,10 +66,10 @@ const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: b
 
     {(goal.effect || goal.result) && (
       <div
-        className={`flex-shrink min-h-0 overflow-hidden rounded-lg bg-emerald-50/70 border border-emerald-100 leading-snug text-slate-600 line-clamp-2 ${
+        className={`flex-shrink-0 rounded-lg bg-emerald-50/70 border border-emerald-100 leading-snug text-slate-600 ${
           dense
-            ? 'px-2.5 py-1 text-[11px] md:text-[clamp(11px,1.4vh,14px)]'
-            : 'px-3 py-2 text-[12px] md:text-[clamp(12px,1.6vh,16px)]'
+            ? 'px-2.5 py-1 text-[10px] md:text-[clamp(10px,1.15vh,12.5px)]'
+            : 'px-3 py-1.5 text-[11.5px] md:text-[clamp(11.5px,1.4vh,14.5px)]'
         }`}
       >
         <span
