@@ -5,31 +5,41 @@ const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b
 const VALUE_GRADIENT = 'linear-gradient(120deg, #7c3aed 0%, #6366f1 45%, #ec4899 100%)';
 const VALUE_LABEL_GRADIENT = 'linear-gradient(90deg, #059669 0%, #10b981 55%, #14b8a6 100%)';
 
-const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
+const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: boolean }) => (
   <div
-    className="goal-row group relative flex-1 min-h-0 overflow-hidden flex flex-col justify-center gap-2 rounded-xl bg-white/95 border border-violet-100 px-3 py-2.5 org-in cursor-pointer transition-shadow hover:shadow-lg"
+    className={`goal-row group relative flex-1 min-h-0 overflow-hidden flex flex-col justify-center rounded-xl bg-white/95 border border-violet-100 org-in cursor-pointer transition-shadow hover:shadow-lg ${
+      dense ? 'gap-1 px-2.5 py-1.5' : 'gap-2 px-3 py-2.5'
+    }`}
     style={{ boxShadow: '0 4px 14px rgba(124,58,237,0.08)', animationDelay: `${120 + index * 60}ms` }}
   >
-    <div className="flex items-center gap-2.5">
+    <div className="flex-shrink-0 flex items-center gap-2.5">
       <span className="flex-shrink-0 w-5 text-center text-[18px] md:text-[22px] font-black text-violet-500 leading-none">
         {index + 1}
       </span>
 
       <div
-        className="flex-shrink-0 w-10 h-10 md:w-[46px] md:h-[46px] rounded-xl flex items-center justify-center"
+        className={`flex-shrink-0 rounded-xl flex items-center justify-center ${
+          dense ? 'w-9 h-9 md:w-[38px] md:h-[38px]' : 'w-10 h-10 md:w-[46px] md:h-[46px]'
+        }`}
         style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.3)' }}
       >
-        <Icon name={goal.icon ?? 'Target'} size={22} className="text-white" />
+        <Icon name={goal.icon ?? 'Target'} size={dense ? 19 : 22} className="text-white" />
       </div>
 
-      <p className="min-w-0 flex-1 text-[13px] md:text-[clamp(13px,1.9vh,20px)] font-bold text-slate-800 leading-tight line-clamp-2">
+      <p
+        className={`min-w-0 flex-1 font-bold text-slate-800 leading-tight line-clamp-2 ${
+          dense ? 'text-[12px] md:text-[clamp(12px,1.55vh,16px)]' : 'text-[13px] md:text-[clamp(13px,1.9vh,20px)]'
+        }`}
+      >
         {goal.title}
       </p>
 
       {goal.metric && (
-        <div className="flex-shrink-0 text-center w-[92px] md:w-[132px]">
+        <div className={`flex-shrink-0 text-center ${dense ? 'w-[84px] md:w-[112px]' : 'w-[92px] md:w-[132px]'}`}>
           <p
-            className="text-[19px] md:text-[clamp(19px,3.2vh,32px)] font-black leading-none tracking-tight"
+            className={`font-black leading-none tracking-tight ${
+              dense ? 'text-[17px] md:text-[clamp(17px,2.5vh,25px)]' : 'text-[19px] md:text-[clamp(19px,3.2vh,32px)]'
+            }`}
             style={{
               background: VALUE_GRADIENT,
               WebkitBackgroundClip: 'text',
@@ -40,7 +50,11 @@ const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
             {goal.metric}
           </p>
           {goal.metricNote && (
-            <p className="text-[9px] md:text-[clamp(9px,1.25vh,12.5px)] font-semibold text-slate-400 leading-tight mt-1">
+            <p
+              className={`font-semibold text-slate-400 leading-tight mt-1 ${
+                dense ? 'text-[8.5px] md:text-[clamp(8.5px,1.05vh,10.5px)]' : 'text-[9px] md:text-[clamp(9px,1.25vh,12.5px)]'
+              }`}
+            >
               {goal.metricNote}
             </p>
           )}
@@ -49,7 +63,13 @@ const GoalCard = ({ goal, index }: { goal: Goal; index: number }) => (
     </div>
 
     {(goal.effect || goal.result) && (
-      <div className="rounded-lg bg-emerald-50/70 border border-emerald-100 px-3 py-2 text-[12px] md:text-[clamp(12px,1.75vh,18px)] leading-snug text-slate-600 line-clamp-3">
+      <div
+        className={`flex-shrink-0 rounded-lg bg-emerald-50/70 border border-emerald-100 leading-snug text-slate-600 line-clamp-2 ${
+          dense
+            ? 'px-2.5 py-1 text-[11px] md:text-[clamp(11px,1.4vh,14px)]'
+            : 'px-3 py-2 text-[12px] md:text-[clamp(12px,1.75vh,18px)]'
+        }`}
+      >
         <span
           className="font-black"
           style={{
@@ -195,12 +215,12 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
           <div className="flex-none md:flex-1 md:min-h-0 grid gap-2.5 md:grid-cols-[0.85fr_0.85fr_1fr]">
             <div className="flex flex-col gap-1.5 md:min-h-0 md:overflow-hidden">
               {left.map((g, i) => (
-                <GoalCard key={g.title} goal={g} index={i} />
+                <GoalCard key={g.title} goal={g} index={i} dense={goals.length > 8} />
               ))}
             </div>
             <div className="flex flex-col gap-1.5 md:min-h-0 md:overflow-hidden">
               {right.map((g, i) => (
-                <GoalCard key={g.title} goal={g} index={half + i} />
+                <GoalCard key={g.title} goal={g} index={half + i} dense={goals.length > 8} />
               ))}
             </div>
 
