@@ -9,11 +9,11 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
-const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, delay = 0 }: {
-  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; delay?: number;
+const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; delay?: number;
 }) => (
   <div
-    className={`relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
+    className={`group relative overflow-hidden flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length ? 'cursor-pointer' : ''} ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
@@ -87,6 +87,30 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     >
       {salary}
     </div>
+
+    {duties && duties.length > 0 && (
+      <>
+        <span className="absolute top-1.5 right-1.5 opacity-40 group-hover:opacity-0 transition-opacity">
+          <Icon name="Info" size={13} className="text-violet-400" />
+        </span>
+        <div
+          className="absolute inset-0 overflow-hidden flex flex-col justify-center gap-1.5 px-4 py-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none"
+          style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #7c3aed 100%)' }}
+        >
+          <p className="text-[11px] md:text-[13px] font-black text-white/70 tracking-[0.12em] uppercase leading-none">
+            Зона ответственности
+          </p>
+          <div className="flex flex-col gap-1 min-h-0 overflow-hidden">
+            {duties.map((d) => (
+              <div key={d} className="flex items-start gap-1.5">
+                <Icon name="Check" size={13} className="text-emerald-300 flex-shrink-0 mt-[2px]" />
+                <p className="text-[11px] md:text-[13.5px] text-white/90 leading-snug">{d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </>
+    )}
   </div>
 );
 
