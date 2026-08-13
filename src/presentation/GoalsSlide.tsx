@@ -66,10 +66,10 @@ const GoalCard = ({ goal, index, dense }: { goal: Goal; index: number; dense?: b
 
     {(goal.effect || goal.result) && (
       <div
-        className={`flex-shrink-0 rounded-lg bg-emerald-50/70 border border-emerald-100 leading-snug text-slate-600 line-clamp-2 ${
+        className={`flex-shrink min-h-0 overflow-hidden rounded-lg bg-emerald-50/70 border border-emerald-100 leading-snug text-slate-600 line-clamp-2 ${
           dense
             ? 'px-2.5 py-1 text-[11px] md:text-[clamp(11px,1.4vh,14px)]'
-            : 'px-3 py-2 text-[12px] md:text-[clamp(12px,1.75vh,18px)]'
+            : 'px-3 py-2 text-[12px] md:text-[clamp(12px,1.6vh,16px)]'
         }`}
       >
         <span
