@@ -344,7 +344,7 @@ export const slides: Slide[] = [
         icon: 'Code',
         people: [
           { role: 'Сеньор-разработчик 1С / Team Lead', lead: true, name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
-          { role: 'Разработчик 1С', tag: 'Middle', name: 'Важенин К.В.', salary: '150 000 ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/0a54051d-4f4f-4e16-8fdf-5d77d84b7e76.png' },
+          { role: 'Разработчик 1С', tag: 'Middle', name: 'Важенин К.В.', salary: '150 000 ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/0a54051d-4f4f-4e16-8fdf-5d77d84b7e76.png', duties: ['Доработка МИС под процессы сети клиник', 'Разработка новых модулей и функций по ТЗ', 'Интеграции МИС с 1С, телефонией и внешними сервисами', 'Разработка и оптимизация отчётов для управленцев', 'Доработка печатных форм и документов', 'Оптимизация быстродействия и разбор ошибок в коде', 'Обновление конфигураций без потери доработок', 'Исправление критических инцидентов в проде', 'Код-ревью и техническая документация по доработкам'] },
           { role: 'Разработчик 1С', tag: 'Junior', name: 'Байбекова Л.Э.', salary: '120 000 ₽/мес', photo: 'https://cdn.poehali.dev/projects/bb37ddcd-e150-4859-a38d-a9aea67934e1/bucket/aa7d2209-d8d0-4a13-8f9f-ebd84b512b43.png' },
           { role: 'Тестировщик 1С', name: 'Требуется поиск', salary: '**** ₽/мес', vacancy: true },
         ],
