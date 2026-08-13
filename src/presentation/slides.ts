@@ -92,7 +92,7 @@ export interface HandoffStep {
 
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'closing';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -132,6 +132,10 @@ export interface Slide {
   handoffSteps?: HandoffStep[];
   handoffResult?: string;
   handoffResultNote?: string;
+  closingPoints?: { icon?: string; metric?: string; title: string; note?: string }[];
+  closingResult?: string;
+  closingResultNote?: string;
+  closingCta?: string;
 }
 
 export const slides: Slide[] = [
@@ -1268,5 +1272,45 @@ export const slides: Slide[] = [
       },
     ],
     phasesFooter: 'Без крепкого фундамента любой рост разрушает качество — поэтому этап 2 возможен только после честно пройденного этапа 1.',
+  },
+  {
+    id: 'closing',
+    type: 'closing',
+    theme: 'light',
+    badge: 'Заключение',
+    badgeIcon: 'Flag',
+    title: 'IT перестаёт быть статьёй расходов',
+    subtitle: 'Собранная команда, наведённый порядок в системах и ИИ-продукты превращают IT-департамент в инструмент роста бизнеса.',
+    author: 'Роберт Лалиев',
+    year: '2026 — 2027',
+    closingPoints: [
+      {
+        icon: 'Users',
+        metric: '33',
+        title: 'Специалиста в структуре',
+        note: 'Полностью описанные роли, зоны ответственности и открытые вакансии.',
+      },
+      {
+        icon: 'ShieldCheck',
+        metric: '6',
+        title: 'Направлений под контролем',
+        note: 'Поддержка, медсистемы, безопасность, инфраструктура, разработка, проекты.',
+      },
+      {
+        icon: 'Bot',
+        metric: '10+',
+        title: 'ИИ-продуктов экосистемы',
+        note: 'От записи пациентов и подбора персонала до закупок и видеонаблюдения.',
+      },
+      {
+        icon: 'TrendingUp',
+        metric: '2027',
+        title: 'Выход на самоокупаемость',
+        note: 'ИИ-продукты выходят на внешний рынок и начинают приносить доход.',
+      },
+    ],
+    closingResult: 'Управляемый IT-департамент: понятная структура, прогнозируемые сроки и работающие сервисы без внезапных сбоев.',
+    closingResultNote: 'Бизнес получает прозрачность затрат, снижение зависимости от подрядчиков и технологическое преимущество на рынке.',
+    closingCta: 'Готов обсудить приоритеты, бюджет и первые шаги по этапу 1.',
   },
 ];
