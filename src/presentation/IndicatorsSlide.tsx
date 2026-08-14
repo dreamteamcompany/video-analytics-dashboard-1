@@ -4,50 +4,62 @@ import Icon from '@/components/ui/icon';
 const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%)';
 const VALUE_GRADIENT = 'linear-gradient(120deg, #7c3aed 0%, #6366f1 45%, #ec4899 100%)';
 
-const IndicatorCard = ({ item, index }: { item: IndicatorItem; index: number }) => (
-  <div
-    className="relative min-h-0 flex flex-col gap-1.5 rounded-xl bg-white/95 border border-violet-100 px-3 py-2.5 org-in transition-shadow hover:shadow-lg"
-    style={{ boxShadow: '0 4px 14px rgba(124,58,237,0.08)', animationDelay: `${120 + index * 55}ms` }}
-  >
-    <div className="flex items-center gap-2.5">
-      <div
-        className="flex-shrink-0 w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center"
-        style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.3)' }}
-      >
-        <Icon name={item.icon ?? 'Target'} size={20} className="text-white" />
-      </div>
+const IndicatorCard = ({ item, index }: { item: IndicatorItem; index: number }) => {
+  const long = (item.title ?? '').length > 46;
+  const titleSize = long
+    ? 'text-[13px] md:text-[clamp(13px,1.9vh,19px)]'
+    : 'text-[14.5px] md:text-[clamp(14.5px,2.2vh,23px)]';
 
-      <p className="min-w-0 flex-1 text-[12.5px] md:text-[clamp(12.5px,1.7vh,17px)] font-bold text-slate-800 leading-tight">
-        {item.title}
-      </p>
+  const metricLong = (item.metric ?? '').length > 5;
+  const metricSize = metricLong
+    ? 'text-[17px] md:text-[clamp(17px,2.5vh,26px)]'
+    : 'text-[20px] md:text-[clamp(20px,3.1vh,33px)]';
 
-      <div className="flex-shrink-0 text-right w-[74px] md:w-[92px]">
-        <p
-          className="text-[18px] md:text-[clamp(18px,2.7vh,28px)] font-black leading-none tracking-tight"
-          style={{
-            background: VALUE_GRADIENT,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
+  return (
+    <div
+      className="relative min-h-0 flex flex-col justify-center gap-2 rounded-xl bg-white/95 border border-violet-100 px-3.5 py-3 org-in transition-shadow hover:shadow-lg"
+      style={{ boxShadow: '0 4px 14px rgba(124,58,237,0.08)', animationDelay: `${120 + index * 55}ms` }}
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className="flex-shrink-0 w-10 h-10 md:w-[52px] md:h-[52px] rounded-xl flex items-center justify-center"
+          style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.3)' }}
         >
-          {item.metric}
-        </p>
-        {item.metricNote && (
-          <p className="text-[8.5px] md:text-[clamp(8.5px,1.1vh,11px)] font-semibold text-slate-400 leading-tight mt-1">
-            {item.metricNote}
-          </p>
-        )}
-      </div>
-    </div>
+          <Icon name={item.icon ?? 'Target'} size={23} className="text-white" />
+        </div>
 
-    {item.note && (
-      <p className="text-[11px] md:text-[clamp(11px,1.5vh,14px)] text-slate-500 leading-snug">
-        {item.note}
-      </p>
-    )}
-  </div>
-);
+        <p className={`min-w-0 flex-1 font-bold text-slate-800 leading-tight ${titleSize}`}>
+          {item.title}
+        </p>
+
+        <div className="flex-shrink-0 text-right w-[82px] md:w-[108px]">
+          <p
+            className={`font-black leading-none tracking-tight ${metricSize}`}
+            style={{
+              background: VALUE_GRADIENT,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            {item.metric}
+          </p>
+          {item.metricNote && (
+            <p className="text-[9.5px] md:text-[clamp(9.5px,1.3vh,13px)] font-semibold text-slate-400 leading-tight mt-1">
+              {item.metricNote}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {item.note && (
+        <p className="text-[12.5px] md:text-[clamp(12.5px,1.8vh,17.5px)] text-slate-500 leading-snug">
+          {item.note}
+        </p>
+      )}
+    </div>
+  );
+};
 
 const IndicatorsSlide = ({ slide }: { slide: Slide }) => {
   const items = slide.indicators ?? [];
