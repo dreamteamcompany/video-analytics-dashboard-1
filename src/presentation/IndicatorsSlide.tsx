@@ -94,7 +94,9 @@ const IndicatorsSlide = ({ slide }: { slide: Slide }) => {
               {slide.title}
             </h2>
             {slide.subtitle && (
-              <p className="text-[14px] md:text-[19px] font-medium text-slate-600 leading-snug max-w-[900px] text-center">
+              <p
+                className="text-[14px] md:text-[19px] font-bold leading-snug max-w-[900px] text-center rounded-xl px-4 py-1.5 bg-emerald-50/80 border border-emerald-100 text-emerald-700"
+              >
                 {slide.subtitle}
               </p>
             )}
