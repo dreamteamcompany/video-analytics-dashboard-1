@@ -316,6 +316,11 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               <p className="text-base md:text-2xl font-bold text-violet-600 leading-tight mt-1.5">
                 {slide.head.salary}
               </p>
+              {slide.head.salaryNote && (
+                <p className="text-[10px] md:text-xs text-slate-400 leading-tight mt-0.5">
+                  {slide.head.salaryNote}
+                </p>
+              )}
 
               {slide.head.duties && slide.head.duties.length > 0 && (
                 <>
