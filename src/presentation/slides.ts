@@ -1169,7 +1169,7 @@ export const slides: Slide[] = [
       { icon: 'ChartColumn', title: 'ИИ-аналитика и BI', note: 'Отчёты и прогнозы по данным' },
       { icon: 'UserSearch', title: 'AI-подбор персонала', note: 'Отбор и оценка кандидатов' },
       { icon: 'Headset', title: 'AI-суфлёр для колл-центра', note: 'Готовый ответ на возражение пациента прямо в разговоре' },
-      { icon: 'PhoneCall', title: 'ИИ-обработка звонков', note: 'Запись, разбор, качество сервиса' },
+      { icon: 'Wallet', title: 'AI-разноска платежей', note: 'Автоматическая разноска для бухгалтерии' },
       { icon: 'ShoppingCart', title: 'AI-закупки', note: 'Подготовка и проверка документов' },
     ],
     ecoBenefits: [
