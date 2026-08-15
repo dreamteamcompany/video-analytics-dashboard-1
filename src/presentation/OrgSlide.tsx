@@ -289,14 +289,14 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
             <div
               ref={headDuties.ref}
               {...headDuties.handlers}
-              className={`group relative rounded-3xl bg-white px-6 sm:px-20 pt-5 md:pt-4 pb-3 md:pb-2.5 text-center flex flex-col items-center ${slide.head.duties?.length ? 'cursor-pointer' : ''}`}
+              className={`group relative rounded-3xl px-6 sm:px-20 pt-5 md:pt-4 pb-3 md:pb-2.5 text-center flex flex-col items-center ${slide.head.replace ? 'bg-rose-50 ring-1 ring-rose-200' : 'bg-white'} ${slide.head.duties?.length ? 'cursor-pointer' : ''}`}
               style={{ boxShadow: '0 8px 30px rgba(124,58,237,0.12), 0 2px 6px rgba(15,23,42,0.06)' }}
             >
               {slide.head.photo && (
                 <img
                   src={slide.head.photo}
                   alt={slide.head.name || slide.head.role}
-                  className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover ring-2 ring-violet-200 mb-1.5"
+                  className={`w-12 h-12 md:w-14 md:h-14 rounded-full object-cover ring-2 mb-1.5 ${slide.head.replace ? 'ring-rose-300' : 'ring-violet-200'}`}
                 />
               )}
               <p className="text-lg md:text-3xl font-bold text-slate-800 leading-tight">
@@ -313,7 +313,12 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   </p>
                 )
               )}
-              <p className="text-base md:text-2xl font-bold text-violet-600 leading-tight mt-1.5">
+              {slide.head.note && (
+                <span className="text-[10px] md:text-sm font-semibold text-white px-2.5 md:px-3 py-0.5 md:py-1 rounded-full bg-gradient-to-r from-rose-500 to-red-500 leading-snug mt-1.5">
+                  {slide.head.note}
+                </span>
+              )}
+              <p className={`text-base md:text-2xl font-bold leading-tight mt-1.5 ${slide.head.replace ? 'text-rose-600' : 'text-violet-600'}`}>
                 {slide.head.salary}
               </p>
               {slide.head.salaryNote && (
