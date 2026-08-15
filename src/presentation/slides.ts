@@ -306,14 +306,6 @@ export const slides: Slide[] = [
         effect: 'меньше ручной работы сотрудников; при росте до 70 клиник — критично.',
       },
       {
-        title: 'Свой штат разработчиков вместо подрядчиков',
-        icon: 'Users',
-        metric: 'in-house',
-        metricNote: 'команда вместо аутсорса',
-        text: 'Формируем внутреннюю команду разработки 1С и МИС, снижая зависимость от внешних подрядчиков.',
-        effect: 'доработки быстрее и дешевле, экспертиза остаётся в компании.',
-      },
-      {
         title: 'Процесс качественной разработки с Code Review',
         icon: 'GitPullRequest',
         metric: '100%',
@@ -340,7 +332,7 @@ export const slides: Slide[] = [
     ],
     flow: [
       { icon: 'Search', title: 'СЕЙЧАС:', lines: ['Разные системы по городам,', 'доработки через подрядчиков'] },
-      { icon: 'Network', title: 'СТАНЕТ:', lines: ['Единая МИС, ЕГИСЗ, бонусы,', 'своя команда и контроль кода'] },
+      { icon: 'Network', title: 'СТАНЕТ:', lines: ['Единая МИС, ЕГИСЗ, бонусы,', 'контроль качества кода'] },
       { icon: 'Gem', title: 'РЕЗУЛЬТАТ ДЛЯ БИЗНЕСА:', lines: ['Управляемая сеть клиник', 'и рост повторных визитов'] },
     ],
     impactGoal: 'Единая цифровая платформа сети клиник',
@@ -356,7 +348,6 @@ export const slides: Slide[] = [
       { icon: 'Gift', label: 'Бонусная система', value: 'все', note: 'города', progress: 100 },
       { icon: 'Building2', label: 'Подключение к ЕГИСЗ', value: 'все', note: 'города', progress: 90 },
       { icon: 'Network', label: 'Единая МИС', value: '1', note: 'система', progress: 80 },
-      { icon: 'Users', label: 'Своя команда разработки', value: 'in', note: 'house', progress: 85 },
       { icon: 'GitPullRequest', label: 'Доработки через Code Review', value: '100', note: '%', progress: 100 },
       { icon: 'GitBranch', label: 'Код в GitLab', value: 'весь', note: 'репозиторий', progress: 95 },
     ],
