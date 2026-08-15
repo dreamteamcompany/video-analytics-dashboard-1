@@ -124,6 +124,7 @@ export interface Slide {
   ecoBenefits?: EcoBenefit[];
   indicators?: IndicatorItem[];
   indicatorsFooter?: string;
+  indicatorsPhases?: { year: string; label: string }[];
   phases?: PhaseItem[];
   phasesFooter?: string;
   handoffLeft?: HandoffSide;
@@ -1284,6 +1285,10 @@ export const slides: Slide[] = [
         metricNote: 'критичных багов',
         note: 'Системы работают предсказуемо, сотрудники не тратят время на обходные пути.',
       },
+    ],
+    indicatorsPhases: [
+      { year: '2026', label: 'Оздоровление IT: закрываем риски и наводим порядок' },
+      { year: '2027', label: 'Активная фаза развития и внедрения новых продуктов' },
     ],
     indicatorsFooter: 'Если эти показатели достигнуты — IT-департамент движется в правильном направлении.',
   },

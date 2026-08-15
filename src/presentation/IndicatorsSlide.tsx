@@ -120,9 +120,35 @@ const IndicatorsSlide = ({ slide }: { slide: Slide }) => {
             ))}
           </div>
 
+          {slide.indicatorsPhases && (
+            <div className="flex-shrink-0 mt-2.5 grid gap-2 sm:grid-cols-2">
+              {slide.indicatorsPhases.map((p, i) => (
+                <div
+                  key={p.year}
+                  className={`org-in rounded-xl px-3.5 py-2 flex items-center gap-2.5 border ${
+                    i === 0
+                      ? 'bg-white/95 border-violet-100'
+                      : 'bg-violet-50/90 border-violet-200'
+                  }`}
+                  style={{ animationDelay: `${560 + i * 80}ms` }}
+                >
+                  <span
+                    className="flex-shrink-0 rounded-lg px-2.5 py-1 text-[12px] md:text-[15px] font-black text-white"
+                    style={{ background: HEADER_GRADIENT }}
+                  >
+                    {p.year}
+                  </span>
+                  <span className="min-w-0 text-[11.5px] md:text-[14px] font-bold text-slate-700 leading-snug">
+                    {p.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
           {slide.indicatorsFooter && (
             <div
-              className="flex-shrink-0 mt-3 rounded-xl px-4 py-2.5 text-center text-white text-[12px] md:text-[15px] font-semibold org-in"
+              className="flex-shrink-0 mt-2.5 rounded-xl px-4 py-2.5 text-center text-white text-[12px] md:text-[15px] font-semibold org-in"
               style={{ background: HEADER_GRADIENT, boxShadow: '0 8px 22px rgba(124,58,237,0.28)', animationDelay: '600ms' }}
             >
               {slide.indicatorsFooter}
