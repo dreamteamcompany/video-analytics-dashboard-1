@@ -86,6 +86,41 @@ const ClosingSlide = ({ slide }: { slide: Slide }) => {
             </div>
           )}
 
+          {slide.closingPayroll && (
+            <div
+              className="org-in flex-shrink-0 rounded-xl md:rounded-2xl bg-white/95 border border-violet-100 px-3.5 py-2.5 md:px-6 md:py-4 flex items-center justify-center gap-3 md:gap-5 text-center"
+              style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.1)', animationDelay: '460ms' }}
+            >
+              <div
+                className="flex-shrink-0 w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center"
+                style={{ background: HEADER_GRADIENT, boxShadow: '0 5px 14px rgba(124,58,237,0.3)' }}
+              >
+                <Icon name="Wallet" size={22} className="text-white" />
+              </div>
+              <div className="text-left">
+                <p className="text-[10.5px] md:text-[13px] font-bold uppercase tracking-[0.12em] text-slate-400 leading-none">
+                  {slide.closingPayrollLabel ?? 'Общий ФОТ'}
+                </p>
+                <p
+                  className="text-[19px] md:text-[32px] font-black leading-tight tracking-tight mt-1"
+                  style={{
+                    background: ACCENT_GRADIENT,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  {slide.closingPayroll}
+                </p>
+                {slide.closingPayrollNote && (
+                  <p className="text-[10.5px] md:text-[13px] text-slate-500 leading-snug">
+                    {slide.closingPayrollNote}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
           {slide.closingResult && (
             <div
               className="org-in flex-shrink-0 rounded-xl md:rounded-2xl px-3.5 py-3 md:px-7 md:py-5 text-center relative overflow-hidden"

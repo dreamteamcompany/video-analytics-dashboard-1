@@ -134,6 +134,9 @@ export interface Slide {
   handoffResult?: string;
   handoffResultNote?: string;
   closingPoints?: { icon?: string; metric?: string; title: string; note?: string }[];
+  closingPayroll?: string;
+  closingPayrollLabel?: string;
+  closingPayrollNote?: string;
   closingResult?: string;
   closingResultNote?: string;
   closingCta?: string;
@@ -1363,6 +1366,9 @@ export const slides: Slide[] = [
         note: 'ИИ-продукты выходят на внешний рынок и начинают приносить доход.',
       },
     ],
+    closingPayroll: '**** ₽/мес',
+    closingPayrollLabel: 'Общий ФОТ департамента',
+    closingPayrollNote: 'Все службы и открытые вакансии, без учёта подрядчиков',
     closingResult: 'Управляемый IT-департамент: понятная структура, прогнозируемые сроки и работающие сервисы без внезапных сбоев.',
     closingResultNote: 'Бизнес получает прозрачность затрат, снижение зависимости от подрядчиков и технологическое преимущество на рынке.',
     closingCta: 'Готов обсудить приоритеты, бюджет и первые шаги по этапу 1.',
