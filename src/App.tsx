@@ -13,6 +13,7 @@ import YunaSettingsPage from "./yuna/YunaSettingsPage";
 import YunaLoginPage from "./yuna/YunaLoginPage";
 import RequireAuth from "./yuna/RequireAuth";
 import PresentationPage from "./presentation/PresentationPage";
+import SpeechPage from "./pages/SpeechPage";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/yuna/settings" element={<RequireAuth><YunaSettingsPage /></RequireAuth>} />
           <Route path="/yuna/:id" element={<RequireAuth><YunaSessionPage /></RequireAuth>} />
           <Route path="/presentation" element={<PresentationPage />} />
+          <Route path="/speech" element={<SpeechPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
