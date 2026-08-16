@@ -38,6 +38,53 @@ type MetricKey = (typeof METRICS)[number]['key'];
 const avg = (nums: number[]) =>
   nums.length ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length) : 0;
 
+const MONTHS_SHORT = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+
+const RadarTick = ({ payload, x, y, textAnchor, data }: {
+  payload?: { value?: string };
+  x?: number;
+  y?: number;
+  textAnchor?: 'start' | 'end' | 'middle' | 'inherit';
+  data: { metric: string; value: number }[];
+}) => {
+  const name = payload?.value ?? '';
+  const item = data.find((d) => d.metric === name);
+  return (
+    <g>
+      <text x={x} y={y} textAnchor={textAnchor} fill="#475569" fontSize={12} fontWeight={700}>
+        {name}
+      </text>
+      <text x={x} y={(y ?? 0) + 16} textAnchor={textAnchor} fill="#4f46e5" fontSize={12} fontWeight={800}>
+        {item?.value ?? 0}%
+      </text>
+    </g>
+  );
+};
+
+const LastValueDot = ({ cx, cy, index, total, value }: {
+  cx?: number;
+  cy?: number;
+  index?: number;
+  total: number;
+  value?: number;
+}) => {
+  const isLast = index === total - 1;
+  if (cx == null || cy == null) return null;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={isLast ? 5 : 4} fill="#fff" stroke={BRAND} strokeWidth={2.5} />
+      {isLast && (
+        <g transform={`translate(${cx - 26}, ${cy - 42})`}>
+          <rect width="52" height="26" rx="13" fill="#fff" stroke="#c7d2fe" strokeWidth="1.5" />
+          <text x="26" y="17" textAnchor="middle" fontSize="12.5" fontWeight="800" fill={BRAND}>
+            {value}%
+          </text>
+        </g>
+      )}
+    </g>
+  );
+};
+
 const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
   const analyzed = useMemo(
     () => sessions.filter((s) => s.metrics && s.overall != null),
@@ -74,12 +121,36 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
 
   const lineData = useMemo(
     () =>
-      [...analyzed].reverse().map((s, i) => ({
-        name: `№${i + 1}`,
-        Общий: s.overall,
-      })),
+      [...analyzed].reverse().map((s) => {
+        const d = new Date(s.created_at.replace(' ', 'T'));
+        const name = Number.isNaN(d.getTime())
+          ? '—'
+          : `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}`;
+        return { name, Общий: s.overall as number };
+      }),
     [analyzed],
   );
+
+  // Помесячная динамика для героя-блока (последние 7 месяцев)
+  const monthData = useMemo(() => {
+    const now = new Date();
+    const buckets: { key: string; name: string; vals: number[] }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      buckets.push({ key: `${d.getFullYear()}-${d.getMonth()}`, name: MONTHS_SHORT[d.getMonth()], vals: [] });
+    }
+    for (const s of analyzed) {
+      const d = new Date(s.created_at.replace(' ', 'T'));
+      if (Number.isNaN(d.getTime())) continue;
+      const b = buckets.find((x) => x.key === `${d.getFullYear()}-${d.getMonth()}`);
+      if (b) b.vals.push(s.overall as number);
+    }
+    let last = 0;
+    return buckets.map((b) => {
+      if (b.vals.length) last = avg(b.vals);
+      return { name: b.name, Общий: last };
+    });
+  }, [analyzed]);
 
   if (analyzed.length === 0) {
     return (
@@ -113,7 +184,7 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
 
       {/* Общий балл + тренд — герой-кольцо со свечением */}
       <div
-        className="relative flex items-center gap-7 mb-7 flex-wrap rounded-3xl p-6 overflow-hidden"
+        className="relative flex items-center gap-7 mb-7 flex-nowrap max-lg:flex-wrap rounded-3xl p-6 overflow-hidden"
         style={{ background: 'radial-gradient(120% 140% at 0% 0%, #eef2ff 0%, #e0e7ff 45%, #dbeafe 100%)' }}
       >
         {/* декоративные блики */}
@@ -157,7 +228,7 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
           </div>
         </div>
 
-        <div className="relative flex flex-col gap-1">
+        <div className="relative flex flex-col gap-1 flex-shrink-0">
           <span className="text-xs uppercase tracking-wider text-indigo-400 font-semibold">Средняя оценка</span>
           <span className="text-lg font-bold text-gray-700">Качество приёмов</span>
           <div className="flex items-center gap-2 mt-1">
@@ -167,10 +238,49 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
               }`}
             >
               <Icon name={trend > 0 ? 'TrendingUp' : trend < 0 ? 'TrendingDown' : 'Minus'} size={15} />
-              {trend > 0 ? `+${trend}` : trend}
+              {trend > 0 ? `+${trend}%` : `${trend}%`}
             </div>
-            <span className="text-xs text-gray-400">к прошлым приёмам</span>
+            <span className="text-xs text-gray-400">от прошлого месяца</span>
           </div>
+        </div>
+
+        {/* Помесячная динамика */}
+        <div className="relative flex-1 min-w-[260px] h-[150px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={monthData} margin={{ top: 26, right: 22, left: -18, bottom: 0 }}>
+              <defs>
+                <linearGradient id="heroAreaFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor={BRAND2} stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="heroLineStroke" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#60a5fa" />
+                  <stop offset="100%" stopColor={BRAND} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
+              <YAxis
+                domain={[0, 100]}
+                ticks={[0, 25, 50, 75, 100]}
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 11, fill: '#94a3b8' }}
+                width={38}
+              />
+              <Tooltip content={<ChartTooltip />} cursor={{ stroke: '#c7d2fe', strokeWidth: 2 }} />
+              <Area
+                type="monotone"
+                dataKey="Общий"
+                stroke="url(#heroLineStroke)"
+                strokeWidth={3}
+                fill="url(#heroAreaFill)"
+                dot={(props) => <LastValueDot {...props} total={monthData.length} />}
+                activeDot={{ r: 6, fill: BRAND, stroke: '#fff', strokeWidth: 2.5 }}
+                isAnimationActive
+                animationDuration={1100}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
@@ -207,7 +317,7 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
           </p>
           <div className="relative h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData} outerRadius="72%">
+              <RadarChart data={radarData} outerRadius="62%">
                 <defs>
                   <radialGradient id="radarFill" cx="50%" cy="50%" r="75%">
                     <stop offset="0%" stopColor="#818cf8" stopOpacity={0.75} />
@@ -225,7 +335,7 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
                 <PolarGrid stroke="#c7d2fe" strokeDasharray="3 4" />
                 <PolarAngleAxis
                   dataKey="metric"
-                  tick={{ fontSize: 12, fill: '#475569', fontWeight: 600 }}
+                  tick={(props) => <RadarTick {...props} data={radarData} />}
                 />
                 <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                 <Radar
@@ -261,7 +371,7 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={lineData} margin={{ top: 8, right: 14, left: -14, bottom: 0 }}>
+                <AreaChart data={lineData} margin={{ top: 30, right: 20, left: -14, bottom: 0 }}>
                   <defs>
                     <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.5} />
@@ -281,7 +391,13 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
                   </defs>
                   <CartesianGrid strokeDasharray="4 4" stroke="#dbeafe" vertical={false} />
                   <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                  <YAxis domain={[0, 100]} tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                  <YAxis
+                    domain={[0, 100]}
+                    ticks={[0, 25, 50, 75, 100]}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 12, fill: '#64748b' }}
+                  />
                   <Tooltip content={<ChartTooltip />} cursor={{ stroke: '#c7d2fe', strokeWidth: 2 }} />
                   <Area
                     type="monotone"
@@ -290,7 +406,7 @@ const YunaDashboard = ({ sessions }: { sessions: YunaSession[] }) => {
                     strokeWidth={3.5}
                     fill="url(#areaFill)"
                     filter="url(#lineGlow)"
-                    dot={{ r: 4, fill: '#fff', stroke: BRAND, strokeWidth: 2.5 }}
+                    dot={(props) => <LastValueDot {...props} total={lineData.length} />}
                     activeDot={{ r: 6, fill: BRAND, stroke: '#fff', strokeWidth: 2.5 }}
                     isAnimationActive
                     animationDuration={1200}

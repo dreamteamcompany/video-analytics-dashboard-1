@@ -4,7 +4,6 @@ import Icon from '@/components/ui/icon';
 import { yunaApi, YunaSession, YunaStats } from './api';
 import { useAuth } from './useAuth';
 import YunaDashboard from './YunaDashboard';
-import Sparkline from './Sparkline';
 import { KpiBlock, AutoJournalsBlock, RatingBlock } from './DoctorBlocks';
 import SpeechAnalytics from './SpeechAnalytics';
 import DirectorBlocks, { AiRecsCard } from './DirectorBlocks';
@@ -42,36 +41,57 @@ const YunaDashboardPage = () => {
     navigate('/yuna/login', { replace: true });
   };
 
-  // Спарклайны: серии по дням для карточек шапки
-  const spark = useMemo(() => {
-    const days: string[] = [];
-    const today = new Date();
-    for (let i = 13; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
-      days.push(d.toISOString().slice(0, 10));
-    }
-    const perDay = days.map(
-      (key) => sessions.filter((s) => new Date(s.created_at.replace(' ', 'T')).toISOString().slice(0, 10) === key).length,
-    );
-    // накопительно за неделю (скользящее окно 7 дней)
-    const weekRolling = days.map((_, idx) => perDay.slice(Math.max(0, idx - 6), idx + 1).reduce((a, b) => a + b, 0));
-    // кумулятивно за месяц
-    let acc = 0;
-    const monthCum = perDay.map((v) => (acc += v));
-    // качество по последним приёмам
-    const quality = [...sessions]
-      .reverse()
-      .filter((s) => s.overall != null)
-      .map((s) => s.overall as number)
-      .slice(-14);
-    return {
-      today: perDay,
-      week: weekRolling,
-      month: monthCum,
-      quality: quality.length ? quality : [0],
+  const headerCards = useMemo(() => {
+    const now = new Date();
+    const inMonth = (s: YunaSession, offset: number) => {
+      const d = new Date(s.created_at.replace(' ', 'T'));
+      const ref = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+      return d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth();
     };
-  }, [sessions]);
+    const pct = (cur: number, prev: number) => (prev > 0 ? Math.round(((cur - prev) / prev) * 100) : cur > 0 ? 100 : 0);
+
+    const thisMonth = sessions.filter((s) => inMonth(s, 0));
+    const prevMonth = sessions.filter((s) => inMonth(s, 1));
+
+    const scored = (list: YunaSession[]) => list.map((s) => s.overall).filter((v): v is number => typeof v === 'number');
+    const mean = (a: number[]) => (a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length) : 0);
+    const qNow = mean(scored(thisMonth));
+    const qPrev = mean(scored(prevMonth));
+
+    const avgDay = prevMonth.length ? prevMonth.length / 30 : 0;
+    const avgWeek = prevMonth.length ? (prevMonth.length / 30) * 7 : 0;
+
+    return [
+      {
+        label: 'Приёмов сегодня',
+        icon: 'CalendarCheck',
+        value: stats?.counts.today ?? '—',
+        delta: pct(stats?.counts.today ?? 0, Math.round(avgDay)),
+        note: 'от среднего',
+      },
+      {
+        label: 'За неделю',
+        icon: 'CalendarDays',
+        value: stats?.counts.week ?? '—',
+        delta: pct(stats?.counts.week ?? 0, Math.round(avgWeek)),
+        note: 'от среднего',
+      },
+      {
+        label: 'За месяц',
+        icon: 'CalendarRange',
+        value: stats?.counts.month ?? '—',
+        delta: pct(thisMonth.length, prevMonth.length),
+        note: 'от прошлого месяца',
+      },
+      {
+        label: 'Качество приёма',
+        icon: 'Gauge',
+        value: stats?.kpi.quality != null ? `${stats.kpi.quality}%` : '—',
+        delta: pct(qNow, qPrev),
+        note: 'от прошлого месяца',
+      },
+    ];
+  }, [sessions, stats]);
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)' }}>
@@ -128,28 +148,30 @@ const YunaDashboardPage = () => {
 
           {/* Быстрые показатели */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-              <p className="text-3xl font-bold">{stats?.counts.today ?? '—'}</p>
-              <p className="text-white/70 text-sm mb-2">Приёмов сегодня</p>
-              <div className="h-8"><Sparkline data={spark.today} gradientId="spToday" /></div>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-              <p className="text-3xl font-bold">{stats?.counts.week ?? '—'}</p>
-              <p className="text-white/70 text-sm mb-2">За неделю</p>
-              <div className="h-8"><Sparkline data={spark.week} gradientId="spWeek" /></div>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-              <p className="text-3xl font-bold">{stats?.counts.month ?? '—'}</p>
-              <p className="text-white/70 text-sm mb-2">За месяц</p>
-              <div className="h-8"><Sparkline data={spark.month} gradientId="spMonth" /></div>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-              <p className="text-3xl font-bold">
-                {stats?.kpi.quality != null ? `${stats.kpi.quality}%` : '—'}
-              </p>
-              <p className="text-white/70 text-sm mb-2">Качество приёма</p>
-              <div className="h-8"><Sparkline data={spark.quality} gradientId="spQuality" /></div>
-            </div>
+            {headerCards.map((c) => (
+              <div key={c.label} className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                    <Icon name={c.icon} size={20} className="text-white" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-2xl font-bold leading-none">{c.value}</p>
+                    <p className="text-white/70 text-sm mt-1 truncate">{c.label}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 mt-3 text-xs">
+                  <Icon
+                    name={c.delta > 0 ? 'TrendingUp' : c.delta < 0 ? 'TrendingDown' : 'Minus'}
+                    size={13}
+                    className={c.delta > 0 ? 'text-emerald-300' : c.delta < 0 ? 'text-rose-300' : 'text-white/50'}
+                  />
+                  <span className={`font-semibold ${c.delta > 0 ? 'text-emerald-300' : c.delta < 0 ? 'text-rose-300' : 'text-white/60'}`}>
+                    {c.delta > 0 ? `+${c.delta}%` : `${c.delta}%`}
+                  </span>
+                  <span className="text-white/50">{c.note}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
