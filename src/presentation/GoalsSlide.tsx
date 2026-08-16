@@ -177,7 +177,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-6 lg:px-8 pt-4 pb-4 min-h-0 overflow-y-auto md:overflow-hidden">
-        <div className="w-full max-w-[1400px] mx-auto flex flex-col flex-1 min-h-0">
+        <div className="w-full max-w-[1760px] mx-auto flex flex-col flex-1 min-h-0">
           {/* Шапка */}
           <div className="flex-shrink-0 flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-3">
             <div className="flex flex-col items-center md:items-start gap-2">
@@ -237,7 +237,7 @@ const GoalsSlide = ({ slide }: { slide: Slide }) => {
           </div>
 
           {/* Основная сетка */}
-          <div className="flex-none md:flex-1 md:min-h-0 grid gap-2.5 md:grid-cols-[0.85fr_0.85fr_1fr]">
+          <div className="flex-none md:flex-1 md:min-h-0 grid gap-3 md:grid-cols-[1.05fr_1.05fr_1fr]">
             <div className="flex flex-col gap-1.5 md:min-h-0 md:overflow-hidden">
               {left.map((g, i) => (
                 <GoalCard key={g.title} goal={g} index={i} dense={goals.length > 8} />
