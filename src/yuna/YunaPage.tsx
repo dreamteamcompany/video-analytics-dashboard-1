@@ -14,6 +14,7 @@ const YunaPage = () => {
   const { doctor: currentDoctor, logout } = useAuth();
   const { state, seconds, level, silent, error: recError, start, pause, resume, stop, cancel } = useRecorder();
   const [processing, setProcessing] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [utterances, setUtterances] = useState<Utterance[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -69,6 +70,16 @@ const YunaPage = () => {
       if (res.utterances.length === 0) {
         setError('В записи не распознана речь. Говорите ближе к микрофону.');
       } else {
+        setProcessing(false);
+        setAnalyzing(true);
+        try {
+          const a = await yunaApi.analyzeSession(res.session_id);
+          setAnalysis(a);
+        } catch {
+          setError('Расшифровка готова, но оценку качества получить не удалось.');
+        } finally {
+          setAnalyzing(false);
+        }
         loadSessions();
         loadStats();
         setRatingKey((k) => k + 1);
@@ -106,7 +117,7 @@ const YunaPage = () => {
             level={level}
             silent={silent}
             recording={recording}
-            processing={processing}
+            processing={processing || analyzing}
             recError={recError}
             error={error}
             analysis={analysis}
@@ -122,7 +133,7 @@ const YunaPage = () => {
           <YunaPatientPanel
             state={state}
             seconds={seconds}
-            processing={processing}
+            processing={processing || analyzing}
             analysis={analysis}
             utterances={utterances}
             sessions={sessions}

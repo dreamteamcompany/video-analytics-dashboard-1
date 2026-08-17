@@ -999,6 +999,54 @@ def _get_session(session_id: int) -> dict:
         conn.close()
 
 
+def _analyze_session(body: dict) -> dict:
+    """Шаг 2: анализ качества уже расшифрованного приёма (отдельный быстрый запрос)."""
+    try:
+        session_id = int(body.get("session_id"))
+    except (TypeError, ValueError):
+        return _resp(400, {"error": "Не передан session_id"})
+
+    conn = _conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT transcript, doctor_id, analysis FROM yuna_sessions WHERE id = %s",
+            (session_id,),
+        )
+        row = cur.fetchone()
+        if not row:
+            return _resp(404, {"error": "Приём не найден"})
+        transcript, doctor_id, existing = row[0], row[1], row[2]
+        if existing:
+            return _resp(200, {"session_id": session_id, "analysis": existing})
+        if not transcript:
+            return _resp(400, {"error": "В приёме нет расшифровки"})
+
+        try:
+            analysis = _analyze(transcript)
+        except Exception as e:
+            print(f"[yuna] analysis failed: {e}")
+            return _resp(502, {"error": f"Не удалось проанализировать: {e}"})
+
+        cur.execute(
+            "UPDATE yuna_sessions SET status = 'analyzed', analysis = %s WHERE id = %s",
+            (json.dumps(analysis), session_id),
+        )
+        if doctor_id:
+            ov = ["empathy", "trust", "quality", "communication"]
+            vals = [analysis.get(k) for k in ov if isinstance(analysis.get(k), (int, float))]
+            bonus = round(sum(vals) / len(vals) / 10) if vals else 0
+            cur.execute(
+                "UPDATE yuna_doctors SET points = points + %s WHERE id = %s",
+                (5 + bonus, doctor_id),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+
+    return _resp(200, {"session_id": session_id, "analysis": analysis})
+
+
 def _transcribe(body: dict) -> dict:
     audio_b64 = body.get("audio_base64", "")
     fmt = (body.get("format") or "webm").lower()
@@ -1035,19 +1083,14 @@ def _transcribe(body: dict) -> dict:
     transcript = "\n".join(f"{label(u['speaker'])}: {u['text']}" for u in utterances)
 
     analysis = None
-    if transcript:
-        try:
-            analysis = _analyze(transcript)
-        except Exception as e:
-            print(f"[yuna] analysis failed: {e}")
 
     conn = _conn()
     try:
         cur = conn.cursor()
         cur.execute(
             "INSERT INTO yuna_sessions (status, transcript, duration_sec, analysis, doctor_id, audio_url) "
-            "VALUES ('analyzed', %s, %s, %s, %s, %s) RETURNING id",
-            (transcript, duration_sec, json.dumps(analysis) if analysis else None, doctor_id, audio_url),
+            "VALUES ('transcribed', %s, %s, NULL, %s, %s) RETURNING id",
+            (transcript, duration_sec, doctor_id, audio_url),
         )
         session_id = cur.fetchone()[0]
         for i, u in enumerate(utterances):
@@ -1055,15 +1098,6 @@ def _transcribe(body: dict) -> dict:
                 "INSERT INTO yuna_utterances (session_id, speaker, text, ord) "
                 "VALUES (%s, %s, %s, %s)",
                 (session_id, u["speaker"], u["text"], i),
-            )
-        # Начисляем врачу баллы за приём: базовые 5 + бонус за качество
-        if doctor_id and analysis:
-            ov = ["empathy", "trust", "quality", "communication"]
-            vals = [analysis.get(k) for k in ov if isinstance(analysis.get(k), (int, float))]
-            bonus = round(sum(vals) / len(vals) / 10) if vals else 0
-            cur.execute(
-                "UPDATE yuna_doctors SET points = points + %s WHERE id = %s",
-                (5 + bonus, doctor_id),
             )
         conn.commit()
     finally:
@@ -1611,6 +1645,8 @@ def handler(event: dict, context) -> dict:
             return _logout(token)
         if resource == "doctors":
             return _create_doctor(body)
+        if resource == "analyze":
+            return _analyze_session(body)
         return _transcribe(body)
 
     if method == "PUT":

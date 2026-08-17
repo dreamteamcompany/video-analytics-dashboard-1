@@ -63,6 +63,14 @@
       "bodyMatcher": "partial"
     },
     {
+      "name": "Analyze without session_id returns 400",
+      "method": "POST",
+      "path": "/?resource=analyze",
+      "body": {},
+      "expectedStatus": 400,
+      "bodyMatcher": "partial"
+    },
+    {
       "name": "Me without token returns 401",
       "method": "GET",
       "path": "/?resource=me",

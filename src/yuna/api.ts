@@ -282,6 +282,23 @@ export const yunaApi = {
     return (await res.json()) as TranscribeResult;
   },
 
+  analyzeSession: async (sessionId: number): Promise<Analysis | null> => {
+    const res = await fetch(`${YUNA_API}?resource=analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+    if (!res.ok) {
+      let msg = `analyze ${res.status}`;
+      try {
+        const err = (await res.json()) as { error?: string };
+        if (err.error) msg = err.error;
+      } catch { /* ignore */ }
+      throw new Error(msg);
+    }
+    return ((await res.json()) as { analysis: Analysis | null }).analysis;
+  },
+
   listDoctors: async (): Promise<Doctor[]> => {
     const res = await fetch(`${YUNA_API}?resource=doctors`);
     if (!res.ok) throw new Error(`doctors ${res.status}`);
