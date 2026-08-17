@@ -193,6 +193,16 @@ export interface RatingEntry {
   sessions_week: number;
 }
 
+export interface WeeklyWinner {
+  id: number;
+  name: string;
+  avatar_url: string;
+  specialty: string;
+  sessions: number;
+  score: number;
+  prize: string;
+}
+
 export interface SpeechStats {
   count: number;
   comm_quality: { empathy: number; clarity: number; professionalism: number; engagement: number };
@@ -387,10 +397,11 @@ export const yunaApi = {
     return ((await res.json()) as { doctor: Doctor }).doctor;
   },
 
-  rating: async (): Promise<RatingEntry[]> => {
+  rating: async (): Promise<{ rating: RatingEntry[]; weekly: WeeklyWinner | null }> => {
     const res = await fetch(`${YUNA_API}?resource=rating`);
     if (!res.ok) throw new Error(`rating ${res.status}`);
-    return ((await res.json()) as { rating: RatingEntry[] }).rating;
+    const d = (await res.json()) as { rating: RatingEntry[]; weekly?: WeeklyWinner | null };
+    return { rating: d.rating || [], weekly: d.weekly ?? null };
   },
 
   stats: async (doctorId?: number | null): Promise<YunaStats> => {

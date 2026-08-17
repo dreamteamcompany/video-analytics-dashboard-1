@@ -1386,7 +1386,7 @@ def _me(token: str) -> dict:
 
 
 def _doctors_rating() -> dict:
-    """Рейтинг врачей по баллам + число приёмов за неделю."""
+    """Рейтинг врачей по баллам + приз недели по качеству приёмов за 7 дней."""
     conn = _conn()
     try:
         cur = conn.cursor()
@@ -1404,7 +1404,33 @@ def _doctors_rating() -> dict:
                 "experience_years": r[3], "avatar_url": r[4], "points": r[5],
                 "sessions_week": r[6],
             })
-        return _resp(200, {"rating": rating})
+
+        # Приз недели: врач с лучшим средним качеством приёмов за 7 дней
+        cur.execute(
+            "SELECT d.id, d.name, d.avatar_url, d.specialty, COUNT(s.id), "
+            "ROUND(AVG(("
+            "  COALESCE((s.analysis->>'empathy')::numeric, 0) + "
+            "  COALESCE((s.analysis->>'trust')::numeric, 0) + "
+            "  COALESCE((s.analysis->>'quality')::numeric, 0) + "
+            "  COALESCE((s.analysis->>'communication')::numeric, 0)"
+            ") / 4.0)) AS score "
+            "FROM yuna_doctors d JOIN yuna_sessions s ON s.doctor_id = d.id "
+            "WHERE d.is_active = TRUE AND s.analysis IS NOT NULL "
+            "AND s.created_at >= NOW() - INTERVAL '7 days' "
+            "GROUP BY d.id, d.name, d.avatar_url, d.specialty "
+            "ORDER BY score DESC, COUNT(s.id) DESC, d.id ASC LIMIT 1"
+        )
+        w = cur.fetchone()
+        weekly = None
+        if w:
+            weekly = {
+                "id": w[0], "name": w[1], "avatar_url": w[2] or "",
+                "specialty": w[3] or "", "sessions": int(w[4]),
+                "score": int(w[5]) if w[5] is not None else 0,
+                "prize": "Сертификат в ресторан",
+            }
+
+        return _resp(200, {"rating": rating, "weekly": weekly})
     finally:
         conn.close()
 

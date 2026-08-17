@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 import Icon from '@/components/ui/icon';
-import { yunaApi, RatingEntry, YunaStats, YunaSession, Learning } from './api';
+import { yunaApi, RatingEntry, WeeklyWinner, YunaStats, YunaSession, Learning } from './api';
 import ProgressRing from './ProgressRing';
 
 const placeColors = ['bg-yellow-400', 'bg-gray-400', 'bg-orange-400'];
@@ -9,12 +9,17 @@ const placeBg = ['bg-yellow-50', 'bg-gray-50', 'bg-orange-50 border border-orang
 
 export const RatingBlock = ({ refreshKey }: { refreshKey?: number }) => {
   const [rating, setRating] = useState<RatingEntry[]>([]);
+  const [weekly, setWeekly] = useState<WeeklyWinner | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
     yunaApi.rating()
-      .then((r) => { if (active) setRating(r); })
+      .then((r) => {
+        if (!active) return;
+        setRating(r.rating);
+        setWeekly(r.weekly);
+      })
       .catch(() => { /* silent */ })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
@@ -64,6 +69,42 @@ export const RatingBlock = ({ refreshKey }: { refreshKey?: number }) => {
               </div>
             ));
           })()}
+        </div>
+      )}
+
+      {!loading && (
+        <div className="mt-5 rounded-2xl p-4 bg-blue-50 border border-blue-100">
+          <div className="flex items-center gap-2 mb-2">
+            <Icon name="Trophy" size={18} className="text-amber-500" fallback="Award" />
+            <p className="text-base font-bold text-blue-800">Приз недели</p>
+          </div>
+          {weekly ? (
+            <>
+              <div className="flex items-center gap-3">
+                {weekly.avatar_url ? (
+                  <img src={weekly.avatar_url} alt={weekly.name} className="w-11 h-11 rounded-full object-cover border-2 border-white shadow" />
+                ) : (
+                  <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center border-2 border-white shadow">
+                    <Icon name="User" size={20} className="text-blue-500" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-base font-semibold text-gray-800 truncate">{weekly.name}</p>
+                  <p className="text-sm text-gray-500 truncate">
+                    {weekly.sessions} прием{weekly.sessions % 10 === 1 && weekly.sessions !== 11 ? '' : weekly.sessions % 10 >= 2 && weekly.sessions % 10 <= 4 && (weekly.sessions < 12 || weekly.sessions > 14) ? 'а' : 'ов'} · качество {weekly.score}%
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 rounded-xl bg-white px-3 py-2 text-center">
+                <p className="text-sm font-semibold text-blue-700">{weekly.prize}</p>
+                <p className="text-xs text-gray-500 mt-0.5">Лучшее качество приёмов за 7 дней</p>
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-gray-500 py-2">
+              За последние 7 дней ещё нет проанализированных приёмов — победитель определится автоматически.
+            </p>
+          )}
         </div>
       )}
     </div>
