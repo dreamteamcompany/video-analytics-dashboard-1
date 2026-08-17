@@ -143,6 +143,7 @@ export interface Analysis {
   upsell?: Upsell | null;
   loyalty?: Loyalty | null;
   doctor_state?: DoctorState | null;
+  speech?: SpeechStats | null;
 }
 
 export interface Doctor {
