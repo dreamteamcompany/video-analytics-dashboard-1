@@ -23,6 +23,7 @@ import hashlib
 import secrets
 import urllib.request
 import urllib.error
+from concurrent.futures import ThreadPoolExecutor
 import psycopg2
 import boto3
 
@@ -435,7 +436,15 @@ def _call_routerai(audio_b64: str, fmt: str) -> list:
     return utterances
 
 
-ANALYSIS_PROMPT = (
+BASE_ROLE = (
+    "Ты — эксперт по качеству стоматологических приёмов. Анализируй расшифровку "
+    "диалога врача и пациента на русском языке. Отвечай СТРОГО JSON без markdown, "
+    "ничего кроме JSON. Если данных мало — делай осторожные предположения, "
+    "но поля заполняй осмысленно по контексту стоматологии.\n"
+)
+
+PROMPT_CORE = (
+    BASE_ROLE +
     "Ты — эксперт по качеству медицинских приёмов. Проанализируй расшифровку "
     "диалога врача и пациента на русском языке. Оцени по шкале 0-100 пять метрик:\n"
     "- empathy — эмпатия врача (внимательность, чуткость);\n"
@@ -448,6 +457,14 @@ ANALYSIS_PROMPT = (
     "recommendations (массив из 2-4 конкретных рекомендаций врачу), "
     "strengths (массив из 1-3 сильных сторон врача), "
     "concerns (массив тревожных моментов: риски, конфликты, жалобы; пустой если их нет).\n"
+    "Верни СТРОГО JSON вида: "
+    '{"empathy":int,"trust":int,"patient_state":int,"quality":int,'
+    '"communication":int,"summary":str,"recommendations":[str],'
+    '"strengths":[str],"concerns":[str]}'
+)
+
+PROMPT_DIAG = (
+    BASE_ROLE +
     "Это СТОМАТОЛОГИЧЕСКИЙ приём. Дополнительно сформируй объект dental — "
     "клиническую диагностику по стоматологии на основе жалоб и слов из диалога:\n"
     "- primary_diagnosis: {name (предварительный стоматологический диагноз, "
@@ -472,6 +489,17 @@ ANALYSIS_PROMPT = (
     "- match: int 0-100, уверенность в рекомендации;\n"
     "- alternatives: массив из 0-3 объектов {name, score} (score int 0-100) — альтернативы;\n"
     "- aftercare: массив из 0-5 строк — рекомендации после лечения.\n"
+    "Верни СТРОГО JSON вида: "
+    '{"dental":{"primary_diagnosis":{"name":str,"probability":int,"tooth":str},'
+    '"differential":[str],"examinations":[{"name":str,"reason":str}],"plan":[str]},'
+    '"tactics":{"approach":str,"sequence":[str],"equipment":[str],"notes":[str]},'
+    '"complications":{"risk":int,"factors":[{"name":str,"impact":str}]},'
+    '"treatment":{"recommended":[{"title":str,"detail":str}],"match":int,'
+    '"alternatives":[{"name":str,"score":int}],"aftercare":[str]}}'
+)
+
+PROMPT_MED = (
+    BASE_ROLE +
     "Дополнительно сформируй patient — карту пациента по тому, что прозвучало в диалоге:\n"
     "- name: ФИО или имя, если названо, иначе '';\n"
     "- age: возраст числом (int) если назван, иначе null;\n"
@@ -494,6 +522,17 @@ ANALYSIS_PROMPT = (
     "(на основе аллергий/анамнеза, например {drug:'Амоксициллин', reason:'аллергия на пенициллин'});\n"
     "- interactions: массив 0-3 объектов {drug, note} — лекарственные взаимодействия;\n"
     "- safe: массив 0-5 строк — разрешённые/безопасные препараты.\n"
+    "Верни СТРОГО JSON вида: "
+    '{"patient":{"name":str,"age":int|null,"sex":str,"weight_kg":int|null,'
+    '"allergies":[str],"chronic":[str],"smoking":str,"complaints":[str],"localization":str},'
+    '"anesthesia":{"drug":str,"dose_ml":number,"reserve_ml":number,"max_ml":number,'
+    '"basis":str,"alternatives":[{"name":str,"dose_ml":number}]},'
+    '"drug_control":{"contraindications":[{"drug":str,"reason":str}],'
+    '"interactions":[{"drug":str,"note":str}],"safe":[str]}}'
+)
+
+PROMPT_SPEECH = (
+    BASE_ROLE +
     "Дополнительно сформируй upsell — потенциал доп. услуг по словам пациента:\n"
     "- potential: 'Высокий'/'Средний'/'Низкий';\n"
     "- services: массив 0-4 объектов {name, score} (score int 0-100) — рекомендуемые доп. услуги;\n"
@@ -532,23 +571,8 @@ ANALYSIS_PROMPT = (
     "(например {name:'Сложные термины', share:42}), пустой если ошибок нет.\n"
     "Если данных в диалоге недостаточно — делай осторожные предположения с низкой "
     "probability/match, но поля всё равно заполни осмысленно по контексту стоматологии.\n"
-    "Верни СТРОГО JSON без markdown вида: "
-    '{"empathy":int,"trust":int,"patient_state":int,"quality":int,'
-    '"communication":int,"summary":str,"recommendations":[str],'
-    '"strengths":[str],"concerns":[str],'
-    '"dental":{"primary_diagnosis":{"name":str,"probability":int,"tooth":str},'
-    '"differential":[str],"examinations":[{"name":str,"reason":str}],"plan":[str]},'
-    '"tactics":{"approach":str,"sequence":[str],"equipment":[str],"notes":[str]},'
-    '"complications":{"risk":int,"factors":[{"name":str,"impact":str}]},'
-    '"treatment":{"recommended":[{"title":str,"detail":str}],"match":int,'
-    '"alternatives":[{"name":str,"score":int}],"aftercare":[str]},'
-    '"patient":{"name":str,"age":int|null,"sex":str,"weight_kg":int|null,'
-    '"allergies":[str],"chronic":[str],"smoking":str,"complaints":[str],"localization":str},'
-    '"anesthesia":{"drug":str,"dose_ml":number,"reserve_ml":number,"max_ml":number,'
-    '"basis":str,"alternatives":[{"name":str,"dose_ml":number}]},'
-    '"drug_control":{"contraindications":[{"drug":str,"reason":str}],'
-    '"interactions":[{"drug":str,"note":str}],"safe":[str]},'
-    '"upsell":{"potential":str,"services":[{"name":str,"score":int}],"phrases":[str]},'
+    "Верни СТРОГО JSON вида: "
+    '{"upsell":{"potential":str,"services":[{"name":str,"score":int}],"phrases":[str]},'
     '"loyalty":{"repeat":int,"nps":int,"recommend":int},'
     '"doctor_state":{"status":str,"stress":int,"speech_rate":str,"tone":str,'
     '"improve":[{"area":str,"delta":str}],"coaching":str},'
@@ -560,8 +584,7 @@ ANALYSIS_PROMPT = (
     '"listening":{"clarifying":int,"paraphrasing":int},'
     '"med_terms":{"explained":int,"adapted":int},'
     '"emotion":{"positive":int,"neutral":int,"negative":int},'
-    '"mistakes":[{"name":str,"share":int}]}}. '
-    "Ничего кроме JSON."
+    '"mistakes":[{"name":str,"share":int}]}}'
 )
 
 
@@ -573,11 +596,12 @@ def _clamp_score(v) -> int:
     return max(0, min(100, n))
 
 
-def _analyze(transcript: str) -> dict:
+def _chat_json(system_prompt: str, transcript: str, timeout: int = 25) -> dict:
+    """Один запрос к чат-модели, ответ — JSON-объект."""
     payload = {
         "model": CHAT_MODEL,
         "messages": [
-            {"role": "system", "content": ANALYSIS_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": transcript},
         ],
         "response_format": {"type": "json_object"},
@@ -591,7 +615,7 @@ def _analyze(transcript: str) -> dict:
         },
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=120) as r:
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         raw = r.read().decode("utf-8")
     data = json.loads(raw)
     if "choices" not in data:
@@ -603,7 +627,37 @@ def _analyze(transcript: str) -> dict:
         if content.startswith("json"):
             content = content[4:]
         content = content.strip()
-    p = json.loads(content)
+    parsed = json.loads(content)
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _analyze(transcript: str) -> dict:
+    """Анализ приёма тремя параллельными запросами, чтобы уложиться в таймаут."""
+    prompts = {
+        "core": PROMPT_CORE,
+        "diag": PROMPT_DIAG,
+        "med": PROMPT_MED,
+        "speech": PROMPT_SPEECH,
+    }
+    results = {}
+    errors = []
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = {
+            key: pool.submit(_chat_json, prompt, transcript)
+            for key, prompt in prompts.items()
+        }
+        for key, fut in futures.items():
+            try:
+                results[key] = fut.result()
+            except Exception as e:
+                print(f"[yuna] analysis part {key} failed: {e}")
+                errors.append(key)
+                results[key] = {}
+
+    if "core" in errors:
+        raise RuntimeError("Не удалось получить оценку приёма")
+
+    p = {**results["core"], **results["diag"], **results["med"], **results["speech"]}
 
     def arr(key):
         v = p.get(key, [])
