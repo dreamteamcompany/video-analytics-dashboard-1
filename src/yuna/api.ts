@@ -123,6 +123,17 @@ export interface DoctorState {
   coaching: string;
 }
 
+export interface Complexity {
+  score: number;
+  level: string;
+  anatomy: string;
+  access: string;
+  previous: string;
+  time_min: number | null;
+  time_max: number | null;
+  factors: string[];
+}
+
 export interface Analysis {
   empathy: number;
   trust: number;
@@ -144,6 +155,7 @@ export interface Analysis {
   loyalty?: Loyalty | null;
   doctor_state?: DoctorState | null;
   speech?: SpeechStats | null;
+  complexity?: Complexity | null;
 }
 
 export interface Doctor {

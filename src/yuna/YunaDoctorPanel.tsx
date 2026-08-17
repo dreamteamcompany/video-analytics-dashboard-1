@@ -1,7 +1,7 @@
 import Icon from '@/components/ui/icon';
 import { Analysis } from './api';
 import { fmtTime } from './utils';
-import { AnesthesiaBlock, DoctorStateBlock } from './LiveBlocks';
+import { AnesthesiaBlock, DoctorStateBlock, ComplexityBlock } from './LiveBlocks';
 import { RatingBlock } from './DoctorBlocks';
 
 interface YunaDoctorPanelProps {
@@ -266,42 +266,8 @@ const YunaDoctorPanel = ({
       </div>
     </div>
 
-    {/* Сложность случая */}
-    <div className="bg-black rounded-2xl shadow-lg p-6 min-h-[120px] [&>*]:invisible">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">
-        <Icon name="ChartBar" size={20} className="text-orange-500 mr-2 inline" />
-        Сложность случая
-      </h2>
-      <div className="space-y-4">
-        <div
-          className="text-white rounded-xl p-4 text-center"
-          style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)' }}
-        >
-          <p className="text-2xl font-bold">ВЫСОКАЯ</p>
-          <p className="text-sm opacity-90">78% сложность</p>
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Анатомия каналов:</span>
-            <span className="font-semibold text-red-600">Сложная</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Доступ:</span>
-            <span className="font-semibold text-orange-600">Ограниченный</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Предыдущее лечение:</span>
-            <span className="font-semibold text-red-600">Осложненное</span>
-          </div>
-        </div>
-
-        <div className="bg-yellow-50 rounded-xl p-3">
-          <p className="text-xs font-semibold text-yellow-800">Рекомендуемое время:</p>
-          <p className="text-sm text-yellow-700">75-90 минут</p>
-        </div>
-      </div>
-    </div>
+    {/* Сложность случая (реальные данные) */}
+    <ComplexityBlock c={analysis?.complexity} />
 
     {/* Расчет анестезии (реальные данные) */}
     <AnesthesiaBlock a={analysis?.anesthesia} />

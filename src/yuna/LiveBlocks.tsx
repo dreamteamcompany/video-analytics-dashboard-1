@@ -7,6 +7,7 @@ import {
   Upsell,
   Loyalty,
   DoctorState,
+  Complexity,
 } from './api';
 
 const Empty = ({ icon, text }: { icon: string; text: string }) => (
@@ -27,6 +28,86 @@ const Bar = ({ label, value, color }: { label: string; value: number; color: str
     </div>
   </div>
 );
+
+
+const severityStyle = (text: string) => {
+  const t = text.toLowerCase();
+  if (/сложн|затрудн|осложн/.test(t)) return 'text-red-600';
+  if (/огранич|умерен/.test(t)) return 'text-orange-600';
+  if (/типич|свободн|без осложн|не проводил/.test(t)) return 'text-green-600';
+  return 'text-gray-700';
+};
+
+export const ComplexityBlock = ({ c }: { c?: Complexity | null }) => {
+  const has = !!c && (!!c.score || !!c.anatomy || !!c.access || !!c.previous);
+  const level = c?.level || '';
+  const grad =
+    level === 'ВЫСОКАЯ'
+      ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+      : level === 'СРЕДНЯЯ'
+      ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+      : 'linear-gradient(135deg, #10b981, #059669)';
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-6">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">
+        <Icon name="ChartBar" size={20} className="text-orange-500 mr-2 inline" />
+        Сложность случая
+      </h2>
+      {has && c ? (
+        <div className="space-y-4">
+          <div className="text-white rounded-xl p-4 text-center" style={{ background: grad }}>
+            <p className="text-2xl font-bold">{level}</p>
+            <p className="text-sm opacity-90">{c.score}% сложность</p>
+          </div>
+
+          <div className="space-y-2">
+            {c.anatomy && (
+              <div className="flex justify-between text-sm gap-3">
+                <span className="text-gray-600">Анатомия каналов:</span>
+                <span className={`font-semibold text-right ${severityStyle(c.anatomy)}`}>{c.anatomy}</span>
+              </div>
+            )}
+            {c.access && (
+              <div className="flex justify-between text-sm gap-3">
+                <span className="text-gray-600">Доступ:</span>
+                <span className={`font-semibold text-right ${severityStyle(c.access)}`}>{c.access}</span>
+              </div>
+            )}
+            {c.previous && (
+              <div className="flex justify-between text-sm gap-3">
+                <span className="text-gray-600">Предыдущее лечение:</span>
+                <span className={`font-semibold text-right ${severityStyle(c.previous)}`}>{c.previous}</span>
+              </div>
+            )}
+          </div>
+
+          {c.factors.length > 0 && (
+            <ul className="space-y-1.5">
+              {c.factors.map((f, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs text-gray-600">
+                  <Icon name="TriangleAlert" size={13} className="text-orange-500 mt-0.5 flex-shrink-0" fallback="CircleAlert" />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {(c.time_min || c.time_max) && (
+            <div className="bg-yellow-50 rounded-xl p-3">
+              <p className="text-xs font-semibold text-yellow-800">Рекомендуемое время:</p>
+              <p className="text-sm text-yellow-700">
+                {c.time_min && c.time_max ? `${c.time_min}-${c.time_max} минут` : `${c.time_min || c.time_max} минут`}
+              </p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <Empty icon="ChartBar" text="Оценка появится после анализа приёма" />
+      )}
+    </div>
+  );
+};
 
 export const AnesthesiaBlock = ({ a }: { a?: Anesthesia | null }) => (
   <div className="bg-white rounded-2xl shadow-lg p-6">

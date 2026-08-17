@@ -8,6 +8,7 @@ import AnalysisReport from './AnalysisReport';
 import TranscriptView from './TranscriptView';
 import DentalReport from './DentalReport';
 import SpeechAnalytics from './SpeechAnalytics';
+import { RatingBlock } from './DoctorBlocks';
 import { TacticsReport, ComplicationsReport, TreatmentReport } from './PatientReports';
 import {
   AutoFillBlock,
@@ -17,6 +18,7 @@ import {
   DrugControlBlock,
   AnesthesiaBlock,
   DoctorStateBlock,
+  ComplexityBlock,
 } from './LiveBlocks';
 
 const YunaSessionPage = () => {
@@ -114,8 +116,10 @@ const YunaSessionPage = () => {
                 </div>
               )}
 
+              <ComplexityBlock c={a?.complexity} />
               <AnesthesiaBlock a={a?.anesthesia} />
               <DoctorStateBlock s={a?.doctor_state} />
+              <RatingBlock />
             </div>
 
             {/* Правая часть — пациент и аналитика */}

@@ -489,8 +489,22 @@ PROMPT_DIAG = (
     "- match: int 0-100, уверенность в рекомендации;\n"
     "- alternatives: массив из 0-3 объектов {name, score} (score int 0-100) — альтернативы;\n"
     "- aftercare: массив из 0-5 строк — рекомендации после лечения.\n"
+    "Дополнительно сформируй complexity — оценку сложности клинического случая:\n"
+    "- score: int 0-100 — общая сложность случая (0 = простой, 100 = очень сложный);\n"
+    "- level: 'НИЗКАЯ'/'СРЕДНЯЯ'/'ВЫСОКАЯ' — соответствует score;\n"
+    "- anatomy: строка про анатомию каналов/зуба "
+    "('Типичная'/'Умеренная'/'Сложная'), '' если не определить;\n"
+    "- access: строка про доступ к зоне работы "
+    "('Свободный'/'Ограниченный'/'Затруднённый');\n"
+    "- previous: строка про предыдущее лечение "
+    "('Не проводилось'/'Без осложнений'/'Осложнённое');\n"
+    "- time_min: int — минимальное рекомендуемое время приёма в минутах;\n"
+    "- time_max: int — максимальное рекомендуемое время приёма в минутах;\n"
+    "- factors: массив 0-4 строк — что именно усложняет случай.\n"
     "Верни СТРОГО JSON вида: "
-    '{"dental":{"primary_diagnosis":{"name":str,"probability":int,"tooth":str},'
+    '{"complexity":{"score":int,"level":str,"anatomy":str,"access":str,'
+    '"previous":str,"time_min":int,"time_max":int,"factors":[str]},'
+    '"dental":{"primary_diagnosis":{"name":str,"probability":int,"tooth":str},'
     '"differential":[str],"examinations":[{"name":str,"reason":str}],"plan":[str]},'
     '"tactics":{"approach":str,"sequence":[str],"equipment":[str],"notes":[str]},'
     '"complications":{"risk":int,"factors":[{"name":str,"impact":str}]},'
@@ -674,6 +688,7 @@ def _analyze(transcript: str) -> dict:
         "strengths": arr("strengths"),
         "concerns": arr("concerns"),
         "dental": _parse_dental(p.get("dental")),
+        "complexity": _parse_complexity(p.get("complexity")),
         "tactics": _parse_tactics(p.get("tactics")),
         "complications": _parse_complications(p.get("complications")),
         "treatment": _parse_treatment(p.get("treatment")),
@@ -875,6 +890,31 @@ def _parse_doctor_state(d) -> dict:
     return out
 
 
+def _parse_complexity(c) -> dict:
+    """Разбор оценки сложности клинического случая."""
+    if not isinstance(c, dict):
+        return {}
+    score = _clamp_score(c.get("score"))
+    level = str(c.get("level") or "").strip().upper()
+    if level not in ("НИЗКАЯ", "СРЕДНЯЯ", "ВЫСОКАЯ"):
+        level = "ВЫСОКАЯ" if score >= 67 else "СРЕДНЯЯ" if score >= 34 else "НИЗКАЯ"
+    tmin = _int_or_none(c.get("time_min"))
+    tmax = _int_or_none(c.get("time_max"))
+    out = {
+        "score": score,
+        "level": level,
+        "anatomy": str(c.get("anatomy") or "").strip(),
+        "access": str(c.get("access") or "").strip(),
+        "previous": str(c.get("previous") or "").strip(),
+        "time_min": tmin,
+        "time_max": tmax,
+        "factors": _str_list(c.get("factors")),
+    }
+    if not out["anatomy"] and not out["access"] and not out["previous"] and not score:
+        return {}
+    return out
+
+
 def _parse_tactics(t) -> dict:
     """Разбор тактики лечения."""
     if not isinstance(t, dict):
@@ -1071,7 +1111,7 @@ def _analyze_session(body: dict) -> dict:
         if not row:
             return _resp(404, {"error": "Приём не найден"})
         transcript, doctor_id, existing = row[0], row[1], row[2]
-        if existing:
+        if existing and not body.get("force"):
             return _resp(200, {"session_id": session_id, "analysis": existing})
         if not transcript:
             return _resp(400, {"error": "В приёме нет расшифровки"})
@@ -1086,7 +1126,7 @@ def _analyze_session(body: dict) -> dict:
             "UPDATE yuna_sessions SET status = 'analyzed', analysis = %s WHERE id = %s",
             (json.dumps(analysis), session_id),
         )
-        if doctor_id:
+        if doctor_id and not existing:
             ov = ["empathy", "trust", "quality", "communication"]
             vals = [analysis.get(k) for k in ov if isinstance(analysis.get(k), (int, float))]
             bonus = round(sum(vals) / len(vals) / 10) if vals else 0
