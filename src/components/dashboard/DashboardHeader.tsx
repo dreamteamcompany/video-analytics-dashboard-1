@@ -45,6 +45,16 @@ export const DashboardHeader = ({ online, checkingPing, onPing }: DashboardHeade
             Презентация
           </Button>
         </Link>
+        <Link to="/presentation-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-xl gap-1.5 border-border"
+          >
+            <Icon name="Presentation" size={14} />
+            Презентация 2
+          </Button>
+        </Link>
         <Link to="/speech">
           <Button
             variant="outline"
