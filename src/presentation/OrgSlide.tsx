@@ -403,8 +403,24 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   {slide.head.note}
                 </span>
               )}
-              <p className={`text-base md:text-2xl font-bold leading-tight mt-1.5 ${slide.head.replace ? 'text-rose-600' : 'text-violet-600'}`}>
+              {slide.head.salaryWas && (
+                <span className="relative inline-flex items-center mt-1.5">
+                  <span className="text-xs md:text-lg font-semibold text-slate-400">
+                    {slide.head.salaryWas}
+                  </span>
+                  <span
+                    className="pointer-events-none absolute left-[-4%] right-[-4%] top-1/2 h-[2px] rounded-full rotate-[-2deg]"
+                    style={{ background: 'linear-gradient(90deg, rgba(239,68,68,0) 0%, #ef4444 12%, #dc2626 50%, #ef4444 88%, rgba(239,68,68,0) 100%)' }}
+                  />
+                </span>
+              )}
+              <p className={`text-base md:text-2xl font-bold leading-tight mt-1.5 flex items-center gap-2 ${slide.head.replace ? 'text-rose-600' : 'text-violet-600'}`}>
                 {slide.head.salary}
+                {slide.head.salaryWas && (
+                  <span className="text-[10px] md:text-sm font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-emerald-500">
+                    −{formatMoney(parseMoney(slide.head.salaryWas) - parseMoney(slide.head.salary))} ₽
+                  </span>
+                )}
               </p>
               {slide.head.salaryNote && (
                 <p className="text-[10px] md:text-xs text-slate-400 leading-tight mt-0.5">

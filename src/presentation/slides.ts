@@ -108,7 +108,7 @@ export interface Slide {
   badge?: string;
   badgeIcon?: string;
   columnsLabel?: string;
-  head?: { role: string; name?: string; note?: string; salary: string; salaryNote?: string; photo?: string; vacancy?: boolean; replace?: boolean; duties?: string[] };
+  head?: { role: string; name?: string; note?: string; salary: string; salaryWas?: string; salaryNote?: string; photo?: string; vacancy?: boolean; replace?: boolean; duties?: string[] };
   columns?: OrgColumn[];
   payroll?: string;
   payrollWas?: string;
