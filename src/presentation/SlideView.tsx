@@ -6,6 +6,7 @@ import EcosystemSlide from './EcosystemSlide';
 import IndicatorsSlide from './IndicatorsSlide';
 import PhasesSlide from './PhasesSlide';
 import HandoffSlide from './HandoffSlide';
+import SplitRolesSlide from './SplitRolesSlide';
 import ClosingSlide from './ClosingSlide';
 import LightBackdrop from './LightBackdrop';
 
@@ -106,6 +107,7 @@ const SlideView = ({ slide }: { slide: Slide }) => (
     {slide.type === 'indicators' && <IndicatorsSlide slide={slide} />}
     {slide.type === 'phases' && <PhasesSlide slide={slide} />}
     {slide.type === 'handoff' && <HandoffSlide slide={slide} />}
+    {slide.type === 'split' && <SplitRolesSlide slide={slide} />}
     {slide.type === 'closing' && <ClosingSlide slide={slide} />}
   </div>
 );

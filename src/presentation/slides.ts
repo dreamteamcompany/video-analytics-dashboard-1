@@ -95,9 +95,20 @@ export interface HandoffStep {
   owner: string;
 }
 
+export interface SplitSide {
+  role: string;
+  name?: string;
+  photo?: string;
+  icon?: string;
+  strongTitle?: string;
+  strong?: string[];
+  cantTitle?: string;
+  cant?: string[];
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'closing';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -139,6 +150,14 @@ export interface Slide {
   handoffSteps?: HandoffStep[];
   handoffResult?: string;
   handoffResultNote?: string;
+  splitFactsTitle?: string;
+  splitFactsNote?: string;
+  splitFacts?: { icon?: string; title: string; note?: string }[];
+  splitLeft?: SplitSide;
+  splitRight?: SplitSide;
+  splitResult?: string;
+  splitResultLabel?: string;
+  splitResultNote?: string;
   closingPoints?: { icon?: string; metric?: string; title: string; note?: string }[];
   closingPayroll?: string;
   closingPayrollLabel?: string;
