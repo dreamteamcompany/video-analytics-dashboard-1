@@ -142,6 +142,8 @@ export interface Slide {
   closingPoints?: { icon?: string; metric?: string; title: string; note?: string }[];
   closingPayroll?: string;
   closingPayrollLabel?: string;
+  closingPayrollWas?: string;
+  closingPayrollSaving?: string;
   closingPayrollNote?: string;
   closingResult?: string;
   closingResultNote?: string;

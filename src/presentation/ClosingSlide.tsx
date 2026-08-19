@@ -112,6 +112,24 @@ const ClosingSlide = ({ slide }: { slide: Slide }) => {
                 >
                   {slide.closingPayroll}
                 </p>
+                {slide.closingPayrollWas && (
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="relative inline-flex items-center">
+                      <span className="text-[11px] md:text-[15px] font-semibold text-slate-400">
+                        {slide.closingPayrollWas}
+                      </span>
+                      <span
+                        className="pointer-events-none absolute left-[-4%] right-[-4%] top-1/2 h-[2px] rounded-full rotate-[-2deg]"
+                        style={{ background: 'linear-gradient(90deg, rgba(239,68,68,0) 0%, #ef4444 12%, #dc2626 50%, #ef4444 88%, rgba(239,68,68,0) 100%)' }}
+                      />
+                    </span>
+                    {slide.closingPayrollSaving && (
+                      <span className="text-[9.5px] md:text-[12px] font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-emerald-500">
+                        −{slide.closingPayrollSaving}
+                      </span>
+                    )}
+                  </div>
+                )}
                 {slide.closingPayrollNote && (
                   <p className="text-[10.5px] md:text-[13px] text-slate-500 leading-snug">
                     {slide.closingPayrollNote}
