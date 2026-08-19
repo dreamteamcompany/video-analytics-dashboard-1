@@ -18,8 +18,8 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
       <LightBackdrop />
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-6 lg:px-8 pt-3 md:pt-4 pb-12 md:pb-4 min-h-0 overflow-y-auto md:overflow-hidden">
-        <div className="w-full max-w-[1280px] mx-auto flex flex-col flex-1 min-h-0 md:justify-center gap-2 md:gap-2.5">
-          <div className="flex-shrink-0 flex flex-col items-center gap-1 md:gap-1.5 text-center">
+        <div className="w-full max-w-[1280px] mx-auto flex flex-col flex-1 min-h-0 md:justify-center gap-2 md:gap-2">
+          <div className="flex-shrink-0 flex flex-col items-center gap-1 md:gap-1 text-center">
             {slide.badge && (
               <span
                 className="org-drop inline-flex items-center gap-1.5 md:gap-2 rounded-full px-3 py-1 md:px-4 md:py-1.5 text-white text-[11px] md:text-[14px] font-semibold"
@@ -43,40 +43,40 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
 
           {facts.length > 0 && (
             <div
-              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3 py-2 md:px-4 md:py-2.5 border border-rose-200 bg-rose-50/80"
+              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3 py-2.5 md:px-5 md:py-3.5 border border-rose-200 bg-rose-50/80"
               style={{ boxShadow: '0 8px 26px rgba(220,38,38,0.12)', animationDelay: '140ms' }}
             >
               <div className="flex items-center gap-2 mb-1.5 md:mb-2">
                 <span
-                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 md:px-3 md:py-1 text-white text-[9.5px] md:text-[12px] font-black uppercase tracking-wider"
+                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 md:px-3 md:py-1 text-white text-[10.5px] md:text-[14px] font-black uppercase tracking-wider"
                   style={{ background: DANGER_GRADIENT }}
                 >
-                  <Icon name="TriangleAlert" size={12} className="flex-shrink-0" />
+                  <Icon name="TriangleAlert" size={14} className="flex-shrink-0" />
                   {slide.splitFactsTitle ?? 'Что имеем сейчас'}
                 </span>
                 {slide.splitFactsNote && (
-                  <p className="text-[10px] md:text-[13px] text-rose-700/80 font-semibold leading-snug">
+                  <p className="text-[11px] md:text-[14.5px] text-rose-700/80 font-semibold leading-snug">
                     {slide.splitFactsNote}
                   </p>
                 )}
               </div>
 
-              <div className="grid gap-1.5 md:gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-2 md:gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
                 {facts.map((f, i) => (
                   <div
                     key={f.title}
-                    className="org-in rounded-lg md:rounded-xl bg-white border border-rose-100 px-2.5 py-1.5 md:px-3 md:py-2 flex items-start gap-2"
+                    className="org-in rounded-lg md:rounded-xl bg-white border border-rose-100 px-3 py-2 md:px-3.5 md:py-3 flex items-start gap-2.5"
                     style={{ boxShadow: '0 3px 12px rgba(220,38,38,0.08)', animationDelay: `${200 + i * 60}ms` }}
                   >
-                    <div className="flex-shrink-0 w-6 h-6 md:w-7 md:h-7 rounded-md md:rounded-lg flex items-center justify-center bg-rose-100">
-                      <Icon name={f.icon ?? 'X'} size={15} className="text-rose-600" />
+                    <div className="flex-shrink-0 w-6 h-6 md:w-9 md:h-9 rounded-md md:rounded-lg flex items-center justify-center bg-rose-100">
+                      <Icon name={f.icon ?? 'X'} size={18} className="text-rose-600" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[11px] md:text-[13px] font-bold text-slate-800 leading-tight">
+                      <p className="text-[12px] md:text-[15.5px] font-black text-slate-800 leading-tight">
                         {f.title}
                       </p>
                       {f.note && (
-                        <p className="text-[9.5px] md:text-[11.5px] text-slate-500 leading-snug mt-0.5">
+                        <p className="text-[10px] md:text-[13px] text-slate-500 leading-snug mt-0.5">
                           {f.note}
                         </p>
                       )}
@@ -92,7 +92,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
               {[left, right].filter(Boolean).map((side, si) => (
                 <div
                   key={side!.role}
-                  className="org-in relative rounded-2xl md:rounded-3xl bg-white/95 border border-violet-100 px-3 py-2 md:px-4 md:py-3 overflow-hidden"
+                  className="org-in relative rounded-2xl md:rounded-3xl bg-white/95 border border-violet-100 px-3 py-2 md:px-4 md:py-2.5 overflow-hidden"
                   style={{ boxShadow: '0 8px 26px rgba(124,58,237,0.12)', animationDelay: `${420 + si * 120}ms` }}
                 >
                   <div className="flex items-center gap-2.5 md:gap-3">
@@ -100,11 +100,11 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                       <img
                         src={side!.photo}
                         alt={side!.name || side!.role}
-                        className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-violet-200 flex-shrink-0"
+                        className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover ring-2 ring-violet-200 flex-shrink-0"
                       />
                     ) : (
                       <div
-                        className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center"
+                        className="flex-shrink-0 w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center"
                         style={{ background: HEADER_GRADIENT }}
                       >
                         <Icon name={side!.icon ?? 'User'} size={22} className="text-white" />
@@ -123,7 +123,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                   </div>
 
                   {side!.strong && side!.strong.length > 0 && (
-                    <div className="mt-1.5 md:mt-2">
+                    <div className="mt-1.5 md:mt-1.5">
                       <p className="text-[9px] md:text-[11px] font-black uppercase tracking-wider text-emerald-600 mb-1">
                         {side!.strongTitle ?? 'Силён в этом'}
                       </p>
@@ -171,7 +171,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
 
           {slide.splitResult && (
             <div
-              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3.5 py-2 md:px-5 md:py-3 text-center"
+              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3.5 py-2 md:px-5 md:py-2.5 text-center"
               style={{ background: HEADER_GRADIENT, boxShadow: '0 10px 30px rgba(124,58,237,0.35)', animationDelay: '700ms' }}
             >
               <p className="text-[9px] md:text-[12px] font-black uppercase tracking-[0.16em] text-white/70 mb-1">
