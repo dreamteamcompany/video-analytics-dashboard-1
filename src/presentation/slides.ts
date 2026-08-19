@@ -124,6 +124,7 @@ export interface Slide {
   payroll?: string;
   payrollWas?: string;
   payrollNote?: string;
+  workload?: { value: string; label: string; note?: string; icon?: string }[];
   goals?: Goal[];
   goalsYear?: string;
   goalsImage?: string;

@@ -281,6 +281,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
   const statsIndex = isMobile ? colCount - 1 : colCount >= 4 ? 2 : colCount >= 3 ? 1 : 0;
   const statsWidth = isMobile ? 'w-full' : colCount >= 4 ? 'w-full' : colCount >= 3 ? 'md:w-[calc(160%+1.5rem)]' : 'w-full';
   const compactCols = !isMobile && colCount >= 4;
+  const tightPayroll = compactCols || !!slide.workload;
 
   return (
   <div
@@ -567,20 +568,63 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
               </>
             )}
 
+            {/* Нагрузка на службу */}
+            {ci === statsIndex && slide.workload && (
+              <div className={`mt-auto pt-1.5 ${statsWidth}`}>
+                <div
+                  className="rounded-2xl px-3 md:px-3.5 py-1.5 md:py-2 org-drop"
+                  style={{
+                    background: 'linear-gradient(120deg, #fff7ed 0%, #ffedd5 100%)',
+                    boxShadow: CARD_SHADOW,
+                    animationDelay: '1100ms',
+                  }}
+                >
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Icon name="Activity" size={14} className="text-orange-600 flex-shrink-0" />
+                    <p className="text-[10px] md:text-[12.5px] font-black uppercase tracking-wider text-orange-700">
+                      Фактическая нагрузка на службу
+                    </p>
+                    <span className="ml-auto text-[10px] md:text-[12px] font-bold text-orange-700/70 whitespace-nowrap">
+                      {total} сотрудников · {slide.columns?.length} линии
+                    </span>
+                  </div>
+                  <div className="grid gap-1.5 md:gap-2 sm:grid-cols-3">
+                    {slide.workload.map((w, wi) => (
+                      <div
+                        key={wi}
+                        className="rounded-xl bg-white/85 px-2.5 py-1 flex items-start gap-2"
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                          <Icon name={w.icon ?? 'Activity'} size={16} className="text-orange-600" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[15px] md:text-[17px] font-black text-orange-600 leading-none">{w.value}</p>
+                          <p className="text-[11px] md:text-[12px] font-bold text-slate-700 leading-tight mt-0.5">{w.label}</p>
+                          {w.note && (
+                            <p className="text-[9.5px] md:text-[10.5px] text-slate-500 leading-snug mt-0.5">{w.note}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Итоги в цифрах + ФОТ */}
             {ci === statsIndex && slide.payroll && (
-              <div className={`mt-auto ${compactCols ? 'pt-2' : 'pt-3'} ${statsWidth}`}>
-                {slide.columns && (
+              <div className={`${slide.workload ? 'pt-1.5' : `mt-auto ${compactCols ? 'pt-2' : 'pt-3'}`} ${statsWidth}`}>
+                {slide.columns && !slide.workload && (
                   <div className={`flex gap-2 md:gap-3 ${compactCols ? 'mb-1.5' : 'mb-2'}`}>
-                    <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} compact={compactCols} />
-                    <StatCard icon="Layers" value={String(slide.columns.length)} label={slide.columnsLabel ?? 'линии поддержки'} delay={1320} compact={compactCols} />
+                    <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} compact={compactCols || !!slide.workload} />
+                    <StatCard icon="Layers" value={String(slide.columns.length)} label={slide.columnsLabel ?? 'линии поддержки'} delay={1320} compact={compactCols || !!slide.workload} />
                     {vacancies > 0 && (
-                      <StatCard icon="Search" value={String(vacancies)} label={vacancies === 1 ? 'вакансия' : 'вакансии'} delay={1440} compact={compactCols} />
+                      <StatCard icon="Search" value={String(vacancies)} label={vacancies === 1 ? 'вакансия' : 'вакансии'} delay={1440} compact={compactCols || !!slide.workload} />
                     )}
                   </div>
                 )}
                 <div
-                  className={`relative rounded-3xl bg-white flex items-center overflow-hidden org-drop ${compactCols ? 'px-3 md:px-4 xl:px-6 py-2 md:py-2.5 xl:py-3.5 min-h-[70px] md:min-h-[clamp(74px,10vh,120px)]' : 'pl-4 md:pl-8 pr-24 md:pr-40 py-3 md:py-4 min-h-[76px] md:min-h-[clamp(96px,13vh,165px)]'}`}
+                  className={`relative rounded-3xl bg-white flex items-center overflow-hidden org-drop ${tightPayroll ? 'pl-3 md:pl-5 pr-16 md:pr-28 py-1.5 md:py-2 min-h-[52px] md:min-h-[clamp(52px,6vh,74px)]' : 'pl-4 md:pl-8 pr-24 md:pr-40 py-3 md:py-4 min-h-[76px] md:min-h-[clamp(96px,13vh,165px)]'}`}
                   style={{
                     boxShadow: CARD_SHADOW,
                     animationDelay: '1550ms',
@@ -589,7 +633,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   <div className="min-w-0">
                     {slide.payrollWas && (
                       <div className="relative inline-flex items-center mb-0.5">
-                        <p className={`font-bold text-slate-400 whitespace-nowrap ${compactCols ? 'text-xs md:text-[15px] xl:text-[18px]' : 'text-sm md:text-2xl'}`}>
+                        <p className={`font-bold text-slate-400 whitespace-nowrap ${tightPayroll ? 'text-xs md:text-[15px] xl:text-[18px]' : 'text-sm md:text-2xl'}`}>
                           ФОТ: {slide.payrollWas}
                         </p>
                         <span
@@ -598,7 +642,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                         />
                       </div>
                     )}
-                    <p className={`font-extrabold text-slate-900 whitespace-nowrap ${compactCols ? 'text-base md:text-[17px] xl:text-[22px]' : slide.payrollWas ? 'text-lg md:text-3xl' : 'text-lg md:text-4xl'}`}>
+                    <p className={`font-extrabold text-slate-900 whitespace-nowrap ${tightPayroll ? 'text-base md:text-[17px] xl:text-[20px]' : slide.payrollWas ? 'text-lg md:text-3xl' : 'text-lg md:text-4xl'}`}>
                       ФОТ: {slide.payroll}
                       {slide.payrollWas && (
                         <span className={`align-middle font-black uppercase tracking-wider text-white rounded-full bg-emerald-500 ${compactCols ? 'ml-1.5 text-[9.5px] md:text-[11px] xl:text-[12.5px] px-1.5 py-0.5' : 'ml-2 md:ml-3 text-[10px] md:text-sm px-2 py-0.5'}`}>
@@ -607,10 +651,10 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                       )}
                     </p>
                     {slide.payrollNote && (
-                      <p className={`text-slate-500 mt-1 ${compactCols ? 'text-[10px] md:text-[11.5px] xl:text-[13px] leading-snug' : 'text-[11px] md:text-sm'}`}>{slide.payrollNote}</p>
+                      <p className={`text-slate-500 mt-1 ${tightPayroll ? 'text-[10px] md:text-[11.5px] xl:text-[13px] leading-snug' : 'text-[11px] md:text-sm'}`}>{slide.payrollNote}</p>
                     )}
                   </div>
-                  {!compactCols && (
+                  {!tightPayroll && (
                     <img
                       src="/coins-3d.png"
                       alt=""
