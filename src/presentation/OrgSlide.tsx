@@ -126,8 +126,8 @@ const RisksOverlay = ({ title, risks }: { title: string; risks: string[] }) =>
     document.body,
   );
 
-const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, cut, cutLabel, cutTone, risks, delay = 0 }: {
-  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; cut?: boolean; cutLabel?: string; cutTone?: 'red' | 'amber'; risks?: string[]; delay?: number;
+const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, cut, cutLabel, cutTone, risks, compact, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; cut?: boolean; cutLabel?: string; cutTone?: 'red' | 'amber'; risks?: string[]; compact?: boolean; delay?: number;
 }) => {
   const { open, ref, handlers } = useDutiesToggle(!!duties?.length || !!risks?.length);
   const showRisks = cut && !!risks?.length;
@@ -138,7 +138,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
   <div
     ref={ref}
     {...handlers}
-    className={`group relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length || risks?.length ? 'cursor-pointer' : ''} ${
+    className={`group relative flex min-w-0 rounded-2xl backdrop-blur-sm px-3 md:px-4 py-3 org-in ${compact ? 'flex-row flex-wrap items-center gap-x-2.5 gap-y-1' : 'flex-row items-center gap-3 md:gap-4'} transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length || risks?.length ? 'cursor-pointer' : ''} ${
       cut
         ? `bg-slate-100/85 ring-2 ${amber ? 'ring-amber-500' : 'ring-red-500'} [&_img]:grayscale [&_p]:text-slate-400`
         : replace
@@ -148,7 +148,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
-      ['--mh' as string]: big ? 'clamp(120px, 16vh, 240px)' : 'clamp(80px, 10.5vh, 160px)',
+      ['--mh' as string]: big ? 'clamp(120px, 16vh, 240px)' : compact ? 'clamp(66px, 7.6vh, 104px)' : 'clamp(80px, 10.5vh, 160px)',
     }}
   >
     <div className="relative flex-shrink-0">
@@ -160,10 +160,10 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
         <img
           src={photo}
           alt={name || role}
-          className={`${big ? 'w-14 h-14 md:w-24 md:h-24' : 'w-11 h-11 md:w-14 md:h-14'} rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : replace ? 'ring-rose-300' : 'ring-violet-200'}`}
+          className={`${big ? 'w-14 h-14 md:w-24 md:h-24' : compact ? 'w-10 h-10 md:w-12 md:h-12' : 'w-11 h-11 md:w-14 md:h-14'} rounded-full object-cover ring-2 ${lead ? 'ring-amber-300' : replace ? 'ring-rose-300' : 'ring-violet-200'}`}
         />
       ) : (
-        <div className={`${big ? 'w-14 h-14 md:w-24 md:h-24' : 'w-11 h-11 md:w-14 md:h-14'} rounded-full flex items-center justify-center ${replace ? 'bg-rose-100' : 'bg-violet-50'} ${lead ? 'ring-2 ring-amber-300' : ''}`}>
+        <div className={`${big ? 'w-14 h-14 md:w-24 md:h-24' : compact ? 'w-10 h-10 md:w-12 md:h-12' : 'w-11 h-11 md:w-14 md:h-14'} rounded-full flex items-center justify-center ${replace ? 'bg-rose-100' : 'bg-violet-50'} ${lead ? 'ring-2 ring-amber-300' : ''}`}>
           <Icon name={replace ? 'UserMinus' : vacancy ? 'UserPlus' : 'User'} size={big ? 28 : 22} className={`${replace ? 'text-rose-500' : 'text-violet-500'} md:hidden`} />
           <Icon name={replace ? 'UserMinus' : vacancy ? 'UserPlus' : 'User'} size={big ? 44 : 26} className={`${replace ? 'text-rose-500' : 'text-violet-500'} hidden md:block`} />
         </div>
@@ -180,7 +180,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
 
     <div className="flex-1 min-w-0">
       <div className="flex items-center gap-2 flex-wrap">
-        <p className={`${big ? 'text-sm md:text-2xl' : 'text-[13px] md:text-base'} font-semibold text-slate-800 leading-snug`}>
+        <p className={`${big ? 'text-sm md:text-2xl' : compact ? 'text-[12.5px] md:text-[14px]' : 'text-[13px] md:text-base'} font-semibold text-slate-800 leading-snug`}>
           {role}
         </p>
         {tag && (
@@ -213,7 +213,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     </div>
 
     <div
-      className={`rounded-full text-white font-semibold whitespace-nowrap flex-shrink-0 ${big ? 'px-2.5 py-1 text-[11px] md:px-5 md:py-2.5 md:text-xl' : 'px-2.5 py-1 text-[11px] md:px-3.5 md:py-1.5 md:text-sm'}`}
+      className={`rounded-full text-white font-semibold whitespace-nowrap flex-shrink-0 ${big ? 'px-2.5 py-1 text-[11px] md:px-5 md:py-2.5 md:text-xl' : compact ? 'w-full text-center px-2.5 py-0.5 text-[11px] md:px-3 md:py-1 md:text-[13px]' : 'px-2.5 py-1 text-[11px] md:px-3.5 md:py-1.5 md:text-sm'}`}
       style={{ background: PILL_GRADIENT }}
     >
       {salary}
@@ -252,21 +252,21 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
   );
 };
 
-const StatCard = ({ icon, value, label, delay }: {
-  icon: string; value: string; label: string; delay: number;
+const StatCard = ({ icon, value, label, delay, compact }: {
+  icon: string; value: string; label: string; delay: number; compact?: boolean;
 }) => (
   <div
-    className="flex-1 min-w-0 rounded-2xl bg-white/90 px-3 md:px-5 py-2.5 flex items-center gap-2 md:gap-3 org-drop min-h-[52px] md:min-h-[clamp(58px,8vh,110px)]"
+    className={`flex-1 min-w-0 rounded-2xl bg-white/90 py-2 flex items-center org-drop min-h-[52px] ${compact ? 'px-2 md:px-2.5 gap-1.5' : 'px-3 md:px-5 gap-2 md:gap-3'} ${compact ? 'md:min-h-[clamp(50px,6vh,72px)]' : 'md:min-h-[clamp(58px,8vh,110px)]'}`}
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
     }}
   >
     <Icon name={icon} size={20} className="text-violet-500 flex-shrink-0 md:hidden" />
-    <Icon name={icon} size={26} className="text-violet-500 flex-shrink-0 hidden md:block" />
+    <Icon name={icon} size={compact ? 20 : 26} className="text-violet-500 flex-shrink-0 hidden md:block" />
     <div className="min-w-0">
-      <p className="text-lg md:text-2xl font-bold text-violet-600 leading-none">{value}</p>
-      <p className="text-[11px] md:text-sm text-slate-500 leading-tight mt-0.5">{label}</p>
+      <p className={`font-bold text-violet-600 leading-none ${compact ? 'text-base md:text-xl' : 'text-lg md:text-2xl'}`}>{value}</p>
+      <p className={`text-slate-500 leading-tight mt-0.5 ${compact ? 'text-[10px] md:text-[12px]' : 'text-[11px] md:text-sm'}`}>{label}</p>
     </div>
   </div>
 );
@@ -278,8 +278,9 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
   const total = allPeople.filter((p) => !p.cut).length + (slide.head ? 1 : 0);
   const vacancies = allPeople.filter((p) => p.vacancy && !p.cut).length;
   const colCount = slide.columns?.length ?? 3;
-  const statsIndex = isMobile ? colCount - 1 : colCount >= 3 ? 1 : 0;
-  const statsWidth = !isMobile && colCount >= 3 ? 'md:w-[calc(160%+1.5rem)]' : 'w-full';
+  const statsIndex = isMobile ? colCount - 1 : colCount >= 4 ? 2 : colCount >= 3 ? 1 : 0;
+  const statsWidth = isMobile ? 'w-full' : colCount >= 4 ? 'w-full' : colCount >= 3 ? 'md:w-[calc(160%+1.5rem)]' : 'w-full';
+  const compactCols = !isMobile && colCount >= 4;
 
   return (
   <div
@@ -504,7 +505,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
             {/* Карточки сотрудников */}
             <div className="space-y-2">
               {col.people.map((p, i) => (
-                <PersonCard key={i} {...p} delay={500 + ci * 120 + i * 110} />
+                <PersonCard key={i} {...p} compact={compactCols} delay={500 + ci * 120 + i * 110} />
               ))}
             </div>
 
@@ -568,18 +569,18 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
 
             {/* Итоги в цифрах + ФОТ */}
             {ci === statsIndex && slide.payroll && (
-              <div className={`mt-auto pt-3 ${statsWidth}`}>
+              <div className={`mt-auto ${compactCols ? 'pt-2' : 'pt-3'} ${statsWidth}`}>
                 {slide.columns && (
-                  <div className="flex gap-2 md:gap-3 mb-2">
-                    <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} />
-                    <StatCard icon="Layers" value={String(slide.columns.length)} label={slide.columnsLabel ?? 'линии поддержки'} delay={1320} />
+                  <div className={`flex gap-2 md:gap-3 ${compactCols ? 'mb-1.5' : 'mb-2'}`}>
+                    <StatCard icon="Users" value={String(total)} label="сотрудников" delay={1200} compact={compactCols} />
+                    <StatCard icon="Layers" value={String(slide.columns.length)} label={slide.columnsLabel ?? 'линии поддержки'} delay={1320} compact={compactCols} />
                     {vacancies > 0 && (
-                      <StatCard icon="Search" value={String(vacancies)} label={vacancies === 1 ? 'вакансия' : 'вакансии'} delay={1440} />
+                      <StatCard icon="Search" value={String(vacancies)} label={vacancies === 1 ? 'вакансия' : 'вакансии'} delay={1440} compact={compactCols} />
                     )}
                   </div>
                 )}
                 <div
-                  className="relative rounded-3xl bg-white pl-4 md:pl-8 pr-24 md:pr-40 py-3 md:py-4 flex items-center overflow-hidden org-drop min-h-[76px] md:min-h-[clamp(96px,13vh,165px)]"
+                  className={`relative rounded-3xl bg-white flex items-center overflow-hidden org-drop ${compactCols ? 'px-3 md:px-4 py-2 md:py-2.5 min-h-[70px] md:min-h-[clamp(74px,9vh,100px)]' : 'pl-4 md:pl-8 pr-24 md:pr-40 py-3 md:py-4 min-h-[76px] md:min-h-[clamp(96px,13vh,165px)]'}`}
                   style={{
                     boxShadow: CARD_SHADOW,
                     animationDelay: '1550ms',
@@ -588,7 +589,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   <div className="min-w-0">
                     {slide.payrollWas && (
                       <div className="relative inline-flex items-center mb-0.5">
-                        <p className="text-sm md:text-2xl font-bold text-slate-400 whitespace-nowrap">
+                        <p className={`font-bold text-slate-400 whitespace-nowrap ${compactCols ? 'text-xs md:text-[15px]' : 'text-sm md:text-2xl'}`}>
                           ФОТ: {slide.payrollWas}
                         </p>
                         <span
@@ -597,23 +598,25 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                         />
                       </div>
                     )}
-                    <p className={`font-extrabold text-slate-900 whitespace-nowrap ${slide.payrollWas ? 'text-lg md:text-3xl' : 'text-lg md:text-4xl'}`}>
+                    <p className={`font-extrabold text-slate-900 whitespace-nowrap ${compactCols ? 'text-base md:text-[17px]' : slide.payrollWas ? 'text-lg md:text-3xl' : 'text-lg md:text-4xl'}`}>
                       ФОТ: {slide.payroll}
                       {slide.payrollWas && (
-                        <span className="ml-2 md:ml-3 align-middle text-[10px] md:text-sm font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-emerald-500">
+                        <span className={`align-middle font-black uppercase tracking-wider text-white rounded-full bg-emerald-500 ${compactCols ? 'ml-1.5 text-[9.5px] md:text-[11px] px-1.5 py-0.5' : 'ml-2 md:ml-3 text-[10px] md:text-sm px-2 py-0.5'}`}>
                           −{formatMoney(parseMoney(slide.payrollWas) - parseMoney(slide.payroll))} ₽
                         </span>
                       )}
                     </p>
                     {slide.payrollNote && (
-                      <p className="text-[11px] md:text-sm text-slate-500 mt-1">{slide.payrollNote}</p>
+                      <p className={`text-slate-500 mt-1 ${compactCols ? 'text-[10px] md:text-[11.5px] leading-snug' : 'text-[11px] md:text-sm'}`}>{slide.payrollNote}</p>
                     )}
                   </div>
-                  <img
-                    src="/coins-3d.png"
-                    alt=""
-                    className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 w-16 md:w-32 object-contain pointer-events-none"
-                  />
+                  {!compactCols && (
+                    <img
+                      src="/coins-3d.png"
+                      alt=""
+                      className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 w-16 md:w-32 object-contain pointer-events-none"
+                    />
+                  )}
                 </div>
               </div>
             )}
