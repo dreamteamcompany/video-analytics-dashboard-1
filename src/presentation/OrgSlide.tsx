@@ -134,7 +134,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     {...handlers}
     className={`group relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length || risks?.length ? 'cursor-pointer' : ''} ${
       cut
-        ? 'bg-slate-100/80 ring-2 ring-red-500 opacity-80 grayscale'
+        ? 'bg-slate-100/85 ring-2 ring-red-500 [&_img]:grayscale [&_p]:text-slate-400'
         : replace
           ? 'bg-rose-50/90 ring-1 ring-rose-200'
           : 'bg-white/90'

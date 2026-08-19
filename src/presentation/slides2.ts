@@ -1,6 +1,6 @@
-import type { EcoBenefit, EcoItem, Goal, HandoffSide, HandoffStep, ImpactItem, IndicatorItem, KpiItem, OrgColumn, OrgPerson, PhaseItem, Slide } from './slides';
+import type { Slide } from './slides';
 
-export const slides2: Slide[] = [] = [
+export const slides2: Slide[] = [
   {
     id: 'title',
     type: 'title',
@@ -10,7 +10,7 @@ export const slides2: Slide[] = [] = [
     author: 'Роберт Лалиев',
     year: '2026',
     logo: '/logo-team.png',
-  },,
+  },
   {
     id: 'med-systems',
     type: 'org',
@@ -41,7 +41,7 @@ export const slides2: Slide[] = [] = [
         ],
       },
     ],
-  },,
+  },
   {
     id: 'support',
     type: 'org',
@@ -74,7 +74,7 @@ export const slides2: Slide[] = [] = [
         ],
       },
     ],
-  },,
+  },
   {
     id: 'digital',
     type: 'org',
@@ -118,7 +118,7 @@ export const slides2: Slide[] = [] = [
         ],
       },
     ],
-  },,
+  },
   {
     id: 'pmo',
     type: 'org',
@@ -145,7 +145,7 @@ export const slides2: Slide[] = [] = [
         ],
       },
     ],
-  },,
+  },
   {
     id: 'ai-ecosystem',
     type: 'ecosystem',
@@ -173,7 +173,7 @@ export const slides2: Slide[] = [] = [
       { icon: 'ShieldCheck', title: 'Безопасность данных', note: 'Единые стандарты защиты и контроля' },
       { icon: 'PiggyBank', title: 'Коммерческий потенциал', note: 'Готовые продукты для рынка' },
     ],
-  },,
+  },
   {
     id: 'infosec',
     type: 'org',
@@ -200,7 +200,7 @@ export const slides2: Slide[] = [] = [
         ],
       },
     ],
-  },,
+  },
   {
     id: 'infra',
     type: 'org',
@@ -226,7 +226,7 @@ export const slides2: Slide[] = [] = [
         ],
       },
     ],
-  },,
+  },
   {
     id: 'director',
     type: 'org',
@@ -246,7 +246,7 @@ export const slides2: Slide[] = [] = [
         ],
       },
     ],
-  },,
+  },
   {
     id: 'closing',
     type: 'closing',
