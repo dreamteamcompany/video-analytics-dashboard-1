@@ -72,15 +72,73 @@ const DutiesOverlay = ({ title, duties }: { title: string; duties: string[] }) =
     document.body,
   );
 
-const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, delay = 0 }: {
-  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; delay?: number;
+const RisksOverlay = ({ title, risks }: { title: string; risks: string[] }) =>
+  createPortal(
+    <div className="fixed inset-0 z-[95] flex items-center justify-center p-4 md:p-10 duties-fade pointer-events-none">
+      <div className="absolute inset-0 bg-red-950/60 backdrop-blur-[3px] danger-flash" />
+      {[
+        { l: '6%', t: '4%', s: 78, d: '0ms' },
+        { l: '88%', t: '10%', s: 62, d: '120ms' },
+        { l: '14%', t: '72%', s: 66, d: '240ms' },
+        { l: '82%', t: '76%', s: 84, d: '80ms' },
+        { l: '48%', t: '2%', s: 54, d: '320ms' },
+        { l: '3%', t: '38%', s: 58, d: '200ms' },
+        { l: '94%', t: '44%', s: 70, d: '400ms' },
+        { l: '52%', t: '92%', s: 60, d: '160ms' },
+      ].map((b) => (
+        <span
+          key={`${b.l}${b.t}`}
+          className="absolute bolt-strike"
+          style={{ left: b.l, top: b.t, animationDelay: b.d }}
+        >
+          <Icon name="Zap" size={b.s} className="text-amber-300 drop-shadow-[0_0_18px_rgba(251,191,36,0.9)]" />
+        </span>
+      ))}
+      <div
+        className={`relative rounded-3xl flex flex-col gap-2 px-6 py-5 text-left max-h-full overflow-auto shake-hard ${risks.length > 6 ? 'w-[min(1060px,94vw)]' : 'w-[min(620px,92vw)]'}`}
+        style={{
+          background: 'linear-gradient(135deg, #7f1d1d 0%, #b91c1c 55%, #dc2626 100%)',
+          boxShadow: '0 24px 70px rgba(127,29,29,0.65), 0 0 0 3px rgba(251,191,36,0.35)',
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <Icon name="TriangleAlert" size={26} className="text-amber-300 flex-shrink-0 alarm-pulse" />
+          <div>
+            <p className="text-[10px] md:text-[12px] font-black text-amber-300 tracking-[0.14em] uppercase leading-none">
+              Что будет, если убрать
+            </p>
+            <p className="text-base md:text-2xl font-bold text-white leading-snug mt-1">{title}</p>
+          </div>
+        </div>
+        <div className={`gap-x-7 ${risks.length > 6 ? 'columns-2' : 'flex flex-col'}`}>
+          {risks.map((d) => (
+            <div key={d} className="flex items-start gap-2 break-inside-avoid mb-1.5">
+              <Icon name="Zap" size={14} className="text-amber-300 flex-shrink-0 mt-[3px]" />
+              <p className="text-[12px] md:text-[15px] text-white/95 leading-snug">{d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+
+const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, cut, risks, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; cut?: boolean; risks?: string[]; delay?: number;
 }) => {
-  const { open, ref, handlers } = useDutiesToggle(!!duties?.length);
+  const { open, ref, handlers } = useDutiesToggle(!!duties?.length || !!risks?.length);
+  const showRisks = cut && !!risks?.length;
   return (
   <div
     ref={ref}
     {...handlers}
-    className={`group relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length ? 'cursor-pointer' : ''} ${replace ? 'bg-rose-50/90 ring-1 ring-rose-200' : 'bg-white/90'}`}
+    className={`group relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length || risks?.length ? 'cursor-pointer' : ''} ${
+      cut
+        ? 'bg-slate-100/80 ring-2 ring-red-500 opacity-80 grayscale'
+        : replace
+          ? 'bg-rose-50/90 ring-1 ring-rose-200'
+          : 'bg-white/90'
+    }`}
     style={{
       boxShadow: CARD_SHADOW,
       animationDelay: `${delay}ms`,
@@ -155,14 +213,28 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
       {salary}
     </div>
 
-    {duties && duties.length > 0 && (
+    {cut && (
       <>
-        <span className="absolute top-1.5 right-1.5 opacity-40">
-          <Icon name="Info" size={13} className="text-violet-400" />
+        <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+          <span className="absolute left-[-6%] right-[-6%] top-1/2 h-[3px] bg-red-500/85 rotate-[-4deg] rounded-full" />
         </span>
-        {open && <DutiesOverlay title={role} duties={duties} />}
+        <span className="absolute -top-2 left-3 z-10 text-[9px] md:text-[11px] font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-red-600 shadow-md flex items-center gap-1">
+          <Icon name="Ban" size={11} />
+          Сокращено
+        </span>
       </>
     )}
+
+    {(duties?.length || risks?.length) ? (
+      <>
+        <span className={`absolute top-1.5 right-1.5 ${showRisks ? 'opacity-90 alarm-pulse' : 'opacity-40'}`}>
+          <Icon name={showRisks ? 'TriangleAlert' : 'Info'} size={13} className={showRisks ? 'text-red-500' : 'text-violet-400'} />
+        </span>
+        {open && (showRisks
+          ? <RisksOverlay title={role} risks={risks!} />
+          : duties?.length ? <DutiesOverlay title={role} duties={duties} /> : null)}
+      </>
+    ) : null}
   </div>
   );
 };

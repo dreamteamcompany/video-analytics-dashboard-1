@@ -12,6 +12,8 @@ export interface OrgPerson {
   big?: boolean;
   replace?: boolean;
   duties?: string[];
+  cut?: boolean;
+  risks?: string[];
 }
 
 export interface OrgColumn {

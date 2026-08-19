@@ -242,4 +242,103 @@
   .duties-fade {
     animation: duties-fade 0.18s ease-out both;
   }
+
+  @keyframes bolt-strike {
+    0% {
+      opacity: 0;
+      transform: scale(0.4) rotate(-14deg);
+    }
+    12% {
+      opacity: 1;
+      transform: scale(1.25) rotate(6deg);
+    }
+    22% {
+      opacity: 0.15;
+      transform: scale(1) rotate(0deg);
+    }
+    34% {
+      opacity: 1;
+      transform: scale(1.12) rotate(-6deg);
+    }
+    48% {
+      opacity: 0.25;
+      transform: scale(1) rotate(0deg);
+    }
+    62% {
+      opacity: 0.95;
+      transform: scale(1.06) rotate(4deg);
+    }
+    100% {
+      opacity: 0.35;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+  .bolt-strike {
+    animation: bolt-strike 1.15s ease-in-out infinite;
+  }
+
+  @keyframes danger-flash {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    8% {
+      opacity: 0.55;
+    }
+    16% {
+      opacity: 1;
+    }
+    26% {
+      opacity: 0.7;
+    }
+    36% {
+      opacity: 1;
+    }
+  }
+  .danger-flash {
+    animation: danger-flash 1.4s ease-in-out infinite;
+  }
+
+  @keyframes shake-hard {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    10% {
+      transform: translate3d(-5px, 2px, 0) rotate(-0.6deg);
+    }
+    20% {
+      transform: translate3d(4px, -3px, 0) rotate(0.5deg);
+    }
+    30% {
+      transform: translate3d(-3px, 1px, 0) rotate(-0.3deg);
+    }
+    40% {
+      transform: translate3d(3px, 2px, 0) rotate(0.3deg);
+    }
+    50% {
+      transform: translate3d(-2px, -1px, 0) rotate(0deg);
+    }
+    60% {
+      transform: translate3d(2px, 1px, 0) rotate(0.2deg);
+    }
+  }
+  .shake-hard {
+    animation: shake-hard 0.9s ease-in-out infinite;
+  }
+
+  @keyframes alarm-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.45;
+      transform: scale(1.18);
+    }
+  }
+  .alarm-pulse {
+    animation: alarm-pulse 0.7s ease-in-out infinite;
+  }
 }
