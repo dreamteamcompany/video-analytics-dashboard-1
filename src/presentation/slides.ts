@@ -13,6 +13,8 @@ export interface OrgPerson {
   replace?: boolean;
   duties?: string[];
   cut?: boolean;
+  cutLabel?: string;
+  cutTone?: 'red' | 'amber';
   risks?: string[];
 }
 

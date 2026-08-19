@@ -123,18 +123,21 @@ const RisksOverlay = ({ title, risks }: { title: string; risks: string[] }) =>
     document.body,
   );
 
-const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, cut, risks, delay = 0 }: {
-  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; cut?: boolean; risks?: string[]; delay?: number;
+const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo, big, replace, duties, cut, cutLabel, cutTone, risks, delay = 0 }: {
+  role: string; name?: string; note?: string; tag?: string; salary: string; vacancy?: boolean; photo?: string; lead?: boolean; logo?: string; big?: boolean; replace?: boolean; duties?: string[]; cut?: boolean; cutLabel?: string; cutTone?: 'red' | 'amber'; risks?: string[]; delay?: number;
 }) => {
   const { open, ref, handlers } = useDutiesToggle(!!duties?.length || !!risks?.length);
   const showRisks = cut && !!risks?.length;
+  const amber = cutTone === 'amber';
+  const strokeColor = amber ? '#f59e0b' : '#ef4444';
+  const strokeGrad = `linear-gradient(90deg, ${amber ? 'rgba(245,158,11,0)' : 'rgba(239,68,68,0)'} 0%, ${strokeColor} 12%, ${amber ? '#d97706' : '#dc2626'} 50%, ${strokeColor} 88%, ${amber ? 'rgba(245,158,11,0)' : 'rgba(239,68,68,0)'} 100%)`;
   return (
   <div
     ref={ref}
     {...handlers}
     className={`group relative flex items-center gap-3 md:gap-4 rounded-2xl backdrop-blur-sm min-w-0 px-3 md:px-5 py-3 org-in transition-transform duration-300 md:hover:scale-[1.02] min-h-[72px] md:min-h-[var(--mh)] ${duties?.length || risks?.length ? 'cursor-pointer' : ''} ${
       cut
-        ? 'bg-slate-100/85 ring-2 ring-red-500 [&_img]:grayscale [&_p]:text-slate-400'
+        ? `bg-slate-100/85 ring-2 ${amber ? 'ring-amber-500' : 'ring-red-500'} [&_img]:grayscale [&_p]:text-slate-400`
         : replace
           ? 'bg-rose-50/90 ring-1 ring-rose-200'
           : 'bg-white/90'
@@ -218,16 +221,16 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
         <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
           <span
             className="absolute left-[3%] right-[3%] top-1/2 h-[3px] rounded-full origin-center rotate-[3.2deg]"
-            style={{ background: 'linear-gradient(90deg, rgba(239,68,68,0) 0%, #ef4444 12%, #dc2626 50%, #ef4444 88%, rgba(239,68,68,0) 100%)' }}
+            style={{ background: strokeGrad }}
           />
           <span
             className="absolute left-[3%] right-[3%] top-1/2 h-[3px] rounded-full origin-center -rotate-[3.2deg]"
-            style={{ background: 'linear-gradient(90deg, rgba(239,68,68,0) 0%, #ef4444 12%, #dc2626 50%, #ef4444 88%, rgba(239,68,68,0) 100%)' }}
+            style={{ background: strokeGrad }}
           />
         </span>
-        <span className="absolute -top-2 left-3 z-10 text-[9px] md:text-[11px] font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-red-600 shadow-md flex items-center gap-1">
-          <Icon name="Ban" size={11} />
-          Сокращено
+        <span className={`absolute -top-2 left-3 z-10 text-[9px] md:text-[11px] font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full shadow-md flex items-center gap-1 ${amber ? 'bg-amber-500' : 'bg-red-600'}`}>
+          <Icon name={amber ? 'Clock' : 'Ban'} size={11} />
+          {cutLabel || 'Сокращено'}
         </span>
       </>
     )}
@@ -235,7 +238,7 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     {(duties?.length || risks?.length) ? (
       <>
         <span className={`absolute top-1.5 right-1.5 ${showRisks ? 'opacity-90 alarm-pulse' : 'opacity-40'}`}>
-          <Icon name={showRisks ? 'TriangleAlert' : 'Info'} size={13} className={showRisks ? 'text-red-500' : 'text-violet-400'} />
+          <Icon name={showRisks ? 'TriangleAlert' : 'Info'} size={13} className={showRisks ? (amber ? 'text-amber-500' : 'text-red-500') : 'text-violet-400'} />
         </span>
         {open && (showRisks
           ? <RisksOverlay title={role} risks={risks!} />
