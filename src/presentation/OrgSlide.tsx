@@ -11,6 +11,9 @@ const LINE_COLOR = '#a78bfa';
 
 const COLUMN_ICONS = ['Target', 'Users', 'Rocket'];
 
+const parseMoney = (v?: string) => Number((v ?? '').replace(/[^\d]/g, '')) || 0;
+const formatMoney = (n: number) => n.toLocaleString('ru-RU').replace(/,/g, ' ');
+
 const useDutiesToggle = (enabled: boolean) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -272,8 +275,8 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
   const isMobile = useIsMobile();
   const headDuties = useDutiesToggle(!!slide.head?.duties?.length);
   const allPeople = slide.columns?.flatMap((c) => c.people) ?? [];
-  const total = allPeople.length + (slide.head ? 1 : 0);
-  const vacancies = allPeople.filter((p) => p.vacancy).length;
+  const total = allPeople.filter((p) => !p.cut).length + (slide.head ? 1 : 0);
+  const vacancies = allPeople.filter((p) => p.vacancy && !p.cut).length;
   const colCount = slide.columns?.length ?? 3;
   const statsIndex = isMobile ? colCount - 1 : colCount >= 3 ? 1 : 0;
   const statsWidth = !isMobile && colCount >= 3 ? 'md:w-[calc(160%+1.5rem)]' : 'w-full';
@@ -567,8 +570,24 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   }}
                 >
                   <div className="min-w-0">
-                    <p className="text-lg md:text-4xl font-extrabold text-slate-900 whitespace-nowrap">
+                    {slide.payrollWas && (
+                      <div className="relative inline-flex items-center mb-0.5">
+                        <p className="text-sm md:text-2xl font-bold text-slate-400 whitespace-nowrap">
+                          ФОТ: {slide.payrollWas}
+                        </p>
+                        <span
+                          className="pointer-events-none absolute left-[-2%] right-[-2%] top-1/2 h-[2.5px] rounded-full rotate-[-2deg]"
+                          style={{ background: 'linear-gradient(90deg, rgba(239,68,68,0) 0%, #ef4444 10%, #dc2626 50%, #ef4444 90%, rgba(239,68,68,0) 100%)' }}
+                        />
+                      </div>
+                    )}
+                    <p className={`font-extrabold text-slate-900 whitespace-nowrap ${slide.payrollWas ? 'text-lg md:text-3xl' : 'text-lg md:text-4xl'}`}>
                       ФОТ: {slide.payroll}
+                      {slide.payrollWas && (
+                        <span className="ml-2 md:ml-3 align-middle text-[10px] md:text-sm font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-emerald-500">
+                          −{formatMoney(parseMoney(slide.payrollWas) - parseMoney(slide.payroll))} ₽
+                        </span>
+                      )}
                     </p>
                     {slide.payrollNote && (
                       <p className="text-[11px] md:text-sm text-slate-500 mt-1">{slide.payrollNote}</p>

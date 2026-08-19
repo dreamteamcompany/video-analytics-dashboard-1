@@ -111,6 +111,7 @@ export interface Slide {
   head?: { role: string; name?: string; note?: string; salary: string; salaryNote?: string; photo?: string; vacancy?: boolean; replace?: boolean; duties?: string[] };
   columns?: OrgColumn[];
   payroll?: string;
+  payrollWas?: string;
   payrollNote?: string;
   goals?: Goal[];
   goalsYear?: string;
