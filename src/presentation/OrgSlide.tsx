@@ -216,7 +216,14 @@ const PersonCard = ({ role, name, note, tag, salary, vacancy, photo, lead, logo,
     {cut && (
       <>
         <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
-          <span className="absolute left-[-6%] right-[-6%] top-1/2 h-[3px] bg-red-500/85 rotate-[-4deg] rounded-full" />
+          <span
+            className="absolute left-[3%] right-[3%] top-1/2 h-[3px] rounded-full origin-center rotate-[3.2deg]"
+            style={{ background: 'linear-gradient(90deg, rgba(239,68,68,0) 0%, #ef4444 12%, #dc2626 50%, #ef4444 88%, rgba(239,68,68,0) 100%)' }}
+          />
+          <span
+            className="absolute left-[3%] right-[3%] top-1/2 h-[3px] rounded-full origin-center -rotate-[3.2deg]"
+            style={{ background: 'linear-gradient(90deg, rgba(239,68,68,0) 0%, #ef4444 12%, #dc2626 50%, #ef4444 88%, rgba(239,68,68,0) 100%)' }}
+          />
         </span>
         <span className="absolute -top-2 left-3 z-10 text-[9px] md:text-[11px] font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-red-600 shadow-md flex items-center gap-1">
           <Icon name="Ban" size={11} />
