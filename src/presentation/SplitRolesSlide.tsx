@@ -266,10 +266,10 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                 ))}
 
                 <div
-                  className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full items-center justify-center border-4 border-white"
-                  style={{ background: HEADER_GRADIENT, boxShadow: '0 6px 18px rgba(124,58,237,0.4)' }}
+                  className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full items-center justify-center border-4 border-white"
+                  style={{ background: DANGER_GRADIENT, boxShadow: '0 8px 22px rgba(220,38,38,0.4)' }}
                 >
-                  <Icon name="ArrowLeftRight" size={16} className="text-white" />
+                  <Icon name="X" size={22} className="text-white" />
                 </div>
               </div>
 
