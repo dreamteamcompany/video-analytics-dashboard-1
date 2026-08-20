@@ -160,7 +160,7 @@ export interface Slide {
     label?: string;
     title: string;
     note?: string;
-    items: { role: string; name?: string; photo?: string; icon?: string; note: string }[];
+    items: { role: string; name?: string; photo?: string; icon?: string; note?: string; strongTitle?: string; strong?: string[]; cantTitle?: string; cant?: string[] }[];
   };
   splitResult?: string;
   splitResultLabel?: string;

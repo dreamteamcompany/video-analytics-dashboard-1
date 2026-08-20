@@ -30,12 +30,12 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
               </span>
             )}
 
-            <h2 className="text-[18px] sm:text-[23px] md:text-[25px] font-black leading-tight tracking-tight text-[#1e1b4b]">
+            <h2 className="text-[18px] sm:text-[22px] md:text-[23px] font-black leading-tight tracking-tight text-[#1e1b4b]">
               {slide.title}
             </h2>
 
             {slide.subtitle && (
-              <p className="text-[11.5px] sm:text-[12px] md:text-[13px] text-slate-500 leading-snug max-w-[900px]">
+              <p className="text-[11.5px] sm:text-[12px] md:text-[12.5px] text-slate-500 leading-snug max-w-[900px]">
                 {slide.subtitle}
               </p>
             )}
@@ -72,11 +72,11 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                       <Icon name={f.icon ?? 'X'} size={18} className="text-rose-600" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[12px] md:text-[14px] font-black text-slate-800 leading-tight">
+                      <p className="text-[12px] md:text-[13px] font-black text-slate-800 leading-tight">
                         {f.title}
                       </p>
                       {f.note && (
-                        <p className="text-[10px] md:text-[11.5px] text-slate-500 leading-snug mt-0.5">
+                        <p className="text-[10px] md:text-[11px] text-slate-500 leading-snug mt-0.5">
                           {f.note}
                         </p>
                       )}
@@ -171,7 +171,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
 
           {slide.splitAnalogy && (
             <div
-              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3 py-1.5 md:px-4 md:py-2 border border-violet-200"
+              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3 py-1.5 md:px-3.5 md:py-1.5 border border-violet-200"
               style={{
                 background: 'linear-gradient(120deg, #f5f3ff 0%, #ede9fe 100%)',
                 boxShadow: '0 8px 24px rgba(124,58,237,0.12)',
@@ -191,44 +191,84 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                 </p>
               </div>
 
-              <div className="grid gap-2 lg:grid-cols-2">
-                {slide.splitAnalogy.items.map((it, ii) => (
+              <div className="relative grid gap-2 lg:grid-cols-2">
+                {slide.splitAnalogy.items.map((it) => (
                   <div
                     key={it.role}
-                    className="relative rounded-xl bg-white/90 border border-violet-100 px-2.5 py-1.5 md:px-3 md:py-2 flex items-start gap-2.5"
+                    className="relative rounded-xl md:rounded-2xl bg-white/95 border border-violet-100 px-2.5 py-1.5 md:px-3 md:py-1.5 overflow-hidden"
+                    style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.1)' }}
                   >
-                    {it.photo ? (
-                      <img
-                        src={it.photo}
-                        alt={it.name || it.role}
-                        className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover ring-2 ring-violet-200 flex-shrink-0"
-                      />
-                    ) : (
-                      <div
-                        className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ background: HEADER_GRADIENT }}
-                      >
-                        <Icon name={it.icon ?? 'User'} size={20} className="text-white" />
+                    <div className="flex items-center gap-2.5">
+                      {it.photo ? (
+                        <img
+                          src={it.photo}
+                          alt={it.name || it.role}
+                          className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover ring-2 ring-violet-200 flex-shrink-0"
+                        />
+                      ) : (
+                        <div
+                          className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ background: HEADER_GRADIENT }}
+                        >
+                          <Icon name={it.icon ?? 'User'} size={20} className="text-white" />
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-[12px] md:text-[15px] font-black text-slate-900 leading-tight">
+                          {it.role}
+                        </p>
+                        {it.name && (
+                          <p className="text-[10px] md:text-[12.5px] text-slate-500 leading-tight">{it.name}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {it.strong && it.strong.length > 0 && (
+                      <div className="mt-1">
+                        <p className="text-[9px] md:text-[10.5px] font-black uppercase tracking-wider text-emerald-600 mb-1">
+                          {it.strongTitle ?? 'Его зона'}
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {it.strong.map((t) => (
+                            <span
+                              key={t}
+                              className="text-[9.5px] md:text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
-                    <div className="min-w-0">
-                      <p className="text-[11.5px] md:text-[14px] font-black text-slate-900 leading-tight">
-                        {it.role}
-                      </p>
-                      {it.name && (
-                        <p className="text-[10px] md:text-[12px] text-slate-500 leading-tight">{it.name}</p>
-                      )}
-                      <p className="text-[10px] md:text-[11px] text-slate-600 leading-snug mt-0.5">{it.note}</p>
-                    </div>
-                    {ii === 0 && (
-                      <Icon
-                        name="ArrowRight"
-                        size={20}
-                        className="hidden lg:block absolute -right-[18px] top-1/2 -translate-y-1/2 text-violet-500 z-20"
-                      />
+
+                    {it.cant && it.cant.length > 0 && (
+                      <div className="mt-1">
+                        <p className="text-[9px] md:text-[10.5px] font-black uppercase tracking-wider text-rose-600 mb-0.5">
+                          {it.cantTitle ?? 'Не может закрыть'}
+                        </p>
+                        <div className="space-y-0.5">
+                          {it.cant.map((t) => (
+                            <div key={t} className="flex items-start gap-1.5">
+                              <Icon name="X" size={12} className="text-rose-500 flex-shrink-0 mt-[2px]" />
+                              <p className="text-[10px] md:text-[11.5px] text-slate-700 leading-snug">{t}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {it.note && (
+                      <p className="text-[10px] md:text-[11px] text-slate-600 leading-snug mt-1">{it.note}</p>
                     )}
                   </div>
                 ))}
+
+                <div
+                  className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full items-center justify-center border-4 border-white"
+                  style={{ background: HEADER_GRADIENT, boxShadow: '0 6px 18px rgba(124,58,237,0.4)' }}
+                >
+                  <Icon name="ArrowLeftRight" size={16} className="text-white" />
+                </div>
               </div>
 
               {slide.splitAnalogy.note && (
