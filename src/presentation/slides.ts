@@ -158,7 +158,7 @@ export interface Slide {
   splitRight?: SplitSide;
   splitAnalogy?: {
     label?: string;
-    title: string;
+    title?: string;
     note?: string;
     items: { role: string; name?: string; photo?: string; icon?: string; note?: string; strongTitle?: string; strong?: string[]; cantTitle?: string; cant?: string[] }[];
   };

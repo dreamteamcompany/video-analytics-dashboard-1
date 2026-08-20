@@ -186,9 +186,11 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                   <Icon name="Repeat" size={13} className="flex-shrink-0" />
                   {slide.splitAnalogy.label ?? 'Та же логика'}
                 </span>
-                <p className="text-[11px] md:text-[15.5px] font-black text-[#1e1b4b] leading-snug min-w-0">
-                  {slide.splitAnalogy.title}
-                </p>
+                {slide.splitAnalogy.title && (
+                  <p className="text-[11px] md:text-[15.5px] font-black text-[#1e1b4b] leading-snug min-w-0">
+                    {slide.splitAnalogy.title}
+                  </p>
+                )}
               </div>
 
               <div className="relative grid gap-2 lg:grid-cols-2">
