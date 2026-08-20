@@ -18,7 +18,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
       <LightBackdrop />
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-6 lg:px-8 pt-3 md:pt-4 pb-12 md:pb-4 min-h-0 overflow-y-auto md:overflow-hidden">
-        <div className="w-full max-w-[1280px] mx-auto flex flex-col flex-1 min-h-0 md:justify-center gap-2 md:gap-2">
+        <div className="w-full max-w-[1280px] mx-auto flex flex-col flex-1 min-h-0 md:justify-center gap-1.5 md:gap-1.5">
           <div className="flex-shrink-0 flex flex-col items-center gap-1 md:gap-1 text-center">
             {slide.badge && (
               <span
@@ -30,12 +30,12 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
               </span>
             )}
 
-            <h2 className="text-[18px] sm:text-[25px] md:text-[28px] font-black leading-tight tracking-tight text-[#1e1b4b]">
+            <h2 className="text-[18px] sm:text-[23px] md:text-[25px] font-black leading-tight tracking-tight text-[#1e1b4b]">
               {slide.title}
             </h2>
 
             {slide.subtitle && (
-              <p className="text-[11.5px] sm:text-[13px] md:text-[14px] text-slate-500 leading-snug max-w-[900px]">
+              <p className="text-[11.5px] sm:text-[12px] md:text-[13px] text-slate-500 leading-snug max-w-[900px]">
                 {slide.subtitle}
               </p>
             )}
@@ -43,40 +43,40 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
 
           {facts.length > 0 && (
             <div
-              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3 py-2.5 md:px-5 md:py-3.5 border border-rose-200 bg-rose-50/80"
+              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3 py-2 md:px-4 md:py-2 border border-rose-200 bg-rose-50/80"
               style={{ boxShadow: '0 8px 26px rgba(220,38,38,0.12)', animationDelay: '140ms' }}
             >
-              <div className="flex items-center gap-2 mb-1.5 md:mb-2">
+              <div className="flex items-center gap-2 mb-1.5">
                 <span
-                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 md:px-3 md:py-1 text-white text-[10.5px] md:text-[14px] font-black uppercase tracking-wider"
+                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 md:px-3 md:py-0.5 text-white text-[10.5px] md:text-[12.5px] font-black uppercase tracking-wider"
                   style={{ background: DANGER_GRADIENT }}
                 >
                   <Icon name="TriangleAlert" size={14} className="flex-shrink-0" />
                   {slide.splitFactsTitle ?? 'Что имеем сейчас'}
                 </span>
                 {slide.splitFactsNote && (
-                  <p className="text-[11px] md:text-[14.5px] text-rose-700/80 font-semibold leading-snug">
+                  <p className="text-[11px] md:text-[12.5px] text-rose-700/80 font-semibold leading-snug">
                     {slide.splitFactsNote}
                   </p>
                 )}
               </div>
 
-              <div className="grid gap-2 md:gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
                 {facts.map((f, i) => (
                   <div
                     key={f.title}
-                    className="org-in rounded-lg md:rounded-xl bg-white border border-rose-100 px-3 py-2 md:px-3.5 md:py-3 flex items-start gap-2.5"
+                    className="org-in rounded-lg md:rounded-xl bg-white border border-rose-100 px-2.5 py-1.5 flex items-start gap-2"
                     style={{ boxShadow: '0 3px 12px rgba(220,38,38,0.08)', animationDelay: `${200 + i * 60}ms` }}
                   >
-                    <div className="flex-shrink-0 w-6 h-6 md:w-9 md:h-9 rounded-md md:rounded-lg flex items-center justify-center bg-rose-100">
+                    <div className="flex-shrink-0 w-6 h-6 md:w-8 md:h-8 rounded-md md:rounded-lg flex items-center justify-center bg-rose-100">
                       <Icon name={f.icon ?? 'X'} size={18} className="text-rose-600" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[12px] md:text-[15.5px] font-black text-slate-800 leading-tight">
+                      <p className="text-[12px] md:text-[14px] font-black text-slate-800 leading-tight">
                         {f.title}
                       </p>
                       {f.note && (
-                        <p className="text-[10px] md:text-[13px] text-slate-500 leading-snug mt-0.5">
+                        <p className="text-[10px] md:text-[11.5px] text-slate-500 leading-snug mt-0.5">
                           {f.note}
                         </p>
                       )}
@@ -92,7 +92,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
               {[left, right].filter(Boolean).map((side, si) => (
                 <div
                   key={side!.role}
-                  className="org-in relative rounded-2xl md:rounded-3xl bg-white/95 border border-violet-100 px-3 py-2 md:px-4 md:py-2.5 overflow-hidden"
+                  className="org-in relative rounded-2xl md:rounded-3xl bg-white/95 border border-violet-100 px-3 py-1.5 md:px-4 md:py-2 overflow-hidden"
                   style={{ boxShadow: '0 8px 26px rgba(124,58,237,0.12)', animationDelay: `${420 + si * 120}ms` }}
                 >
                   <div className="flex items-center gap-2.5 md:gap-3">
@@ -100,18 +100,18 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                       <img
                         src={side!.photo}
                         alt={side!.name || side!.role}
-                        className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover ring-2 ring-violet-200 flex-shrink-0"
+                        className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover ring-2 ring-violet-200 flex-shrink-0"
                       />
                     ) : (
                       <div
-                        className="flex-shrink-0 w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center"
+                        className="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center"
                         style={{ background: HEADER_GRADIENT }}
                       >
                         <Icon name={side!.icon ?? 'User'} size={22} className="text-white" />
                       </div>
                     )}
                     <div className="min-w-0">
-                      <p className="text-[14px] md:text-[18px] font-black text-slate-900 leading-tight">
+                      <p className="text-[14px] md:text-[16px] font-black text-slate-900 leading-tight">
                         {side!.role}
                       </p>
                       {side!.name && (
@@ -123,7 +123,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                   </div>
 
                   {side!.strong && side!.strong.length > 0 && (
-                    <div className="mt-1.5 md:mt-1.5">
+                    <div className="mt-1 md:mt-1.5">
                       <p className="text-[9px] md:text-[11px] font-black uppercase tracking-wider text-emerald-600 mb-1">
                         {side!.strongTitle ?? 'Силён в этом'}
                       </p>
@@ -131,7 +131,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                         {side!.strong.map((t) => (
                           <span
                             key={t}
-                            className="text-[9.5px] md:text-[12px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5"
+                            className="text-[9.5px] md:text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5"
                           >
                             {t}
                           </span>
@@ -141,7 +141,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                   )}
 
                   {side!.cant && side!.cant.length > 0 && (
-                    <div className="mt-1.5 md:mt-2">
+                    <div className="mt-1 md:mt-1.5">
                       <p className="text-[9px] md:text-[11px] font-black uppercase tracking-wider text-rose-600 mb-1">
                         {side!.cantTitle ?? 'Не может закрыть'}
                       </p>
@@ -149,7 +149,7 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
                         {side!.cant.map((t) => (
                           <div key={t} className="flex items-start gap-1.5">
                             <Icon name="X" size={13} className="text-rose-500 flex-shrink-0 mt-[2px]" />
-                            <p className="text-[10.5px] md:text-[12.5px] text-slate-700 leading-snug">
+                            <p className="text-[10.5px] md:text-[11.5px] text-slate-700 leading-snug">
                               {t}
                             </p>
                           </div>
@@ -169,15 +169,85 @@ const SplitRolesSlide = ({ slide }: { slide: Slide }) => {
             </div>
           )}
 
+          {slide.splitAnalogy && (
+            <div
+              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3 py-1.5 md:px-4 md:py-2 border border-violet-200"
+              style={{
+                background: 'linear-gradient(120deg, #f5f3ff 0%, #ede9fe 100%)',
+                boxShadow: '0 8px 24px rgba(124,58,237,0.12)',
+                animationDelay: '640ms',
+              }}
+            >
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 md:px-3 md:py-1 text-white text-[10px] md:text-[12.5px] font-black uppercase tracking-wider"
+                  style={{ background: HEADER_GRADIENT }}
+                >
+                  <Icon name="Repeat" size={13} className="flex-shrink-0" />
+                  {slide.splitAnalogy.label ?? 'Та же логика'}
+                </span>
+                <p className="text-[11px] md:text-[14px] font-black text-[#1e1b4b] leading-snug min-w-0">
+                  {slide.splitAnalogy.title}
+                </p>
+              </div>
+
+              <div className="grid gap-2 lg:grid-cols-2">
+                {slide.splitAnalogy.items.map((it, ii) => (
+                  <div
+                    key={it.role}
+                    className="relative rounded-xl bg-white/90 border border-violet-100 px-2.5 py-1.5 md:px-3 md:py-2 flex items-start gap-2.5"
+                  >
+                    {it.photo ? (
+                      <img
+                        src={it.photo}
+                        alt={it.name || it.role}
+                        className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover ring-2 ring-violet-200 flex-shrink-0"
+                      />
+                    ) : (
+                      <div
+                        className="w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ background: HEADER_GRADIENT }}
+                      >
+                        <Icon name={it.icon ?? 'User'} size={20} className="text-white" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-[11.5px] md:text-[14px] font-black text-slate-900 leading-tight">
+                        {it.role}
+                      </p>
+                      {it.name && (
+                        <p className="text-[10px] md:text-[12px] text-slate-500 leading-tight">{it.name}</p>
+                      )}
+                      <p className="text-[10px] md:text-[11px] text-slate-600 leading-snug mt-0.5">{it.note}</p>
+                    </div>
+                    {ii === 0 && (
+                      <Icon
+                        name="ArrowRight"
+                        size={20}
+                        className="hidden lg:block absolute -right-[18px] top-1/2 -translate-y-1/2 text-violet-500 z-20"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {slide.splitAnalogy.note && (
+                <p className="text-[10px] md:text-[11.5px] text-violet-700/80 font-semibold leading-snug mt-1">
+                  {slide.splitAnalogy.note}
+                </p>
+              )}
+            </div>
+          )}
+
           {slide.splitResult && (
             <div
-              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3.5 py-2 md:px-5 md:py-2.5 text-center"
+              className="org-in flex-shrink-0 rounded-2xl md:rounded-3xl px-3.5 py-1.5 md:px-5 md:py-2 text-center"
               style={{ background: HEADER_GRADIENT, boxShadow: '0 10px 30px rgba(124,58,237,0.35)', animationDelay: '700ms' }}
             >
-              <p className="text-[9px] md:text-[12px] font-black uppercase tracking-[0.16em] text-white/70 mb-1">
+              <p className="text-[9px] md:text-[11px] font-black uppercase tracking-[0.16em] text-white/70">
                 {slide.splitResultLabel ?? 'Вывод'}
               </p>
-              <p className="text-[13px] sm:text-[16px] md:text-[18px] font-black text-white leading-snug">
+              <p className="text-[13px] sm:text-[15px] md:text-[16.5px] font-black text-white leading-snug">
                 {slide.splitResult}
               </p>
               {slide.splitResultNote && (

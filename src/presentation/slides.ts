@@ -156,6 +156,12 @@ export interface Slide {
   splitFacts?: { icon?: string; title: string; note?: string }[];
   splitLeft?: SplitSide;
   splitRight?: SplitSide;
+  splitAnalogy?: {
+    label?: string;
+    title: string;
+    note?: string;
+    items: { role: string; name?: string; photo?: string; icon?: string; note: string }[];
+  };
   splitResult?: string;
   splitResultLabel?: string;
   splitResultNote?: string;
