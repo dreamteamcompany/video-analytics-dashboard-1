@@ -581,19 +581,19 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
             {ci === statsIndex && slide.workload && (
               <div className={`mt-auto pt-1.5 ${statsWidth}`}>
                 <div
-                  className="rounded-2xl px-3 md:px-3.5 py-1.5 md:py-2 org-drop"
+                  className="rounded-2xl px-3 md:px-4 py-2 md:py-2.5 org-drop"
                   style={{
                     background: 'linear-gradient(120deg, #fff7ed 0%, #ffedd5 100%)',
                     boxShadow: CARD_SHADOW,
                     animationDelay: '1100ms',
                   }}
                 >
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Icon name="Activity" size={14} className="text-orange-600 flex-shrink-0" />
-                    <p className="text-[10px] md:text-[12.5px] font-black uppercase tracking-wider text-orange-700">
+                  <div className="flex items-center gap-1.5 mb-1.5 md:mb-2">
+                    <Icon name="Activity" size={17} className="text-orange-600 flex-shrink-0" />
+                    <p className="text-[10px] md:text-[14px] font-black uppercase tracking-wider text-orange-700">
                       Фактическая нагрузка на службу
                     </p>
-                    <span className="ml-auto text-[10px] md:text-[12px] font-bold text-orange-700/70 whitespace-nowrap">
+                    <span className="ml-auto text-[10px] md:text-[13px] font-bold text-orange-700/70 whitespace-nowrap">
                       {total} сотрудников · {slide.columns?.length} линии
                     </span>
                   </div>
@@ -601,16 +601,16 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                     {slide.workload.map((w, wi) => (
                       <div
                         key={wi}
-                        className="rounded-xl bg-white/85 px-2.5 py-1 flex items-start gap-2"
+                        className="rounded-xl bg-white/85 px-3 py-1.5 md:px-3 md:py-2 flex items-start gap-2"
                       >
-                        <div className="w-7 h-7 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
-                          <Icon name={w.icon ?? 'Activity'} size={16} className="text-orange-600" />
+                        <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                          <Icon name={w.icon ?? 'Activity'} size={20} className="text-orange-600" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-[15px] md:text-[17px] font-black text-orange-600 leading-none">{w.value}</p>
-                          <p className="text-[11px] md:text-[12px] font-bold text-slate-700 leading-tight mt-0.5">{w.label}</p>
+                          <p className="text-[16px] md:text-[19px] font-black text-orange-600 leading-none">{w.value}</p>
+                          <p className="text-[11px] md:text-[12.5px] font-bold text-slate-700 leading-tight mt-0.5">{w.label}</p>
                           {w.note && (
-                            <p className="text-[9.5px] md:text-[10.5px] text-slate-500 leading-snug mt-0.5">{w.note}</p>
+                            <p className="text-[9.5px] md:text-[11px] text-slate-500 leading-snug mt-0.5">{w.note}</p>
                           )}
                         </div>
                       </div>
