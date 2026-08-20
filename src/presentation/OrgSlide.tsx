@@ -78,15 +78,23 @@ const DutiesOverlay = ({ title, duties }: { title: string; duties: string[] }) =
 
 const RisksOverlay = ({ title, risks }: { title: string; risks: string[] }) =>
   createPortal(
-    <div className="fixed inset-0 z-[95] flex items-center justify-center p-4 md:p-10 duties-fade pointer-events-none">
+    <div className="fixed inset-0 z-[95] flex items-center justify-center p-4 md:p-10 duties-fade pointer-events-none overflow-hidden">
       <div className="absolute inset-0 bg-red-950/60 backdrop-blur-[3px] danger-flash" />
+      <div className="absolute inset-0 screen-flash" />
       {[
-        { l: '5%', t: '-10%', s: 560, d: '0ms', r: -8, v: 0, o: 0.85 },
-        { l: '82%', t: '-14%', s: 640, d: '1300ms', r: 10, v: 1, o: 0.8 },
-        { l: '30%', t: '-8%', s: 430, d: '2600ms', r: -3, v: 2, o: 0.55 },
-        { l: '66%', t: '-12%', s: 520, d: '3900ms', r: 6, v: 3, o: 0.6 },
-        { l: '-3%', t: '-6%', s: 400, d: '5200ms', r: -14, v: 3, o: 0.45 },
-        { l: '94%', t: '-8%', s: 460, d: '6500ms', r: 13, v: 0, o: 0.5 },
+        { l: '6%', t: '-12%', s: 620, d: '0ms', r: -7, v: 0, o: 0.9 },
+        { l: '84%', t: '-14%', s: 700, d: '2100ms', r: 9, v: 1, o: 0.85 },
+        { l: '34%', t: '-9%', s: 470, d: '4700ms', r: -3, v: 2, o: 0.6 },
+        { l: '62%', t: '-11%', s: 540, d: '7300ms', r: 5, v: 3, o: 0.6 },
+        { l: '18%', t: '112%', s: 560, d: '1100ms', r: 186, v: 1, o: 0.8 },
+        { l: '73%', t: '114%', s: 640, d: '3400ms', r: 173, v: 2, o: 0.75 },
+        { l: '45%', t: '110%', s: 440, d: '6100ms', r: 181, v: 0, o: 0.5 },
+        { l: '-8%', t: '22%', s: 620, d: '900ms', r: 82, v: 3, o: 0.7 },
+        { l: '-6%', t: '68%', s: 500, d: '5400ms', r: 96, v: 0, o: 0.55 },
+        { l: '108%', t: '18%', s: 660, d: '2800ms', r: -84, v: 2, o: 0.7 },
+        { l: '106%', t: '72%', s: 520, d: '6800ms', r: -97, v: 1, o: 0.55 },
+        { l: '-4%', t: '-8%', s: 480, d: '3900ms', r: 38, v: 2, o: 0.45 },
+        { l: '104%', t: '-6%', s: 500, d: '7700ms', r: -42, v: 3, o: 0.45 },
       ].map((b) => (
         <span
           key={`${b.l}${b.t}`}

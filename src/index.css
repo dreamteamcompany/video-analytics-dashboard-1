@@ -280,36 +280,108 @@
   @keyframes bolt-flash {
     0% {
       opacity: 0;
+      transform: scaleY(0.82);
     }
-    1% {
+    0.6% {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+    2% {
+      opacity: 0.06;
+    }
+    3% {
       opacity: 1;
     }
-    2.5% {
-      opacity: 0.08;
+    4.4% {
+      opacity: 0.15;
     }
-    3.5% {
-      opacity: 0.95;
+    5.4% {
+      opacity: 0.92;
     }
-    5% {
-      opacity: 0.2;
+    7.5% {
+      opacity: 0.3;
     }
-    6% {
-      opacity: 1;
-    }
-    9% {
-      opacity: 0.35;
-    }
-    12% {
+    10% {
       opacity: 0;
+      transform: scaleY(1);
     }
     100% {
       opacity: 0;
+      transform: scaleY(1);
     }
   }
 
   .bolt-flash {
-    animation: bolt-flash 7.8s linear infinite;
+    animation: bolt-flash 9.2s linear infinite;
     opacity: 0;
+    will-change: opacity;
+  }
+
+  @keyframes screen-flash {
+    0%,
+    6%,
+    100% {
+      opacity: 0;
+    }
+    1% {
+      opacity: 0.5;
+    }
+    2% {
+      opacity: 0.05;
+    }
+    3% {
+      opacity: 0.34;
+    }
+    4.5% {
+      opacity: 0.1;
+    }
+    12% {
+      opacity: 0;
+    }
+    24% {
+      opacity: 0.4;
+    }
+    26% {
+      opacity: 0.06;
+    }
+    28% {
+      opacity: 0.26;
+    }
+    32% {
+      opacity: 0;
+    }
+    55% {
+      opacity: 0.44;
+    }
+    57% {
+      opacity: 0.08;
+    }
+    59% {
+      opacity: 0.3;
+    }
+    63% {
+      opacity: 0;
+    }
+    80% {
+      opacity: 0.36;
+    }
+    82% {
+      opacity: 0.06;
+    }
+    84% {
+      opacity: 0.24;
+    }
+    88% {
+      opacity: 0;
+    }
+  }
+
+  .screen-flash {
+    background: radial-gradient(circle at 50% 35%, rgba(224, 242, 254, 0.9) 0%, rgba(147, 197, 253, 0.35) 45%, transparent 75%);
+    animation: screen-flash 9.2s linear infinite;
+    opacity: 0;
+    mix-blend-mode: screen;
+    will-change: opacity;
   }
 
   @keyframes danger-flash {
