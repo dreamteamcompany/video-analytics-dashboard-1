@@ -277,6 +277,41 @@
     animation: bolt-strike 1.15s ease-in-out infinite;
   }
 
+  @keyframes bolt-flash {
+    0% {
+      opacity: 0;
+    }
+    1% {
+      opacity: 1;
+    }
+    2.5% {
+      opacity: 0.08;
+    }
+    3.5% {
+      opacity: 0.95;
+    }
+    5% {
+      opacity: 0.2;
+    }
+    6% {
+      opacity: 1;
+    }
+    9% {
+      opacity: 0.35;
+    }
+    12% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .bolt-flash {
+    animation: bolt-flash 7.8s linear infinite;
+    opacity: 0;
+  }
+
   @keyframes danger-flash {
     0%,
     100% {

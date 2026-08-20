@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
+import LightningBolt from './LightningBolt';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const CARD_SHADOW = '0 4px 20px rgba(124,58,237,0.08), 0 1px 3px rgba(15,23,42,0.06)';
@@ -80,21 +81,21 @@ const RisksOverlay = ({ title, risks }: { title: string; risks: string[] }) =>
     <div className="fixed inset-0 z-[95] flex items-center justify-center p-4 md:p-10 duties-fade pointer-events-none">
       <div className="absolute inset-0 bg-red-950/60 backdrop-blur-[3px] danger-flash" />
       {[
-        { l: '6%', t: '4%', s: 78, d: '0ms' },
-        { l: '88%', t: '10%', s: 62, d: '120ms' },
-        { l: '14%', t: '72%', s: 66, d: '240ms' },
-        { l: '82%', t: '76%', s: 84, d: '80ms' },
-        { l: '48%', t: '2%', s: 54, d: '320ms' },
-        { l: '3%', t: '38%', s: 58, d: '200ms' },
-        { l: '94%', t: '44%', s: 70, d: '400ms' },
-        { l: '52%', t: '92%', s: 60, d: '160ms' },
+        { l: '5%', t: '-10%', s: 560, d: '0ms', r: -8, v: 0, o: 0.85 },
+        { l: '82%', t: '-14%', s: 640, d: '1300ms', r: 10, v: 1, o: 0.8 },
+        { l: '30%', t: '-8%', s: 430, d: '2600ms', r: -3, v: 2, o: 0.55 },
+        { l: '66%', t: '-12%', s: 520, d: '3900ms', r: 6, v: 3, o: 0.6 },
+        { l: '-3%', t: '-6%', s: 400, d: '5200ms', r: -14, v: 3, o: 0.45 },
+        { l: '94%', t: '-8%', s: 460, d: '6500ms', r: 13, v: 0, o: 0.5 },
       ].map((b) => (
         <span
           key={`${b.l}${b.t}`}
-          className="absolute bolt-strike"
-          style={{ left: b.l, top: b.t, animationDelay: b.d }}
+          className="absolute origin-top"
+          style={{ left: b.l, top: b.t, transform: `rotate(${b.r}deg)`, opacity: b.o }}
         >
-          <Icon name="Zap" size={b.s} className="text-amber-300 drop-shadow-[0_0_18px_rgba(251,191,36,0.9)]" />
+          <span className="block bolt-flash" style={{ animationDelay: b.d }}>
+            <LightningBolt size={b.s} variant={b.v} />
+          </span>
         </span>
       ))}
       <div
@@ -116,7 +117,7 @@ const RisksOverlay = ({ title, risks }: { title: string; risks: string[] }) =>
         <div className={`gap-x-7 ${risks.length > 6 ? 'columns-2' : 'flex flex-col'}`}>
           {risks.map((d) => (
             <div key={d} className="flex items-start gap-2 break-inside-avoid mb-1.5">
-              <Icon name="Zap" size={14} className="text-amber-300 flex-shrink-0 mt-[3px]" />
+              <Icon name="TriangleAlert" size={13} className="text-amber-300 flex-shrink-0 mt-[3px]" />
               <p className="text-[12px] md:text-[15px] text-white/95 leading-snug">{d}</p>
             </div>
           ))}
