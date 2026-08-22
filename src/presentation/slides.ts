@@ -200,6 +200,13 @@ export interface Slide {
   aiSolutionTitle?: string;
   aiSteps?: AiStep[];
   aiMetrics?: AiMetric[];
+  aiDoc?: {
+    title: string;
+    subtitle?: string;
+    lines: { text: string; bad?: boolean; badge?: string; empty?: boolean }[];
+    alert?: string;
+  };
+  aiNow?: string;
   aiHighlight?: { icon?: string; label?: string; title: string; note?: string };
 }
 
