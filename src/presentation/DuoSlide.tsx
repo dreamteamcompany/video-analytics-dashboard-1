@@ -7,40 +7,41 @@ type DuoCard = NonNullable<Slide['duoCards']>[number];
 
 const Card = ({ card, index }: { card: DuoCard; index: number }) => (
   <div
-    className="relative min-h-0 flex flex-col rounded-[28px] bg-white/70 border border-white px-5 pt-5 pb-5 org-drop"
+    className="relative md:min-h-0 flex flex-col rounded-[24px] md:rounded-[28px] bg-white/70 border border-white px-4 sm:px-5 pt-4 pb-4 sm:pt-5 sm:pb-5 org-drop"
     style={{ boxShadow: '0 18px 50px rgba(124,58,237,0.10)', animationDelay: `${140 + index * 120}ms` }}
   >
     <span
-      className="absolute -top-3.5 right-8 w-9 h-9 rounded-full flex items-center justify-center text-white text-[12px] font-black"
+      className="absolute -top-3 right-5 sm:right-8 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-white text-[12px] font-black"
       style={{ background: HEADER_GRADIENT, boxShadow: '0 8px 18px rgba(124,58,237,0.35)' }}
     >
       {card.num}
     </span>
 
-    <div className="flex items-start gap-4 flex-shrink-0">
+    <div className="flex items-start gap-3 sm:gap-4 flex-shrink-0 pr-8 sm:pr-10">
       <div
-        className="flex-shrink-0 w-[62px] h-[62px] md:w-[74px] md:h-[74px] rounded-2xl flex items-center justify-center"
+        className="flex-shrink-0 w-[48px] h-[48px] sm:w-[62px] sm:h-[62px] md:w-[74px] md:h-[74px] rounded-xl sm:rounded-2xl flex items-center justify-center"
         style={{ background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)' }}
       >
-        <Icon name={card.icon ?? 'ClipboardCheck'} size={34} className="text-violet-500" />
+        <Icon name={card.icon ?? 'ClipboardCheck'} size={28} className="text-violet-500 sm:hidden" />
+        <Icon name={card.icon ?? 'ClipboardCheck'} size={34} className="text-violet-500 hidden sm:block" />
       </div>
       <div className="min-w-0 pt-1 max-w-[420px]">
-        <p className="text-[17px] md:text-[clamp(17px,2.6vh,24px)] font-black text-[#1e1b4b] leading-snug">
+        <p className="text-[15px] sm:text-[17px] md:text-[clamp(17px,2.6vh,24px)] font-black text-[#1e1b4b] leading-snug">
           {card.title}
         </p>
-        <span className="block mt-2.5 w-11 h-[3px] rounded-full bg-violet-400" />
+        <span className="block mt-2 sm:mt-2.5 w-9 sm:w-11 h-[3px] rounded-full bg-violet-400" />
       </div>
     </div>
 
     {card.text && (
-      <p className="flex-shrink-0 mt-4 text-[12.5px] md:text-[clamp(12.5px,1.85vh,16px)] text-slate-500 leading-relaxed">
+      <p className="flex-shrink-0 mt-3 sm:mt-4 text-[12px] sm:text-[12.5px] md:text-[clamp(12.5px,1.85vh,16px)] text-slate-500 leading-relaxed">
         {card.text}
       </p>
     )}
 
-    <div className="flex-1 min-h-0 mt-4 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-end">
+    <div className="md:flex-1 md:min-h-0 mt-3 sm:mt-4 grid grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-3 items-end">
       <div
-        className="rounded-2xl px-3.5 py-3.5 flex flex-col justify-center gap-3"
+        className="rounded-xl sm:rounded-2xl px-3 py-3 sm:px-3.5 sm:py-3.5 flex flex-col justify-center gap-2.5 sm:gap-3"
         style={{ background: 'linear-gradient(135deg,#faf9ff,#f4f1fe)' }}
       >
         {card.points.map((p, i) => (
@@ -48,7 +49,7 @@ const Card = ({ card, index }: { card: DuoCard; index: number }) => (
             <span className="flex-shrink-0 w-[18px] h-[18px] rounded-full border-[1.5px] border-violet-300 flex items-center justify-center">
               <Icon name="Check" size={11} className="text-violet-500" />
             </span>
-            <p className="min-w-0 text-[11.5px] md:text-[clamp(11.5px,1.7vh,14.5px)] text-slate-600 leading-snug">
+            <p className="min-w-0 text-[11px] sm:text-[11.5px] md:text-[clamp(11.5px,1.7vh,14.5px)] text-slate-600 leading-snug">
               {p}
             </p>
           </div>
@@ -59,7 +60,7 @@ const Card = ({ card, index }: { card: DuoCard; index: number }) => (
         <img
           src={card.image}
           alt=""
-          className="w-[110px] md:w-[clamp(110px,17vh,175px)] object-contain mix-blend-multiply select-none pointer-events-none"
+          className="w-[74px] sm:w-[110px] md:w-[clamp(110px,17vh,175px)] object-contain mix-blend-multiply select-none pointer-events-none"
         />
       )}
     </div>
@@ -100,8 +101,8 @@ const DuoSlide = ({ slide }: { slide: Slide }) => {
         />
       </div>
 
-      <div className="relative z-10 flex-1 flex flex-col px-4 sm:px-8 lg:px-14 pt-3 pb-3 min-h-0 overflow-y-auto md:overflow-hidden">
-        <div className="w-full max-w-[1480px] mx-auto flex flex-col flex-1 min-h-0">
+      <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-8 lg:px-14 pt-3 pb-16 md:pb-3 min-h-0 overflow-y-auto md:overflow-hidden">
+        <div className="w-full max-w-[1480px] mx-auto flex flex-col md:flex-1 md:min-h-0">
           <div className="flex-shrink-0 flex flex-col items-center gap-2 mb-4">
             {slide.badge && (
               <span
@@ -112,17 +113,17 @@ const DuoSlide = ({ slide }: { slide: Slide }) => {
                 {slide.badge}
               </span>
             )}
-            <h2 className="text-3xl md:text-[46px] font-black leading-tight tracking-tight text-center text-[#1e1b4b]">
+            <h2 className="text-[26px] sm:text-3xl md:text-[46px] font-black leading-tight tracking-tight text-center text-[#1e1b4b]">
               {slide.title}
             </h2>
             {slide.subtitle && (
-              <p className="text-[13px] md:text-[18px] font-medium leading-snug max-w-[720px] text-center text-slate-500">
+              <p className="text-[12.5px] md:text-[18px] font-medium leading-snug max-w-[720px] text-center text-slate-500 px-2">
                 {slide.subtitle}
               </p>
             )}
           </div>
 
-          <div className="relative flex-1 min-h-0 grid gap-4 lg:gap-[86px] lg:grid-cols-2">
+          <div className="relative md:flex-1 md:min-h-0 grid gap-5 lg:gap-[86px] lg:grid-cols-2">
             {cards.map((c, i) => (
               <Card key={c.title} card={c} index={i} />
             ))}
@@ -140,28 +141,28 @@ const DuoSlide = ({ slide }: { slide: Slide }) => {
 
           {why.length > 0 && (
             <div
-              className="flex-shrink-0 mt-4 rounded-[24px] bg-white/60 border border-white px-4 py-3 flex flex-col lg:flex-row items-center gap-3 org-in"
+              className="flex-shrink-0 mt-4 rounded-[20px] sm:rounded-[24px] bg-white/60 border border-white px-3 sm:px-4 py-3 flex flex-col lg:flex-row items-center gap-3 org-in"
               style={{ boxShadow: '0 12px 32px rgba(124,58,237,0.08)', animationDelay: '520ms' }}
             >
-              <div className="flex items-center gap-3 flex-shrink-0 lg:pr-5 lg:border-r border-violet-100">
+              <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 lg:pr-5 lg:border-r border-violet-100 self-start lg:self-auto">
                 <div
-                  className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center flex-shrink-0"
+                  className="w-[42px] h-[42px] sm:w-[52px] sm:h-[52px] rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0"
                   style={{ background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)' }}
                 >
-                  <Icon name="Sparkles" size={26} className="text-violet-500" />
+                  <Icon name="Sparkles" size={24} className="text-violet-500" />
                 </div>
-                <p className="text-[15px] md:text-[19px] font-black text-violet-600 leading-tight">
+                <p className="text-[15px] md:text-[19px] font-black text-violet-600 leading-tight whitespace-pre-line">
                   {slide.duoWhyTitle ?? 'Почему\nэто важно?'}
                 </p>
               </div>
 
-              <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-2">
+              <div className="w-full flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-2.5">
                 {why.map((w, i) => (
                   <div
                     key={w.title}
                     className={`flex items-start gap-2.5 ${i > 0 ? 'lg:pl-4 lg:border-l border-violet-100' : ''}`}
                   >
-                    <Icon name={w.icon ?? 'Target'} size={26} className="text-violet-500 flex-shrink-0 mt-0.5" />
+                    <Icon name={w.icon ?? 'Target'} size={24} className="text-violet-500 flex-shrink-0 mt-0.5" />
                     <div className="min-w-0">
                       <p className="text-[12px] md:text-[14.5px] font-bold text-slate-800 leading-tight">
                         {w.title}
@@ -181,7 +182,7 @@ const DuoSlide = ({ slide }: { slide: Slide }) => {
           {slide.duoFooter && (
             <div className="flex-shrink-0 mt-3 flex justify-center">
               <span
-                className="inline-flex items-center gap-2 rounded-full bg-white/80 border border-violet-100 px-5 py-2 text-[12px] md:text-[15px] font-semibold text-slate-600 org-in"
+                className="inline-flex items-center gap-2 rounded-full bg-white/80 border border-violet-100 px-4 sm:px-5 py-2 text-[11.5px] md:text-[15px] font-semibold text-slate-600 text-center org-in"
                 style={{ boxShadow: '0 8px 22px rgba(124,58,237,0.08)', animationDelay: '640ms' }}
               >
                 <Icon name="Star" size={16} className="text-violet-500 flex-shrink-0" />
