@@ -106,9 +106,29 @@ export interface SplitSide {
   cant?: string[];
 }
 
+export interface AiPoint {
+  icon?: string;
+  title: string;
+  note?: string;
+}
+
+export interface AiStep {
+  icon?: string;
+  step?: string;
+  title: string;
+  text?: string;
+}
+
+export interface AiMetric {
+  icon?: string;
+  value: string;
+  label: string;
+  note?: string;
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -174,6 +194,13 @@ export interface Slide {
   closingResult?: string;
   closingResultNote?: string;
   closingCta?: string;
+  aiTag?: string;
+  aiProblemTitle?: string;
+  aiProblems?: AiPoint[];
+  aiSolutionTitle?: string;
+  aiSteps?: AiStep[];
+  aiMetrics?: AiMetric[];
+  aiHighlight?: { icon?: string; label?: string; title: string; note?: string };
 }
 
 export const slides: Slide[] = [
