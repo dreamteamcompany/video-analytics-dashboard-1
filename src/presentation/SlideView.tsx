@@ -9,6 +9,7 @@ import HandoffSlide from './HandoffSlide';
 import SplitRolesSlide from './SplitRolesSlide';
 import ClosingSlide from './ClosingSlide';
 import AiSlide from './AiSlide';
+import DuoSlide from './DuoSlide';
 import LightBackdrop from './LightBackdrop';
 
 const TitleSlide = ({ slide }: { slide: Slide }) => (
@@ -111,6 +112,7 @@ const SlideView = ({ slide }: { slide: Slide }) => (
     {slide.type === 'split' && <SplitRolesSlide slide={slide} />}
     {slide.type === 'closing' && <ClosingSlide slide={slide} />}
     {slide.type === 'ai' && <AiSlide slide={slide} />}
+    {slide.type === 'duo' && <DuoSlide slide={slide} />}
   </div>
 );
 

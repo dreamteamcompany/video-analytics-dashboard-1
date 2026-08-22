@@ -128,7 +128,7 @@ export interface AiMetric {
 
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai' | 'duo';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -207,6 +207,17 @@ export interface Slide {
     alert?: string;
   };
   aiNow?: string;
+  duoCards?: {
+    num: string;
+    icon?: string;
+    title: string;
+    text?: string;
+    points: string[];
+    image?: string;
+  }[];
+  duoWhyTitle?: string;
+  duoWhy?: { icon?: string; title: string; note?: string }[];
+  duoFooter?: string;
   aiHighlight?: { icon?: string; label?: string; title: string; note?: string };
 }
 
