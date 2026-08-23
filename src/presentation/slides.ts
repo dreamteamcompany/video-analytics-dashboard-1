@@ -128,7 +128,7 @@ export interface AiMetric {
 
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai' | 'duo';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai' | 'duo' | 'section' | 'idea';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -218,6 +218,15 @@ export interface Slide {
   duoWhyTitle?: string;
   duoWhy?: { icon?: string; title: string; note?: string }[];
   duoFooter?: string;
+  sectionNum?: string;
+  sectionItems?: { icon?: string; title: string }[];
+  ideaTag?: string;
+  ideaNum?: string;
+  ideaText?: string;
+  ideaPoints?: { num?: string; text: string }[];
+  ideaFlow?: string[];
+  ideaNote?: string;
+  ideaImage?: string;
   aiHighlight?: { icon?: string; label?: string; title: string; note?: string };
 }
 

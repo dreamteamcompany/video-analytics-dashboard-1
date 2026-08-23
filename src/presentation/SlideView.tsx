@@ -10,6 +10,8 @@ import SplitRolesSlide from './SplitRolesSlide';
 import ClosingSlide from './ClosingSlide';
 import AiSlide from './AiSlide';
 import DuoSlide from './DuoSlide';
+import SectionSlide from './SectionSlide';
+import IdeaSlide from './IdeaSlide';
 import LightBackdrop from './LightBackdrop';
 
 const TitleSlide = ({ slide }: { slide: Slide }) => (
@@ -113,6 +115,8 @@ const SlideView = ({ slide }: { slide: Slide }) => (
     {slide.type === 'closing' && <ClosingSlide slide={slide} />}
     {slide.type === 'ai' && <AiSlide slide={slide} />}
     {slide.type === 'duo' && <DuoSlide slide={slide} />}
+    {slide.type === 'section' && <SectionSlide slide={slide} />}
+    {slide.type === 'idea' && <IdeaSlide slide={slide} />}
   </div>
 );
 
