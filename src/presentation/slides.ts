@@ -227,6 +227,7 @@ export interface Slide {
   ideaFlow?: string[];
   ideaNote?: string;
   ideaImage?: string;
+  ideaColumns?: { title: string; icon?: string; points: string[] }[];
   aiHighlight?: { icon?: string; label?: string; title: string; note?: string };
 }
 

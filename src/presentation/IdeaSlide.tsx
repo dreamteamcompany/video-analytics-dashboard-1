@@ -8,6 +8,7 @@ const IdeaSlide = ({ slide }: { slide: Slide }) => {
   const flow = slide.ideaFlow ?? [];
   const numbered = points.some((p) => p.num);
   const cols = points.length > 5 ? 2 : 1;
+  const groups = slide.ideaColumns ?? [];
 
   return (
     <div
@@ -135,6 +136,42 @@ const IdeaSlide = ({ slide }: { slide: Slide }) => {
                   </div>
                 ))}
               </div>
+
+              {groups.length > 0 && (
+                <div className="grid gap-3 sm:gap-4 lg:grid-cols-2">
+                  {groups.map((g, gi) => (
+                    <div
+                      key={g.title}
+                      className="rounded-2xl px-3.5 py-3.5 sm:px-4 sm:py-4 org-in"
+                      style={{
+                        background: 'linear-gradient(135deg,#faf9ff,#f4f1fe)',
+                        animationDelay: `${200 + gi * 100}ms`,
+                      }}
+                    >
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-white flex items-center justify-center">
+                          <Icon name={g.icon ?? 'ListChecks'} size={17} className="text-violet-500" />
+                        </span>
+                        <p className="min-w-0 text-[13px] md:text-[16px] font-black text-[#1e1b4b] leading-snug">
+                          {g.title}
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {g.points.map((t) => (
+                          <div key={t} className="flex items-start gap-2.5">
+                            <span className="flex-shrink-0 mt-[1px] w-[19px] h-[19px] rounded-full bg-white border border-violet-200 flex items-center justify-center">
+                              <Icon name="Check" size={11} className="text-violet-500" />
+                            </span>
+                            <p className="min-w-0 text-[11.5px] md:text-[14.5px] font-medium text-slate-600 leading-snug">
+                              {t}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {slide.ideaNote && (
                 <div className="flex-shrink-0 mt-3 flex items-start gap-2 rounded-xl bg-violet-50/70 border border-violet-100 px-3 py-2">
