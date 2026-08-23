@@ -128,7 +128,7 @@ export interface AiMetric {
 
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai' | 'duo' | 'section' | 'idea';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai' | 'duo' | 'section' | 'idea' | 'ideacard';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
