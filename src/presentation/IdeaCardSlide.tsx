@@ -7,13 +7,8 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
   const points = slide.ideaPoints ?? [];
   const flow = slide.ideaFlow ?? [];
   const groups = slide.ideaColumns ?? [];
-  const half = Math.ceil(points.length / 2);
-  const cards = groups.length
-    ? groups.map((g) => ({ title: g.title, icon: g.icon, points: g.points }))
-    : [
-        { title: '', icon: slide.badgeIcon, points: points.slice(0, half).map((p) => p.text) },
-        { title: '', icon: slide.badgeIcon, points: points.slice(half).map((p) => p.text) },
-      ];
+  const cards = groups.map((g) => ({ title: g.title, icon: g.icon, points: g.points }));
+  const single = cards.length === 0;
 
   return (
     <div
@@ -104,7 +99,39 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
             </div>
           )}
 
-          <div className="relative md:flex-1 md:min-h-0 grid gap-5 lg:gap-[86px] lg:grid-cols-2">
+          {single && (
+            <div className="md:flex-1 md:min-h-0 flex flex-col justify-center">
+            <div
+              className="relative flex flex-col rounded-[24px] md:rounded-[28px] bg-white/70 border border-white px-4 sm:px-7 pt-6 pb-6 org-drop"
+              style={{ boxShadow: '0 18px 50px rgba(124,58,237,0.10)', animationDelay: '140ms' }}
+            >
+              <div
+                className="rounded-xl sm:rounded-2xl px-3.5 py-4 sm:px-5 sm:py-5 grid gap-2.5 sm:gap-x-6 sm:gap-y-3 content-center sm:grid-cols-2"
+                style={{ background: 'linear-gradient(135deg,#faf9ff,#f4f1fe)' }}
+              >
+                {points.map((pt, i) => (
+                  <div
+                    key={pt.text}
+                    className="flex items-start gap-3 org-in"
+                    style={{ animationDelay: `${260 + i * 55}ms` }}
+                  >
+                    <span
+                      className="flex-shrink-0 mt-[1px] min-w-[24px] h-[24px] px-1 rounded-lg flex items-center justify-center text-white text-[11px] font-black"
+                      style={{ background: HEADER_GRADIENT }}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <p className="min-w-0 text-[12px] sm:text-[13px] md:text-[clamp(13px,1.95vh,17px)] font-medium text-slate-600 leading-snug">
+                      {pt.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            </div>
+          )}
+
+          <div className={`relative md:flex-1 md:min-h-0 grid gap-5 lg:gap-[86px] lg:grid-cols-2 ${single ? 'hidden' : ''}`}>
             {cards.map((card, ci) => (
               <div
                 key={ci}
