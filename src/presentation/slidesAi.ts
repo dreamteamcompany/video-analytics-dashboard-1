@@ -1282,14 +1282,14 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'fin-revenue-loss',
-    type: 'ideacard',
+    type: 'idea',
     theme: 'light',
     badge: 'Финансы и антифрод',
     badgeIcon: 'Wallet',
     ideaTag: EXTRA,
     ideaNum: '7.4',
     title: 'Агент потерь выручки',
-    subtitle: 'Ищет',
+    subtitle: 'Находит деньги, которые клиника заработала, но не получила',
     ideaPoints: p(
       'Выполненные, но не выставленные услуги',
       'Скидки без основания',
