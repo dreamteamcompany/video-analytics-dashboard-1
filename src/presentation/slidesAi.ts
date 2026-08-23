@@ -71,7 +71,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-visit-analysis',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -93,7 +93,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-card-autofill',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -115,7 +115,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-clinical-guidelines',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -135,7 +135,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-ortho-monitoring',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -156,7 +156,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-xray',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -176,7 +176,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-card-coherence',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -199,7 +199,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-drug-safety',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -223,7 +223,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-unfinished',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -245,7 +245,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-postop',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -267,7 +267,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-perio-voice',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -288,7 +288,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-consilium',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -311,7 +311,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-warranty',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -334,7 +334,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-antifraud',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Медицинский блок',
     badgeIcon: 'Stethoscope',
@@ -374,7 +374,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-ppe-video',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контроль качества',
     badgeIcon: 'ShieldCheck',
@@ -392,7 +392,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-sterilization',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контроль качества',
     badgeIcon: 'ShieldCheck',
@@ -415,7 +415,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-emergency-kit',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контроль качества',
     badgeIcon: 'ShieldCheck',
@@ -436,7 +436,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-recall',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контроль качества',
     badgeIcon: 'ShieldCheck',
@@ -456,7 +456,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ai-incidents',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контроль качества',
     badgeIcon: 'ShieldCheck',
@@ -496,7 +496,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-claim',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -514,7 +514,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-paperless',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -534,7 +534,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-contracts-audit',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -551,7 +551,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-ids',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -573,7 +573,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-radar',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -611,7 +611,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-licenses',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -633,7 +633,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-claim-extended',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -654,7 +654,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-obligations',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -676,7 +676,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'legal-anonymize',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Юридический блок',
     badgeIcon: 'Scale',
@@ -716,7 +716,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'egisz-rejections',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'ЕГИСЗ и ИТ',
     badgeIcon: 'Network',
@@ -735,7 +735,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'egisz-integrations',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'ЕГИСЗ и ИТ',
     badgeIcon: 'Network',
@@ -773,7 +773,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'egisz-data-quality',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'ЕГИСЗ и ИТ',
     badgeIcon: 'Network',
@@ -794,7 +794,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'egisz-access',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'ЕГИСЗ и ИТ',
     badgeIcon: 'Network',
@@ -815,7 +815,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'egisz-card-changes',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'ЕГИСЗ и ИТ',
     badgeIcon: 'Network',
@@ -836,7 +836,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'egisz-backup',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'ЕГИСЗ и ИТ',
     badgeIcon: 'Network',
@@ -856,7 +856,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'egisz-ai-registry',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'ЕГИСЗ и ИТ',
     badgeIcon: 'Network',
@@ -879,7 +879,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'egisz-search',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'ЕГИСЗ и ИТ',
     badgeIcon: 'Network',
@@ -921,7 +921,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'supply-stock',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Закупки и склад',
     badgeIcon: 'PackageSearch',
@@ -939,7 +939,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'supply-expiry',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Закупки и склад',
     badgeIcon: 'PackageSearch',
@@ -964,7 +964,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'supply-anomalies',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Закупки и склад',
     badgeIcon: 'PackageSearch',
@@ -979,7 +979,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'supply-scoring',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Закупки и склад',
     badgeIcon: 'PackageSearch',
@@ -1002,7 +1002,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'supply-redistribution',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Закупки и склад',
     badgeIcon: 'PackageSearch',
@@ -1020,7 +1020,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'supply-consumption',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Закупки и склад',
     badgeIcon: 'PackageSearch',
@@ -1041,7 +1041,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'supply-analogs',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Закупки и склад',
     badgeIcon: 'PackageSearch',
@@ -1061,7 +1061,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'supply-predictive',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Закупки и склад',
     badgeIcon: 'PackageSearch',
@@ -1100,7 +1100,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ops-day-close',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Операционное управление',
     badgeIcon: 'CalendarCheck',
@@ -1121,7 +1121,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ops-chair-load',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Операционное управление',
     badgeIcon: 'CalendarCheck',
@@ -1141,7 +1141,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ops-shift-close',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Операционное управление',
     badgeIcon: 'CalendarCheck',
@@ -1162,7 +1162,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'ops-dispatcher',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Операционное управление',
     badgeIcon: 'CalendarCheck',
@@ -1202,7 +1202,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'fin-fraud',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Финансы и антифрод',
     badgeIcon: 'Wallet',
@@ -1219,7 +1219,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'fin-reconciliation',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Финансы и антифрод',
     badgeIcon: 'Wallet',
@@ -1238,7 +1238,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'fin-profitability',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Финансы и антифрод',
     badgeIcon: 'Wallet',
@@ -1260,7 +1260,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'fin-cashflow',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Финансы и антифрод',
     badgeIcon: 'Wallet',
@@ -1316,7 +1316,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'fin-receivables',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Финансы и антифрод',
     badgeIcon: 'Wallet',
@@ -1336,7 +1336,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'fin-scenarios',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Финансы и антифрод',
     badgeIcon: 'Wallet',
@@ -1376,7 +1376,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-translator',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1396,7 +1396,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-return-thinkers',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1416,7 +1416,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-ai-registrar',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1436,7 +1436,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-routing',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1456,7 +1456,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-quality',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1478,7 +1478,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-next-action',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1498,7 +1498,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-journey',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1517,7 +1517,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-churn',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1540,7 +1540,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'crm-navigator',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Контакт-центр и CRM',
     badgeIcon: 'Headset',
@@ -1582,7 +1582,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'hr-competencies',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'HR и персонал',
     badgeIcon: 'Users',
@@ -1600,7 +1600,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'hr-matrix',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'HR и персонал',
     badgeIcon: 'Users',
@@ -1621,7 +1621,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'hr-education',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'HR и персонал',
     badgeIcon: 'Users',
@@ -1641,7 +1641,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'hr-communication-trainer',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'HR и персонал',
     badgeIcon: 'Users',
@@ -1678,7 +1678,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'hr-shifts',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'HR и персонал',
     badgeIcon: 'Users',
@@ -1699,7 +1699,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'hr-burnout',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'HR и персонал',
     badgeIcon: 'Users',
@@ -1722,7 +1722,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'hr-onboarding',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'HR и персонал',
     badgeIcon: 'Users',
@@ -1761,7 +1761,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'strategy-digital-twin',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Управление и стратегия',
     badgeIcon: 'Compass',
@@ -1781,7 +1781,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'strategy-ceo-assistant',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Управление и стратегия',
     badgeIcon: 'Compass',
@@ -1808,7 +1808,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'strategy-branches',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Управление и стратегия',
     badgeIcon: 'Compass',
@@ -1830,7 +1830,7 @@ export const aiMedicalSlides: Slide[] = [
   },
   {
     id: 'strategy-kpi',
-    type: 'idea',
+    type: 'ideacard',
     theme: 'light',
     badge: 'Управление и стратегия',
     badgeIcon: 'Compass',

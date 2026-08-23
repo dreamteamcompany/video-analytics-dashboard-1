@@ -104,11 +104,12 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
             </div>
           )}
 
-          <div className="relative md:flex-1 md:min-h-0 grid gap-5 lg:gap-[86px] lg:grid-cols-2">
+          <div className="relative md:flex-1 md:min-h-0 flex items-stretch">
+          <div className="relative w-full grid gap-5 lg:gap-[86px] lg:grid-cols-2 items-stretch">
             {cards.map((card, ci) => (
               <div
                 key={ci}
-                className="relative md:min-h-0 flex flex-col rounded-[24px] md:rounded-[28px] bg-white/70 border border-white px-4 sm:px-6 pt-5 pb-5 org-drop"
+                className="relative flex flex-col rounded-[24px] md:rounded-[28px] bg-white/70 border border-white px-4 sm:px-6 pt-5 pb-5 org-drop"
                 style={{
                   boxShadow: '0 18px 50px rgba(124,58,237,0.10)',
                   animationDelay: `${140 + ci * 120}ms`,
@@ -139,7 +140,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                 )}
 
                 <div
-                  className="md:flex-1 md:min-h-0 rounded-xl sm:rounded-2xl px-3.5 py-3.5 sm:px-4 sm:py-4 flex flex-col justify-center gap-2.5 sm:gap-3"
+                  className="flex-1 rounded-xl sm:rounded-2xl px-3.5 py-3.5 sm:px-4 sm:py-4 flex flex-col justify-center gap-2.5 sm:gap-3"
                   style={{ background: 'linear-gradient(135deg,#faf9ff,#f4f1fe)' }}
                 >
                   {card.points.map((t, i) => (
@@ -169,6 +170,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                 AI
               </span>
             </div>
+          </div>
           </div>
 
           {slide.ideaText && (
