@@ -18,7 +18,6 @@ export const aiMedicalSlides: Slide[] = [
       'ИИ-агенты для клинической документации, диагностики и сопровождения пациента на всех этапах лечения',
     sectionItems: [
       { icon: 'ClipboardCheck', title: 'Контроль качества медкарт' },
-      { icon: 'ScanLine', title: 'Второе мнение по снимкам' },
       { icon: 'Pill', title: 'Лекарственная безопасность' },
       { icon: 'CalendarClock', title: 'Незавершённое лечение' },
       { icon: 'MessageCircleHeart', title: 'Сопровождение пациента' },
@@ -639,9 +638,7 @@ export const aiMedicalSlides: Slide[] = [
       { icon: 'FileX2', title: 'Отказы ЕГИСЗ' },
       { icon: 'Network', title: 'Монитор интеграций' },
       { icon: 'Database', title: 'Качество данных' },
-      { icon: 'KeyRound', title: 'Контроль доступов' },
       { icon: 'History', title: 'Изменения медкарты' },
-      { icon: 'Bot', title: 'Реестр ИИ-моделей' },
     ],
   },
   {
@@ -756,7 +753,6 @@ export const aiMedicalSlides: Slide[] = [
       { icon: 'CalendarClock', title: 'Сроки годности' },
       { icon: 'ShieldAlert', title: 'Аномалии в закупках' },
       { icon: 'Star', title: 'Скоринг поставщиков' },
-      { icon: 'ArrowLeftRight', title: 'Перераспределение между филиалами' },
       { icon: 'TrendingUp', title: 'Предиктивный заказ' },
     ],
   },
