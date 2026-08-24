@@ -33,12 +33,22 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
   const flow = slide.ideaFlow ?? [];
   const groups = slide.ideaColumns ?? [];
   const half = Math.ceil(points.length / 2);
-  const cards = groups.length
+  const rawCards = groups.length
     ? groups.map((g) => ({ title: g.title, icon: g.icon, points: g.points }))
     : [
         { title: '', icon: slide.badgeIcon, points: points.slice(0, half).map((p) => p.text) },
         { title: '', icon: slide.badgeIcon, points: points.slice(half).map((p) => p.text) },
       ];
+
+  const usedTitles = new Set<string>();
+  const cards = rawCards.map((c, ci) => {
+    if (c.title) return c;
+    let t = cardTitleFor(c.points.join(' '), ci);
+    if (usedTitles.has(t)) t = ci === 0 ? 'Что анализирует' : 'Что учитывает';
+    if (usedTitles.has(t)) t = ci === 0 ? 'Основные блоки' : 'Дополнительно';
+    usedTitles.add(t);
+    return { ...c, title: t };
+  });
 
   return (
     <div
@@ -132,9 +142,9 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
             </div>
           )}
 
-          <div className="md:flex-1 md:min-h-0 flex flex-col">
-          <div className="relative flex md:flex-1 md:min-h-0 items-stretch">
-            <div className="relative w-full md:h-full grid gap-4 lg:gap-[92px] lg:grid-cols-2 items-stretch">
+          <div className="md:flex-1 md:min-h-0 flex flex-col justify-center">
+          <div className="relative flex items-stretch">
+            <div className="relative w-full grid gap-4 lg:gap-[92px] lg:grid-cols-2 items-stretch">
               {cards.map((card, ci) => (
                 <div
                   key={ci}
@@ -156,7 +166,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                       className="flex-shrink-0 w-[52px] h-[52px] sm:w-[64px] sm:h-[64px] rounded-[18px] flex items-center justify-center p-2.5"
                       style={{ background: 'linear-gradient(135deg,#f3f0ff,#e9e4fe)' }}
                     >
-                      <CardTileArt index={ci} text={`${card.title} ${card.points.join(' ')}`} className="w-full h-full" />
+                      <CardTileArt index={ci} text={`${card.title} ${card.points.join(' ')}`} avoid={ci > 0 ? `${cards[0].title} ${cards[0].points.join(' ')}` : ''} className="w-full h-full" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-[15px] sm:text-[17px] md:text-[clamp(16px,2.5vh,22px)] font-black text-[#221a4d] leading-snug">

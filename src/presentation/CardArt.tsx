@@ -180,13 +180,20 @@ const pickTile = (text: string) => KEYWORDS.find(([re]) => re.test(text))?.[1];
 export const CardTileArt = ({
   index,
   text = '',
+  avoid = '',
   className = '',
 }: {
   index: number;
   text?: string;
+  avoid?: string;
   className?: string;
 }) => {
-  const Tile = pickTile(text) ?? TILES[index % TILES.length];
+  const mine = pickTile(text);
+  const other = avoid ? pickTile(avoid) : undefined;
+  const Tile =
+    mine && mine !== other
+      ? mine
+      : KEYWORDS.map(([, t]) => t).find((t) => t !== other && t !== mine) ?? TILES[index % TILES.length];
   return <Tile className={className} />;
 };
 
