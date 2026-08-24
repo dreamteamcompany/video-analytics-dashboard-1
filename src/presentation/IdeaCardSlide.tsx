@@ -192,7 +192,14 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     >
                       <CardTileArt index={ci} text={`${card.title} ${card.points.join(' ')}`} avoid={ci > 0 ? `${cards[0].title} ${cards[0].points.join(' ')}` : ''} className="w-full h-full" />
                     </div>
-                    <span className="block w-12 h-[3px] rounded-full bg-violet-500" />
+                    <div className="min-w-0 flex flex-col gap-1.5">
+                      {card.title && (
+                        <p className="text-[14px] sm:text-[16px] md:text-[clamp(15px,2.4vh,20px)] font-black leading-tight text-[#221a4d]">
+                          {card.title}
+                        </p>
+                      )}
+                      <span className="block w-12 h-[3px] rounded-full bg-violet-500" />
+                    </div>
                   </div>
 
                   <div className="flex-1 min-h-0 flex items-center gap-3 lg:gap-5">
