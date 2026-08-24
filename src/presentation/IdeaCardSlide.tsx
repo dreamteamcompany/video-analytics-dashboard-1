@@ -1,5 +1,6 @@
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
+import CardArt, { ShieldArt } from './CardArt';
 
 const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%)';
 
@@ -155,7 +156,8 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     </div>
                   )}
 
-                  <div className="flex-1 flex flex-col justify-center gap-1.5 sm:gap-2">
+                  <div className="flex-1 flex items-center gap-3">
+                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5 sm:gap-2">
                     {card.points.map((t, i) => (
                       <div
                         key={t}
@@ -180,6 +182,10 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                         </p>
                       </div>
                     ))}
+                  </div>
+                    <div className="hidden xl:flex flex-shrink-0 w-[26%] max-w-[190px] items-center justify-center">
+                      <CardArt index={ci} className="w-full h-auto opacity-95" />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -237,6 +243,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                 <p className="min-w-0 text-[11.5px] md:text-[15px] font-semibold text-slate-600 leading-snug">
                   {slide.ideaNote}
                 </p>
+                <ShieldArt className="hidden md:block flex-shrink-0 w-[52px] h-[52px]" />
               </div>
             </div>
           )}
