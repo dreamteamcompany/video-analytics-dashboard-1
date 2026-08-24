@@ -223,7 +223,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     ))}
                   </div>
                     <div className="hidden xl:flex flex-shrink-0 w-[30%] max-w-[220px] items-center justify-center">
-                      <CardArt index={ci} text={`${card.title} ${card.points.join(' ')}`} className="w-full h-auto opacity-95" />
+                      <CardArt index={ci} text={`${card.title} ${card.points.join(' ')}`} avoid={ci > 0 ? `${cards[0].title} ${cards[0].points.join(' ')}` : ''} className="w-full h-auto opacity-95" />
                     </div>
                   </div>
                 </div>

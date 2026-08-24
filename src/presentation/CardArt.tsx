@@ -197,24 +197,163 @@ export const CardTileArt = ({
   return <Tile className={className} />;
 };
 
+
+const DocArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <rect x="40" y="14" width="112" height="146" rx="18" fill="white" opacity="0.9" />
+    <rect x="40" y="14" width="112" height="146" rx="18" fill={GLASS} opacity="0.75" />
+    <rect x="58" y="36" width="70" height="10" rx="5" fill={V1} opacity="0.8" />
+    <rect x="58" y="56" width="86" height="9" rx="4.5" fill={V1} opacity="0.5" />
+    <rect x="58" y="74" width="60" height="9" rx="4.5" fill={V1} opacity="0.4" />
+    <rect x="58" y="92" width="76" height="9" rx="4.5" fill={V1} opacity="0.35" />
+    <circle cx="136" cy="140" r="38" fill="white" opacity="0.95" />
+    <circle cx="136" cy="140" r="38" fill={V2} opacity="0.28" />
+    <path d="M120 140 l12 13 22 -26" stroke={V3} strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const MoneyArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <rect x="22" y="46" width="150" height="92" rx="20" fill="white" opacity="0.9" />
+    <rect x="22" y="46" width="150" height="92" rx="20" fill={GLASS} opacity="0.8" />
+    <circle cx="97" cy="92" r="30" fill={V2} opacity="0.55" />
+    <path d="M97 74 v36 M85 84 h24 M85 100 h24" stroke="white" strokeWidth="8" strokeLinecap="round" />
+    <rect x="36" y="60" width="26" height="12" rx="6" fill={V1} opacity="0.7" />
+    <rect x="132" y="112" width="26" height="12" rx="6" fill={V1} opacity="0.7" />
+    <path d="M140 44 L164 20" stroke={V3} strokeWidth="7" strokeLinecap="round" />
+    <path d="M148 18 H166 V36" stroke={V3} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const ClockArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <circle cx="100" cy="100" r="72" fill="white" opacity="0.9" />
+    <circle cx="100" cy="100" r="72" fill={GLASS} opacity="0.8" />
+    <circle cx="100" cy="100" r="54" fill="white" opacity="0.85" />
+    <path d="M100 62 V102 l28 18" stroke={V3} strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="100" cy="28" r="7" fill={V2} opacity="0.7" />
+    <circle cx="172" cy="100" r="7" fill={V2} opacity="0.5" />
+    <circle cx="100" cy="172" r="7" fill={V2} opacity="0.4" />
+    <circle cx="28" cy="100" r="7" fill={V2} opacity="0.5" />
+  </svg>
+);
+
+const ShieldBigArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <path d="M100 18 L166 46 V104 C166 144 134 172 100 184 C66 172 34 144 34 104 V46 Z" fill="white" opacity="0.9" />
+    <path d="M100 18 L166 46 V104 C166 144 134 172 100 184 C66 172 34 144 34 104 V46 Z" fill={V2} opacity="0.3" />
+    <path d="M74 102 l19 21 35 -44" stroke={V3} strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="100" cy="100" r="76" stroke={V1} strokeWidth="4" opacity="0.35" />
+  </svg>
+);
+
+const AlertArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <path d="M100 26 L176 162 H24 Z" fill="white" opacity="0.9" />
+    <path d="M100 26 L176 162 H24 Z" fill={V2} opacity="0.32" />
+    <rect x="92" y="76" width="16" height="46" rx="8" fill={V3} />
+    <circle cx="100" cy="138" r="10" fill={V3} />
+    <circle cx="164" cy="42" r="12" fill={V1} opacity="0.6" />
+    <circle cx="34" cy="60" r="8" fill={V1} opacity="0.5" />
+  </svg>
+);
+
+const BoxArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <path d="M100 22 L172 60 V138 L100 176 L28 138 V60 Z" fill="white" opacity="0.9" />
+    <path d="M100 22 L172 60 V138 L100 176 L28 138 V60 Z" fill={GLASS} opacity="0.8" />
+    <path d="M28 60 L100 98 L172 60" stroke={V2} strokeWidth="8" strokeLinejoin="round" />
+    <path d="M100 98 V176" stroke={V2} strokeWidth="8" opacity="0.7" />
+    <rect x="76" y="34" width="48" height="20" rx="10" fill={V3} opacity="0.55" />
+  </svg>
+);
+
+const ChatArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <rect x="20" y="30" width="118" height="82" rx="22" fill="white" opacity="0.92" />
+    <rect x="20" y="30" width="118" height="82" rx="22" fill={GLASS} opacity="0.8" />
+    <path d="M50 112 L48 140 L78 112 Z" fill={GLASS} />
+    <rect x="42" y="54" width="70" height="10" rx="5" fill={V1} opacity="0.8" />
+    <rect x="42" y="74" width="46" height="10" rx="5" fill={V1} opacity="0.5" />
+    <rect x="88" y="94" width="92" height="72" rx="22" fill="white" opacity="0.95" />
+    <rect x="88" y="94" width="92" height="72" rx="22" fill={V2} opacity="0.3" />
+    <rect x="106" y="116" width="56" height="10" rx="5" fill={V3} opacity="0.6" />
+    <rect x="106" y="136" width="36" height="10" rx="5" fill={V3} opacity="0.4" />
+  </svg>
+);
+
+const SearchArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <rect x="26" y="26" width="120" height="120" rx="26" fill="white" opacity="0.9" />
+    <rect x="26" y="26" width="120" height="120" rx="26" fill={GLASS} opacity="0.75" />
+    <rect x="48" y="52" width="60" height="9" rx="4.5" fill={V1} opacity="0.6" />
+    <rect x="48" y="70" width="76" height="9" rx="4.5" fill={V1} opacity="0.4" />
+    <circle cx="112" cy="112" r="38" fill="white" opacity="0.95" />
+    <circle cx="112" cy="112" r="30" stroke={V3} strokeWidth="11" />
+    <path d="M136 136 L170 170" stroke={V3} strokeWidth="14" strokeLinecap="round" />
+  </svg>
+);
+
+const MedArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <rect x="28" y="42" width="144" height="116" rx="26" fill="white" opacity="0.9" />
+    <rect x="28" y="42" width="144" height="116" rx="26" fill={GLASS} opacity="0.8" />
+    <path d="M44 104 h30 l14 -30 l20 60 l14 -30 h34" stroke={V3} strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+    <rect x="86" y="20" width="28" height="30" rx="10" fill={V2} opacity="0.7" />
+  </svg>
+);
+
+const NetworkArt = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" className={className} fill="none">
+    <circle cx="100" cy="100" r="30" fill="white" opacity="0.95" />
+    <circle cx="100" cy="100" r="30" fill={V2} opacity="0.4" />
+    <circle cx="38" cy="46" r="20" fill={V1} opacity="0.85" />
+    <circle cx="164" cy="52" r="18" fill={V2} opacity="0.7" />
+    <circle cx="46" cy="158" r="18" fill={V2} opacity="0.6" />
+    <circle cx="158" cy="152" r="22" fill={V1} opacity="0.75" />
+    <path d="M56 60 L82 86 M148 66 L120 88 M62 146 L84 118 M142 138 L118 116" stroke={V3} strokeWidth="6" strokeLinecap="round" opacity="0.6" />
+  </svg>
+);
+
 const ARTS = [ChartArt, ProfileArt, FlowArt];
 
 const ART_KEYWORDS: [RegExp, typeof ChartArt][] = [
-  [/сотрудник|персонал|пациент|клиент|hr|врач|команд|профил/i, ProfileArt],
-  [/процесс|интеграц|этап|сценар|автомат|шаг|маршрут|поток/i, FlowArt],
-  [/метрик|показател|прогноз|статист|динамик|рост|нагруз|kpi/i, ChartArt],
+  [/безопас|защит|конфиденц|персональн|доступ|соглас|риск|наруш|юридич|претенз|суд|лиценз/i, ShieldBigArt],
+  [/склад|остатк|материал|закуп|поставк|товар|расходник|запас|логист/i, BoxArt],
+  [/поиск|найти|подбор|аудит|провер|сверк|реестр|база знан/i, SearchArt],
+  [/звонок|чат|сообщен|переписк|обращен|отзыв|коммуникац|скрипт|оператор/i, ChatArt],
+  [/диагноз|лечен|клинич|медицин|препарат|анамнез|зуб|снимок|осмотр|имплант/i, MedArt],
+  [/ошибк|отклонен|несоответств|дефицит|инцидент|аномал|сбой|штраф|просроч/i, AlertArt],
+  [/егисз|мис|интеграц|api|обмен|синхрониз|систем|сеть|инфраструктур/i, NetworkArt],
+  [/деньг|финанс|бюджет|стоим|оплат|выручк|прайс|экономи|затрат|счет|счёт|маржинальн/i, MoneyArt],
+  [/документ|отч[её]т|протокол|заключ|шаблон|бумаг|подпис|договор|акт|карт/i, DocArt],
+  [/врем|расписан|график|смен|срок|дедлайн|задержк|опоздан|окн[оа]|отпуск/i, ClockArt],
+  [/сотрудник|персонал|пациент|клиент|hr|врач|команд|профил|кадр|обучен/i, ProfileArt],
+  [/процесс|этап|сценар|автомат|шаг|маршрут|поток|правил|алгоритм/i, FlowArt],
+  [/метрик|показател|прогноз|статист|динамик|рост|нагруз|kpi|план/i, ChartArt],
 ];
+
+const pickArt = (text: string) => ART_KEYWORDS.find(([re]) => re.test(text))?.[1];
 
 export const CardArt = ({
   index,
   text = '',
+  avoid = '',
   className = '',
 }: {
   index: number;
   text?: string;
+  avoid?: string;
   className?: string;
 }) => {
-  const Art = ART_KEYWORDS.find(([re]) => re.test(text))?.[1] ?? ARTS[index % ARTS.length];
+  const mine = pickArt(text);
+  const other = avoid ? pickArt(avoid) : undefined;
+  const Art =
+    mine && mine !== other
+      ? mine
+      : mine
+        ? ART_KEYWORDS.map(([, a]) => a).find((a) => a !== other) ?? ARTS[index % ARTS.length]
+        : ARTS[index % ARTS.length];
   return <Art className={className} />;
 };
 
