@@ -79,6 +79,42 @@ const ShieldArt = ({ className = '' }: { className?: string }) => (
   </svg>
 );
 
+const TileChart = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <rect x="22" y="52" width="13" height="30" rx="5" fill={V1} />
+    <rect x="43" y="38" width="13" height="44" rx="5" fill={V2} />
+    <rect x="64" y="24" width="13" height="58" rx="5" fill={V3} opacity="0.85" />
+    <path d="M26 42 L46 26 L64 34 L82 16" stroke={V3} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="82" cy="16" r="7" fill={V3} />
+  </svg>
+);
+
+const TileFlame = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <path
+      d="M50 12 C64 30 78 40 78 58 a28 28 0 0 1 -56 0 C22 42 34 36 40 22 C44 34 48 38 50 12 Z"
+      fill={V2}
+    />
+    <path d="M50 46 C58 56 62 60 62 66 a12 12 0 0 1 -24 0 C38 58 44 54 50 46 Z" fill="white" opacity="0.7" />
+  </svg>
+);
+
+const TilePeople = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <circle cx="38" cy="34" r="14" fill={V2} />
+    <path d="M14 78 a24 24 0 0 1 48 0 Z" fill={V2} opacity="0.75" />
+    <circle cx="70" cy="40" r="11" fill={V3} opacity="0.65" />
+    <path d="M52 78 a19 19 0 0 1 36 0 Z" fill={V3} opacity="0.5" />
+  </svg>
+);
+
+const TILES = [TileChart, TileFlame, TilePeople];
+
+export const CardTileArt = ({ index, className = '' }: { index: number; className?: string }) => {
+  const Tile = TILES[index % TILES.length];
+  return <Tile className={className} />;
+};
+
 const ARTS = [ChartArt, ProfileArt, FlowArt];
 
 export const CardArt = ({ index, className = '' }: { index: number; className?: string }) => {

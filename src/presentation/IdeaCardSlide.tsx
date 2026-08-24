@@ -1,6 +1,6 @@
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
-import CardArt, { ShieldArt } from './CardArt';
+import CardArt, { CardTileArt, ShieldArt } from './CardArt';
 
 const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%)';
 
@@ -126,7 +126,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
               {cards.map((card, ci) => (
                 <div
                   key={ci}
-                  className={`relative flex flex-col rounded-[26px] md:rounded-[30px] bg-white px-4 sm:px-6 pb-5 org-drop ${card.title ? 'pt-5' : 'pt-[62px]'}`}
+                  className="relative flex flex-col rounded-[26px] md:rounded-[30px] bg-white px-4 sm:px-6 pb-5 pt-5 org-drop"
                   style={{
                     boxShadow: '0 22px 60px rgba(109,40,217,0.10), 0 2px 6px rgba(109,40,217,0.05)',
                     animationDelay: `${140 + ci * 120}ms`,
@@ -139,22 +139,20 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     {`0${ci + 1}`}
                   </span>
 
-                  {card.title && (
-                    <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 pr-12 mb-3">
-                      <div
-                        className="flex-shrink-0 w-[46px] h-[46px] sm:w-[58px] sm:h-[58px] rounded-2xl flex items-center justify-center"
-                        style={{ background: 'linear-gradient(135deg,#f3f0ff,#e9e4fe)' }}
-                      >
-                        <Icon name={card.icon ?? 'ListChecks'} size={27} className="text-violet-600" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[15px] sm:text-[17px] md:text-[clamp(16px,2.5vh,22px)] font-black text-[#221a4d] leading-snug">
-                          {card.title}
-                        </p>
-                        <span className="block mt-2 w-10 h-[3px] rounded-full bg-violet-500" />
-                      </div>
+                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 pr-12 mb-3">
+                    <div
+                      className="flex-shrink-0 w-[52px] h-[52px] sm:w-[64px] sm:h-[64px] rounded-[18px] flex items-center justify-center p-2.5"
+                      style={{ background: 'linear-gradient(135deg,#f3f0ff,#e9e4fe)' }}
+                    >
+                      <CardTileArt index={ci} className="w-full h-full" />
                     </div>
-                  )}
+                    <div className="min-w-0">
+                      <p className="text-[15px] sm:text-[17px] md:text-[clamp(16px,2.5vh,22px)] font-black text-[#221a4d] leading-snug">
+                        {card.title || (ci === 0 ? 'Что анализирует' : 'Что учитывает')}
+                      </p>
+                      <span className="block mt-2 w-10 h-[3px] rounded-full bg-violet-500" />
+                    </div>
+                  </div>
 
                   <div className="flex-1 flex items-center gap-3">
                   <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5 sm:gap-2">
