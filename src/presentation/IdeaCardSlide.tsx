@@ -70,8 +70,8 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
         />
       </div>
 
-      <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-8 lg:px-12 pt-3 pb-16 md:pb-5 min-h-0 overflow-y-auto md:overflow-hidden">
-        <div className="w-full max-w-[1520px] mx-auto flex flex-col md:flex-1 md:min-h-0">
+      <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-8 lg:px-16 xl:px-24 pt-3 pb-16 md:pb-5 min-h-0 overflow-y-auto md:overflow-hidden">
+        <div className="w-full max-w-[1460px] mx-auto flex flex-col md:flex-1 md:min-h-0">
           <div className="flex-shrink-0 flex flex-col items-center gap-1.5 mb-3 md:mb-4">
             <div className="flex items-center gap-2 flex-wrap justify-center">
               {slide.badge && (
@@ -132,13 +132,13 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
             </div>
           )}
 
-          <div className="md:flex-1 md:min-h-0 flex flex-col justify-center">
-          <div className="relative flex items-stretch">
-            <div className="relative w-full grid gap-4 lg:gap-[76px] lg:grid-cols-2 items-stretch">
+          <div className="md:flex-1 md:min-h-0 flex flex-col">
+          <div className="relative flex md:flex-1 md:min-h-0 items-stretch">
+            <div className="relative w-full md:h-full grid gap-4 lg:gap-[92px] lg:grid-cols-2 items-stretch">
               {cards.map((card, ci) => (
                 <div
                   key={ci}
-                  className="relative flex flex-col rounded-[26px] md:rounded-[30px] bg-white px-4 sm:px-6 pb-5 pt-5 org-drop"
+                  className="relative flex flex-col rounded-[26px] md:rounded-[30px] bg-white px-4 sm:px-6 lg:px-7 pb-6 pt-6 org-drop"
                   style={{
                     boxShadow: '0 22px 60px rgba(109,40,217,0.10), 0 2px 6px rgba(109,40,217,0.05)',
                     animationDelay: `${140 + ci * 120}ms`,
@@ -166,12 +166,12 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     </div>
                   </div>
 
-                  <div className="flex-1 flex items-center gap-3">
-                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5 sm:gap-2">
+                  <div className="flex-1 min-h-0 flex items-center gap-3 lg:gap-5">
+                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-2 sm:gap-2.5">
                     {card.points.map((t, i) => (
                       <div
                         key={t}
-                        className="flex items-center gap-3 rounded-2xl px-2.5 py-2 sm:px-3 sm:py-2.5 org-in transition-colors"
+                        className="flex items-center gap-3 rounded-2xl px-2.5 py-2.5 sm:px-3.5 sm:py-3 org-in transition-colors"
                         style={{
                           background: 'linear-gradient(135deg,#fbfaff,#f6f3fe)',
                           animationDelay: `${300 + i * 60}ms`,
@@ -193,7 +193,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                       </div>
                     ))}
                   </div>
-                    <div className="hidden xl:flex flex-shrink-0 w-[26%] max-w-[190px] items-center justify-center">
+                    <div className="hidden xl:flex flex-shrink-0 w-[30%] max-w-[220px] items-center justify-center">
                       <CardArt index={ci} text={`${card.title} ${card.points.join(' ')}`} className="w-full h-auto opacity-95" />
                     </div>
                   </div>
