@@ -108,17 +108,106 @@ const TilePeople = ({ className = '' }: { className?: string }) => (
   </svg>
 );
 
+
+const TileShield = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <path d="M50 12 L82 26 V52 c0 20 -14 32 -32 38 C32 84 18 72 18 52 V26 Z" fill={V2} />
+    <path d="M38 52 l9 10 17 -22" stroke="white" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const TileDoc = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <rect x="24" y="14" width="52" height="72" rx="10" fill={V1} />
+    <rect x="34" y="30" width="32" height="7" rx="3.5" fill="white" opacity="0.9" />
+    <rect x="34" y="44" width="32" height="7" rx="3.5" fill="white" opacity="0.7" />
+    <rect x="34" y="58" width="20" height="7" rx="3.5" fill="white" opacity="0.55" />
+    <circle cx="72" cy="70" r="16" fill={V3} />
+    <path d="M66 70 l5 5 9 -10" stroke="white" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const TileClock = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <circle cx="50" cy="50" r="34" fill={V1} />
+    <circle cx="50" cy="50" r="24" fill="white" opacity="0.55" />
+    <path d="M50 32 V52 l14 9" stroke={V3} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const TileBrain = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <rect x="24" y="24" width="52" height="52" rx="16" fill={V2} />
+    <circle cx="40" cy="42" r="6" fill="white" />
+    <circle cx="62" cy="42" r="6" fill="white" />
+    <circle cx="50" cy="62" r="6" fill="white" opacity="0.85" />
+    <path d="M40 42 L50 62 L62 42" stroke="white" strokeWidth="4" opacity="0.7" />
+    <path d="M14 50 h10 M76 50 h10 M50 10 v10" stroke={V3} strokeWidth="6" strokeLinecap="round" />
+  </svg>
+);
+
+const TileMoney = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <rect x="14" y="28" width="72" height="46" rx="12" fill={V1} />
+    <circle cx="50" cy="51" r="14" fill="white" opacity="0.8" />
+    <path d="M50 42 v18 M45 47 h10 M45 55 h10" stroke={V3} strokeWidth="4.5" strokeLinecap="round" />
+  </svg>
+);
+
+const TileGear = ({ className = '' }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none">
+    <path d="M50 14 l8 8 h11 v11 l8 8 -8 8 v11 h-11 l-8 8 -8 -8 h-11 v-11 l-8 -8 8 -8 v-11 h11 z" fill={V2} />
+    <circle cx="50" cy="49" r="12" fill="white" opacity="0.85" />
+  </svg>
+);
+
 const TILES = [TileChart, TileFlame, TilePeople];
 
-export const CardTileArt = ({ index, className = '' }: { index: number; className?: string }) => {
-  const Tile = TILES[index % TILES.length];
+const KEYWORDS: [RegExp, typeof TileChart][] = [
+  [/выгор|стресс|перегруз|риск|нагруз|конфликт/i, TileFlame],
+  [/безопас|защит|доступ|прав|конфиденц|соглас|этик|контрол/i, TileShield],
+  [/документ|отч[её]т|протокол|заключ|бумаг|запис|карт/i, TileDoc],
+  [/врем|расписан|график|смен|срок|дедлайн|задержк|отпуск/i, TileClock],
+  [/ии|ai|модел|алгоритм|прогноз|нейро|анализ/i, TileBrain],
+  [/деньг|финанс|бюджет|стоим|оплат|выручк|экономи/i, TileMoney],
+  [/интеграц|настрой|процесс|автомат|систем|сценар|этап/i, TileGear],
+  [/сотрудник|команд|персонал|пациент|клиент|hr|люд|врач/i, TilePeople],
+  [/метрик|показател|статист|динамик|рост|kpi|график/i, TileChart],
+];
+
+const pickTile = (text: string) => KEYWORDS.find(([re]) => re.test(text))?.[1];
+
+export const CardTileArt = ({
+  index,
+  text = '',
+  className = '',
+}: {
+  index: number;
+  text?: string;
+  className?: string;
+}) => {
+  const Tile = pickTile(text) ?? TILES[index % TILES.length];
   return <Tile className={className} />;
 };
 
 const ARTS = [ChartArt, ProfileArt, FlowArt];
 
-export const CardArt = ({ index, className = '' }: { index: number; className?: string }) => {
-  const Art = ARTS[index % ARTS.length];
+const ART_KEYWORDS: [RegExp, typeof ChartArt][] = [
+  [/сотрудник|персонал|пациент|клиент|hr|врач|команд|профил/i, ProfileArt],
+  [/процесс|интеграц|этап|сценар|автомат|шаг|маршрут|поток/i, FlowArt],
+  [/метрик|показател|прогноз|статист|динамик|рост|нагруз|kpi/i, ChartArt],
+];
+
+export const CardArt = ({
+  index,
+  text = '',
+  className = '',
+}: {
+  index: number;
+  text?: string;
+  className?: string;
+}) => {
+  const Art = ART_KEYWORDS.find(([re]) => re.test(text))?.[1] ?? ARTS[index % ARTS.length];
   return <Art className={className} />;
 };
 

@@ -16,6 +16,18 @@ const ROW_ICONS = [
   'Target',
 ];
 
+const cardTitleFor = (text: string, ci: number) => {
+  if (/выгор|стресс|перегруз|риск|конфликт/i.test(text)) return 'Факторы риска';
+  if (/безопас|защит|доступ|прав|конфиденц|соглас|этик/i.test(text)) return 'Безопасность и права';
+  if (/документ|отч[её]т|протокол|заключ|запис/i.test(text)) return 'Документы и данные';
+  if (/врем|расписан|график|смен|срок|дедлайн|задержк|отпуск/i.test(text)) return 'Время и нагрузка';
+  if (/деньг|финанс|бюджет|стоим|оплат|выручк|экономи/i.test(text)) return 'Финансы';
+  if (/интеграц|настрой|процесс|автомат|систем|сценар|этап/i.test(text)) return 'Как это работает';
+  if (/сотрудник|команд|персонал|пациент|клиент|врач|люд/i.test(text)) return 'Кого это касается';
+  if (/метрик|показател|статист|динамик|рост|прогноз/i.test(text)) return 'Что анализирует';
+  return ci === 0 ? 'Что анализирует' : 'Что учитывает';
+};
+
 const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
   const points = slide.ideaPoints ?? [];
   const flow = slide.ideaFlow ?? [];
@@ -144,11 +156,11 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                       className="flex-shrink-0 w-[52px] h-[52px] sm:w-[64px] sm:h-[64px] rounded-[18px] flex items-center justify-center p-2.5"
                       style={{ background: 'linear-gradient(135deg,#f3f0ff,#e9e4fe)' }}
                     >
-                      <CardTileArt index={ci} className="w-full h-full" />
+                      <CardTileArt index={ci} text={`${card.title} ${card.points.join(' ')}`} className="w-full h-full" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-[15px] sm:text-[17px] md:text-[clamp(16px,2.5vh,22px)] font-black text-[#221a4d] leading-snug">
-                        {card.title || (ci === 0 ? 'Что анализирует' : 'Что учитывает')}
+                        {card.title || cardTitleFor(card.points.join(' '), ci)}
                       </p>
                       <span className="block mt-2 w-10 h-[3px] rounded-full bg-violet-500" />
                     </div>
@@ -182,7 +194,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     ))}
                   </div>
                     <div className="hidden xl:flex flex-shrink-0 w-[26%] max-w-[190px] items-center justify-center">
-                      <CardArt index={ci} className="w-full h-auto opacity-95" />
+                      <CardArt index={ci} text={`${card.title} ${card.points.join(' ')}`} className="w-full h-auto opacity-95" />
                     </div>
                   </div>
                 </div>
