@@ -140,13 +140,13 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
             </div>
           )}
 
-          <div className="md:flex-1 md:min-h-0 flex flex-col justify-center">
+          <div className="md:flex-1 md:min-h-0 flex flex-col justify-center overflow-hidden">
           <div className="relative flex items-stretch">
             <div className="relative w-full grid gap-4 lg:gap-[92px] lg:grid-cols-2 items-stretch">
               {cards.map((card, ci) => (
                 <div
                   key={ci}
-                  className="relative flex flex-col rounded-[26px] md:rounded-[30px] bg-white px-4 sm:px-6 lg:px-7 pb-6 pt-6 org-drop"
+                  className="relative flex flex-col rounded-[26px] md:rounded-[30px] bg-white px-4 sm:px-6 lg:px-7 pb-5 pt-5 org-drop"
                   style={{
                     boxShadow: '0 22px 60px rgba(109,40,217,0.10), 0 2px 6px rgba(109,40,217,0.05)',
                     animationDelay: `${140 + ci * 120}ms`,
@@ -159,34 +159,29 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     {`0${ci + 1}`}
                   </span>
 
-                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 pr-12 mb-3">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 pr-12 mb-2">
                     <div
-                      className="flex-shrink-0 w-[52px] h-[52px] sm:w-[64px] sm:h-[64px] rounded-[18px] flex items-center justify-center p-2.5"
+                      className="flex-shrink-0 w-[46px] h-[46px] sm:w-[54px] sm:h-[54px] rounded-[16px] flex items-center justify-center p-2.5"
                       style={{ background: 'linear-gradient(135deg,#f3f0ff,#e9e4fe)' }}
                     >
                       <CardTileArt index={ci} text={`${card.title} ${card.points.join(' ')}`} avoid={ci > 0 ? `${cards[0].title} ${cards[0].points.join(' ')}` : ''} className="w-full h-full" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-[15px] sm:text-[17px] md:text-[clamp(16px,2.5vh,22px)] font-black text-[#221a4d] leading-snug">
-                        {card.title || cardTitleFor(card.points.join(' '), ci)}
-                      </p>
-                      <span className="block mt-2 w-10 h-[3px] rounded-full bg-violet-500" />
-                    </div>
+                    <span className="block w-12 h-[3px] rounded-full bg-violet-500" />
                   </div>
 
                   <div className="flex-1 min-h-0 flex items-center gap-3 lg:gap-5">
-                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-2 sm:gap-2.5">
+                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5 sm:gap-[clamp(4px,1.1vh,10px)]">
                     {card.points.map((t, i) => (
                       <div
                         key={t}
-                        className="flex items-center gap-3 rounded-2xl px-2.5 py-2.5 sm:px-3.5 sm:py-3 org-in transition-colors"
+                        className="flex items-center gap-3 rounded-2xl px-2.5 py-2 sm:px-3.5 sm:py-[clamp(6px,1.2vh,12px)] org-in transition-colors"
                         style={{
                           background: 'linear-gradient(135deg,#fbfaff,#f6f3fe)',
                           animationDelay: `${300 + i * 60}ms`,
                         }}
                       >
                         <span
-                          className="flex-shrink-0 w-[34px] h-[34px] sm:w-[38px] sm:h-[38px] rounded-xl flex items-center justify-center"
+                          className="flex-shrink-0 w-[32px] h-[32px] sm:w-[clamp(30px,4.6vh,38px)] sm:h-[clamp(30px,4.6vh,38px)] rounded-xl flex items-center justify-center"
                           style={{ background: 'linear-gradient(135deg,#ede9fe,#ddd6fe)' }}
                         >
                           <Icon
