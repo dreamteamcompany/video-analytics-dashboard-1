@@ -43,16 +43,7 @@ const SectionSlide = ({ slide }: { slide: Slide }) => {
             </span>
           )}
 
-          {slide.sectionNum && (
-            <span
-              className="org-drop mt-5 w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-[26px] flex items-center justify-center text-white text-[26px] md:text-[34px] font-black"
-              style={{ background: HEADER_GRADIENT, boxShadow: '0 16px 36px rgba(124,58,237,0.32)', animationDelay: '90ms' }}
-            >
-              {slide.sectionNum}
-            </span>
-          )}
-
-          <h2 className="org-drop mt-5 text-[30px] sm:text-[42px] md:text-[58px] font-black leading-[1.05] tracking-tight text-[#1e1b4b]">
+          <h2 className="org-drop mt-6 text-[30px] sm:text-[42px] md:text-[58px] font-black leading-[1.05] tracking-tight text-[#1e1b4b]">
             {slide.title}
           </h2>
 
