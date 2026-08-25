@@ -126,9 +126,18 @@ export interface AiMetric {
   note?: string;
 }
 
+export interface RoadmapWave {
+  period: string;
+  title: string;
+  icon?: string;
+  summary: string;
+  items: string[];
+  outcome?: string;
+}
+
 export interface Slide {
   id: string;
-  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai' | 'duo' | 'section' | 'idea' | 'ideacard';
+  type: 'title' | 'bullets' | 'org' | 'goals' | 'ecosystem' | 'indicators' | 'phases' | 'handoff' | 'split' | 'closing' | 'ai' | 'duo' | 'section' | 'idea' | 'ideacard' | 'roadmap';
   theme?: 'light' | 'dark';
   title?: string;
   subtitle?: string;
@@ -164,6 +173,8 @@ export interface Slide {
   indicatorsPhases?: { year: string; label: string }[];
   phases?: PhaseItem[];
   phasesFooter?: string;
+  roadmap?: RoadmapWave[];
+  roadmapFooter?: string;
   handoffLeft?: HandoffSide;
   handoffRight?: HandoffSide;
   handoffForward?: string;

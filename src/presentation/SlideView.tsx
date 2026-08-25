@@ -13,6 +13,7 @@ import DuoSlide from './DuoSlide';
 import SectionSlide from './SectionSlide';
 import IdeaSlide from './IdeaSlide';
 import IdeaCardSlide from './IdeaCardSlide';
+import RoadmapSlide from './RoadmapSlide';
 import LightBackdrop from './LightBackdrop';
 
 const TitleSlide = ({ slide }: { slide: Slide }) => (
@@ -119,6 +120,7 @@ const SlideView = ({ slide }: { slide: Slide }) => (
     {slide.type === 'section' && <SectionSlide slide={slide} />}
     {slide.type === 'idea' && <IdeaSlide slide={slide} />}
     {slide.type === 'ideacard' && <IdeaCardSlide slide={slide} />}
+    {slide.type === 'roadmap' && <RoadmapSlide slide={slide} />}
   </div>
 );
 
