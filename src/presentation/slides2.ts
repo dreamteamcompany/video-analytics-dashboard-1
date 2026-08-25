@@ -308,7 +308,7 @@ export const slides2: Slide[] = [
       },
     ],
   },
-  ...aiMedicalSlides,
+  ...aiMedicalSlides.filter((s) => s.id !== 'ai-whats-next'),
   {
     id: 'ai-roadmap',
     type: 'roadmap',
@@ -393,6 +393,7 @@ export const slides2: Slide[] = [
     roadmapFooter:
       'К декабрю 2027 все 60+ агентов работают в единой экосистеме — рутина снята со всех подразделений.',
   },
+  ...aiMedicalSlides.filter((s) => s.id === 'ai-whats-next'),
   {
     id: 'closing',
     type: 'closing',
