@@ -178,14 +178,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     animationDelay: `${140 + ci * 120}ms`,
                   }}
                 >
-                  <span
-                    className="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white text-[12px] sm:text-[13px] font-black z-10"
-                    style={{ background: HEADER_GRADIENT, boxShadow: '0 10px 20px rgba(124,58,237,0.32)' }}
-                  >
-                    {`0${ci + 1}`}
-                  </span>
-
-                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 pr-12 mb-2">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 mb-2">
                     <div
                       className="flex-shrink-0 w-[46px] h-[46px] sm:w-[54px] sm:h-[54px] rounded-[16px] flex items-center justify-center p-2.5"
                       style={{ background: 'linear-gradient(135deg,#f3f0ff,#e9e4fe)' }}
