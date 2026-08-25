@@ -128,14 +128,6 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
             </div>
 
             <div className="flex items-center gap-3 mt-0.5">
-              {slide.ideaNum && (
-                <span
-                  className="flex-shrink-0 px-3 h-9 md:h-12 rounded-2xl flex items-center justify-center text-white text-[15px] md:text-[21px] font-black"
-                  style={{ background: HEADER_GRADIENT, boxShadow: '0 10px 22px rgba(124,58,237,0.30)' }}
-                >
-                  {slide.ideaNum}
-                </span>
-              )}
               <h2 className="text-[24px] sm:text-[32px] md:text-[clamp(30px,5vh,48px)] font-black leading-tight tracking-tight text-center text-[#221a4d]">
                 {slide.title}
               </h2>

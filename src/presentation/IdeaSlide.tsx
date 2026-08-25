@@ -56,14 +56,6 @@ const IdeaSlide = ({ slide }: { slide: Slide }) => {
             </div>
 
             <div className="flex items-start gap-3 mt-1">
-              {slide.ideaNum && (
-                <span
-                  className="flex-shrink-0 mt-1 px-3 h-8 md:h-10 rounded-xl flex items-center justify-center text-white text-[14px] md:text-[18px] font-black"
-                  style={{ background: HEADER_GRADIENT, boxShadow: '0 8px 20px rgba(124,58,237,0.3)' }}
-                >
-                  {slide.ideaNum}
-                </span>
-              )}
               <h2 className="text-[22px] sm:text-[30px] md:text-[clamp(28px,4.6vh,44px)] font-black leading-tight tracking-tight text-center text-[#1e1b4b]">
                 {slide.title}
               </h2>
