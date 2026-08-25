@@ -1,6 +1,7 @@
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
 import CardArt, { CardTileArt, ShieldArt } from './CardArt';
+import IdeaBackdrop from './IdeaBackdrop';
 
 const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%)';
 
@@ -79,6 +80,9 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
       className="h-full flex flex-col overflow-hidden relative"
       style={{ background: 'linear-gradient(135deg, #ffffff 0%, #fbfaff 42%, #f5f2fd 74%, #fdf2f9 100%)' }}
     >
+      {slide.id === 'ops-chair-load' ? (
+        <IdeaBackdrop />
+      ) : (
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute top-0 left-0 w-[22rem] h-[22rem] opacity-70"
@@ -103,6 +107,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
           style={{ background: 'radial-gradient(circle, rgba(244,114,182,0.10) 0%, transparent 70%)' }}
         />
       </div>
+      )}
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-8 lg:px-16 xl:px-24 pt-3 pb-16 md:pb-5 min-h-0 overflow-y-auto md:overflow-hidden">
         <div className="w-full max-w-[1460px] mx-auto flex flex-col md:flex-1 md:min-h-0">
