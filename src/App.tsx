@@ -34,6 +34,7 @@ const App = () => (
           <Route path="/presentation" element={<PresentationPage />} />
           <Route path="/presentation-2" element={<Presentation2Page />} />
           <Route path="/speech" element={<SpeechPage />} />
+          <Route path="/speech-2" element={<SpeechPage file="/speech-2.md" heading="Речь 2: ИИ-агенты в клиниках" />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -26,14 +26,19 @@ const formatTime = (totalMinutes: number) => {
   return h > 0 ? `${h} ч ${m} мин` : `${m} мин`;
 };
 
-const SpeechPage = () => {
+interface SpeechPageProps {
+  file?: string;
+  heading?: string;
+}
+
+const SpeechPage = ({ file = '/speech.md', heading = 'Выступление: IT-департамент' }: SpeechPageProps) => {
   const [raw, setRaw] = useState('');
 
   useEffect(() => {
-    fetch('/speech.md')
+    fetch(file)
       .then((r) => r.text())
       .then(setRaw);
-  }, []);
+  }, [file]);
 
   const sections = useMemo<SpeechSection[]>(() => {
     if (!raw) return [];
@@ -84,7 +89,7 @@ const SpeechPage = () => {
 
         <div className="rounded-2xl bg-white p-8 shadow-sm print:rounded-none print:p-0 print:shadow-none">
           <header className="mb-8 border-b border-slate-200 pb-6">
-            <h2 className="text-3xl font-semibold text-slate-900">Выступление: IT-департамент</h2>
+            <h2 className="text-3xl font-semibold text-slate-900">{heading}</h2>
             <p className="mt-2 text-slate-500">
               Полный текст по слайдам · общий хронометраж ≈ {formatTime(totalMinutes)}
             </p>

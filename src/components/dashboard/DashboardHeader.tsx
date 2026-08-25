@@ -65,6 +65,16 @@ export const DashboardHeader = ({ online, checkingPing, onPing }: DashboardHeade
             Речь
           </Button>
         </Link>
+        <Link to="/speech-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-xl gap-1.5 border-border"
+          >
+            <Icon name="FileText" size={14} />
+            Речь 2
+          </Button>
+        </Link>
         <div className="flex items-center gap-2 bg-secondary rounded-full px-3 py-1.5">
           <span className={`w-2 h-2 rounded-full live-ring ${online ? 'bg-success' : online === false ? 'bg-destructive' : 'bg-muted-foreground'}`} />
           <span className="text-xs font-medium text-muted-foreground">
