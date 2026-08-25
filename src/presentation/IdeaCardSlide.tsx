@@ -80,34 +80,7 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
       className="h-full flex flex-col overflow-hidden relative"
       style={{ background: 'linear-gradient(135deg, #ffffff 0%, #fbfaff 42%, #f5f2fd 74%, #fdf2f9 100%)' }}
     >
-      {slide.id === 'ops-chair-load' ? (
-        <IdeaBackdrop />
-      ) : (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div
-          className="absolute top-0 left-0 w-[22rem] h-[22rem] opacity-70"
-          style={{
-            backgroundImage: 'radial-gradient(rgba(139,92,246,0.30) 1.3px, transparent 1.3px)',
-            backgroundSize: '15px 15px',
-            maskImage: 'radial-gradient(circle at 25% 25%, #000 0%, transparent 70%)',
-            WebkitMaskImage: 'radial-gradient(circle at 25% 25%, #000 0%, transparent 70%)',
-          }}
-        />
-        <div
-          className="absolute -top-24 -right-24 w-[30rem] h-[30rem] rounded-full"
-          style={{
-            background:
-              'repeating-radial-gradient(circle, rgba(196,181,253,0.30) 0 1.4px, transparent 1.4px 20px)',
-            maskImage: 'radial-gradient(circle, #000 10%, transparent 70%)',
-            WebkitMaskImage: 'radial-gradient(circle, #000 10%, transparent 70%)',
-          }}
-        />
-        <div
-          className="absolute -bottom-24 -right-16 w-[24rem] h-[24rem] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(244,114,182,0.10) 0%, transparent 70%)' }}
-        />
-      </div>
-      )}
+      <IdeaBackdrop />
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-8 lg:px-16 xl:px-24 pt-3 pb-16 md:pb-5 min-h-0 overflow-y-auto md:overflow-hidden">
         <div className="w-full max-w-[1460px] mx-auto flex flex-col md:flex-1 md:min-h-0">

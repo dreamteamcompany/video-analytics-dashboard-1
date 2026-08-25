@@ -1,5 +1,6 @@
 import { Slide } from './slides';
 import Icon from '@/components/ui/icon';
+import IdeaBackdrop from './IdeaBackdrop';
 
 const HEADER_GRADIENT = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%)';
 
@@ -15,25 +16,7 @@ const IdeaSlide = ({ slide }: { slide: Slide }) => {
       className="h-full flex flex-col overflow-hidden relative"
       style={{ background: 'linear-gradient(135deg, #ffffff 0%, #fbfaff 40%, #f4f0fd 72%, #fdf1f8 100%)' }}
     >
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div
-          className="absolute -top-10 -left-10 w-[26rem] h-[26rem] opacity-70"
-          style={{
-            backgroundImage: 'radial-gradient(rgba(139,92,246,0.32) 1.4px, transparent 1.4px)',
-            backgroundSize: '15px 15px',
-            maskImage: 'radial-gradient(circle at 30% 30%, #000 0%, transparent 68%)',
-            WebkitMaskImage: 'radial-gradient(circle at 30% 30%, #000 0%, transparent 68%)',
-          }}
-        />
-        <div
-          className="absolute -bottom-28 -right-24 w-[30rem] h-[30rem] rounded-full"
-          style={{
-            background: 'repeating-radial-gradient(circle, rgba(236,72,153,0.16) 0 1.4px, transparent 1.4px 18px)',
-            maskImage: 'radial-gradient(circle, #000 10%, transparent 70%)',
-            WebkitMaskImage: 'radial-gradient(circle, #000 10%, transparent 70%)',
-          }}
-        />
-      </div>
+      <IdeaBackdrop />
 
       <div className="relative z-10 flex-1 flex flex-col px-3 sm:px-8 lg:px-14 pt-3 pb-16 md:pb-4 min-h-0 overflow-y-auto md:overflow-hidden">
         <div className="w-full max-w-[1180px] mx-auto flex flex-col md:flex-1 md:min-h-0">
