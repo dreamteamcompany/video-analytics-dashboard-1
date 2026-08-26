@@ -170,6 +170,7 @@ export interface Slide {
   ecoBenefits?: EcoBenefit[];
   indicators?: IndicatorItem[];
   indicatorsFooter?: string;
+  indicatorsTone?: 'default' | 'danger';
   indicatorsPhases?: { year: string; label: string }[];
   phases?: PhaseItem[];
   phasesFooter?: string;

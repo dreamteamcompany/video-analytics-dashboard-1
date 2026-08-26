@@ -354,6 +354,7 @@ export const slides2: Slide[] = [
     badge: 'Информационная безопасность',
     badgeIcon: 'Radar',
     title: 'Что показал аудит защищённости',
+    indicatorsTone: 'danger',
     subtitle: 'Аудит показал реальную картину защищённости — уязвимости находим сами, до того как их найдут снаружи.',
     indicators: [
       {
