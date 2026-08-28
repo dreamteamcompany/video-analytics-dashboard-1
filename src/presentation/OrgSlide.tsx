@@ -303,6 +303,30 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                     )}
                   </div>
                 )}
+                {slide.orgCallout && (
+                  <div
+                    className={`relative rounded-2xl overflow-hidden org-drop ${compactCols ? 'mb-1.5 px-3 md:px-4 py-1.5' : 'mb-1.5 px-3.5 md:px-5 py-2'} flex items-center gap-2.5`}
+                    style={{
+                      background: 'linear-gradient(135deg, #059669 0%, #0d9488 55%, #0f766e 100%)',
+                      boxShadow: '0 10px 26px rgba(5,150,105,0.28)',
+                      animationDelay: '1480ms',
+                    }}
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 md:w-9 md:h-9 rounded-lg bg-white/20 flex items-center justify-center">
+                      <Icon name={slide.orgCallout.icon ?? 'Handshake'} size={19} className="text-white" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-white font-black leading-tight text-[13px] md:text-[17px]">
+                        {slide.orgCallout.title}
+                      </p>
+                      {slide.orgCallout.note && (
+                        <p className="text-white/80 font-semibold leading-snug text-[10.5px] md:text-[13px] mt-0.5">
+                          {slide.orgCallout.note}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
                 <div
                   className={`relative rounded-3xl bg-white flex items-center overflow-hidden org-drop ${tightPayroll ? 'pl-3 md:pl-5 pr-16 md:pr-28 py-1.5 md:py-2 min-h-[52px] md:min-h-[clamp(52px,6vh,74px)]' : 'pl-4 md:pl-8 pr-24 md:pr-40 py-3 md:py-4 min-h-[76px] md:min-h-[clamp(96px,13vh,165px)]'}`}
                   style={{

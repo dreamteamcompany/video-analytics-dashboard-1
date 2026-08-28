@@ -153,6 +153,7 @@ export interface Slide {
   payroll?: string;
   payrollWas?: string;
   payrollNote?: string;
+  orgCallout?: { icon?: string; title: string; note?: string };
   workload?: { value: string; label: string; note?: string; icon?: string }[];
   goals?: Goal[];
   goalsYear?: string;
