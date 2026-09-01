@@ -1241,7 +1241,6 @@ export const aiMedicalSlides: Slide[] = [
       { icon: 'GitCompareArrows', title: 'Автореконсиляция' },
       { icon: 'ChartNoAxesCombined', title: 'Анализ рентабельности' },
       { icon: 'Banknote', title: 'Прогноз денежных потоков' },
-      { icon: 'TrendingDown', title: 'Потери выручки' },
     ],
   },
   {
@@ -1324,43 +1323,14 @@ export const aiMedicalSlides: Slide[] = [
     ),
   },
   {
-    id: 'fin-revenue-loss',
-    type: 'ideacard',
-    theme: 'light',
-    badge: 'Финансы и антифрод',
-    badgeIcon: 'Wallet',
-    ideaTag: EXTRA,
-    ideaNum: '9.4',
-    title: 'Агент потерь выручки',
-    subtitle: 'Находит деньги, которые клиника заработала, но не получила',
-    ideaColumns: [
-      {
-        title: 'Потери на счетах и оплатах',
-        icon: 'ReceiptText',
-        points: [
-          'Неиспользованные предоплаты',
-          'Незакрытые счета по завершённому лечению',
-        ],
-      },
-      {
-        title: 'Потери на услугах и материалах',
-        icon: 'PackageSearch',
-        points: [
-          'Неоплаченные лабораторные работы',
-          'Услуги без списания материалов',
-        ],
-      },
-    ],
-  },
-  {
     id: 'fin-receivables',
     type: 'ideacard',
     theme: 'light',
     badge: 'Финансы и антифрод',
     badgeIcon: 'Wallet',
     ideaTag: EXTRA,
-    ideaNum: '9.5',
-    title: 'Агент рассрочек и дебиторской задолженности',
+    ideaNum: '9.4',
+    title: 'Агент контроля рассрочек',
     subtitle: 'Мониторит обычные и внутренние рассрочки, сообщает управляющим о статусе таких пациентов',
     ideaText:
       'Если пациент подписал договор на миллион, оплатил 50 000 и пропал — это сигнал связаться с ним и привлечь в клинику. Сейчас вторичка делает это руками.',
