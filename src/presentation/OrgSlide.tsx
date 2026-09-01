@@ -85,7 +85,7 @@ const OrgSlide = ({ slide }: { slide: Slide }) => {
                   className={`text-[10px] md:text-sm font-semibold text-white px-2.5 md:px-3 py-0.5 md:py-1 rounded-full leading-snug mt-1.5 ${
                     slide.head.replace
                       ? 'bg-gradient-to-r from-rose-500 to-red-500'
-                      : 'bg-gradient-to-r from-violet-500 to-indigo-500'
+                      : 'bg-gradient-to-r from-amber-500 to-orange-500'
                   }`}
                 >
                   {slide.head.note}
