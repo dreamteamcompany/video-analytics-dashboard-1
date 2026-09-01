@@ -65,6 +65,10 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
         { title: '', icon: slide.badgeIcon, points: points.slice(half).map((p) => p.text) },
       ];
 
+  const maxPoints = Math.max(...rawCards.map((c) => c.points.length), 1);
+  const dense = maxPoints >= 8;
+  const veryDense = maxPoints >= 10;
+
   const usedTitles = new Set<string>();
   const cards = rawCards.map((c, ci) => {
     if (c.title) return c;
@@ -137,20 +141,28 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
           )}
 
           <div className="md:flex-1 md:min-h-0 flex flex-col justify-center overflow-hidden">
-          <div className="relative flex items-stretch">
-            <div className="relative w-full grid gap-4 lg:gap-[92px] lg:grid-cols-2 items-stretch">
+          <div className="relative flex items-stretch md:min-h-0 md:h-full">
+            <div className="relative w-full grid gap-4 lg:gap-[92px] lg:grid-cols-2 items-stretch md:min-h-0">
               {cards.map((card, ci) => (
                 <div
                   key={ci}
-                  className="relative flex flex-col rounded-[26px] md:rounded-[30px] bg-white px-4 sm:px-6 lg:px-7 pb-5 pt-5 org-drop"
+                  className={`relative flex flex-col md:min-h-0 rounded-[26px] md:rounded-[30px] bg-white org-drop ${
+                    veryDense
+                      ? 'px-3 sm:px-4 lg:px-5 pb-3 pt-3'
+                      : dense
+                        ? 'px-3.5 sm:px-5 lg:px-6 pb-4 pt-4'
+                        : 'px-4 sm:px-6 lg:px-7 pb-5 pt-5'
+                  }`}
                   style={{
                     boxShadow: '0 22px 60px rgba(109,40,217,0.10), 0 2px 6px rgba(109,40,217,0.05)',
                     animationDelay: `${140 + ci * 120}ms`,
                   }}
                 >
-                  <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 mb-2">
+                  <div className={`flex items-center gap-3 sm:gap-4 flex-shrink-0 ${dense ? 'mb-1.5' : 'mb-2'}`}>
                     <div
-                      className="flex-shrink-0 w-[46px] h-[46px] sm:w-[54px] sm:h-[54px] rounded-[16px] flex items-center justify-center p-2.5"
+                      className={`flex-shrink-0 rounded-[16px] flex items-center justify-center p-2.5 ${
+                        dense ? 'w-[40px] h-[40px] sm:w-[46px] sm:h-[46px]' : 'w-[46px] h-[46px] sm:w-[54px] sm:h-[54px]'
+                      }`}
                       style={{ background: 'linear-gradient(135deg,#f3f0ff,#e9e4fe)' }}
                     >
                       <CardTileArt index={ci} text={`${card.title} ${card.points.join(' ')}`} avoid={ci > 0 ? `${cards[0].title} ${cards[0].points.join(' ')}` : ''} className="w-full h-full" />
@@ -165,28 +177,52 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
                     </div>
                   </div>
 
-                  <div className="flex-1 min-h-0 flex items-center gap-3 lg:gap-5">
-                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5 sm:gap-[clamp(4px,1.1vh,10px)]">
+                  <div className="flex-1 min-h-0 flex items-center gap-3 lg:gap-5 overflow-hidden">
+                  <div className={`flex-1 min-w-0 flex flex-col justify-center ${
+                    veryDense
+                      ? 'gap-1 sm:gap-[clamp(2px,0.5vh,6px)]'
+                      : dense
+                        ? 'gap-1 sm:gap-[clamp(3px,0.7vh,7px)]'
+                        : 'gap-1.5 sm:gap-[clamp(4px,1.1vh,10px)]'
+                  }`}>
                     {card.points.map((t, i) => (
                       <div
                         key={t}
-                        className="flex items-center gap-3 rounded-2xl px-2.5 py-2 sm:px-3.5 sm:py-[clamp(6px,1.2vh,12px)] org-in transition-colors"
+                        className={`flex items-center rounded-2xl org-in transition-colors ${
+                          veryDense
+                            ? 'gap-2 px-2 py-1 sm:px-2.5 sm:py-[clamp(3px,0.65vh,7px)]'
+                            : dense
+                              ? 'gap-2.5 px-2.5 py-1.5 sm:px-3 sm:py-[clamp(4px,0.85vh,9px)]'
+                              : 'gap-3 px-2.5 py-2 sm:px-3.5 sm:py-[clamp(6px,1.2vh,12px)]'
+                        }`}
                         style={{
                           background: 'linear-gradient(135deg,#fbfaff,#f6f3fe)',
                           animationDelay: `${300 + i * 60}ms`,
                         }}
                       >
                         <span
-                          className="flex-shrink-0 w-[32px] h-[32px] sm:w-[clamp(30px,4.6vh,38px)] sm:h-[clamp(30px,4.6vh,38px)] rounded-xl flex items-center justify-center"
+                          className={`flex-shrink-0 rounded-xl flex items-center justify-center ${
+                            veryDense
+                              ? 'w-[26px] h-[26px] sm:w-[clamp(24px,3.2vh,30px)] sm:h-[clamp(24px,3.2vh,30px)]'
+                              : dense
+                                ? 'w-[28px] h-[28px] sm:w-[clamp(26px,3.8vh,33px)] sm:h-[clamp(26px,3.8vh,33px)]'
+                                : 'w-[32px] h-[32px] sm:w-[clamp(30px,4.6vh,38px)] sm:h-[clamp(30px,4.6vh,38px)]'
+                          }`}
                           style={{ background: 'linear-gradient(135deg,#ede9fe,#ddd6fe)' }}
                         >
                           <Icon
                             name={iconFor(t, ci, i)}
-                            size={18}
+                            size={veryDense ? 14 : dense ? 16 : 18}
                             className="text-violet-600"
                           />
                         </span>
-                        <p className="min-w-0 text-[12px] sm:text-[13px] md:text-[clamp(13px,1.95vh,16.5px)] font-bold text-[#2b2359] leading-snug">
+                        <p className={`min-w-0 font-bold text-[#2b2359] leading-snug ${
+                          veryDense
+                            ? 'text-[11px] sm:text-[12px] md:text-[clamp(11.5px,1.5vh,14px)]'
+                            : dense
+                              ? 'text-[11.5px] sm:text-[12.5px] md:text-[clamp(12px,1.7vh,15px)]'
+                              : 'text-[12px] sm:text-[13px] md:text-[clamp(13px,1.95vh,16.5px)]'
+                        }`}>
                           {t}
                         </p>
                       </div>
