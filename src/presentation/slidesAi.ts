@@ -387,7 +387,7 @@ export const aiMedicalSlides: Slide[] = [
     badge: 'AI-решения',
     badgeIcon: 'Box',
     sectionNum: '4',
-    title: 'КЦ, CRM и путь пациента',
+    title: 'Путь пациента',
     subtitle:
       'Агенты, которые ведут пациента от первого звонка до профилактики и не дают ему потеряться по дороге',
     sectionItems: [
