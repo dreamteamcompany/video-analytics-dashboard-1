@@ -204,6 +204,9 @@ export interface Slide {
   closingPayrollWas?: string;
   closingPayrollSaving?: string;
   closingPayrollNote?: string;
+  closingPayrollAlt?: string;
+  closingPayrollAltLabel?: string;
+  closingPayrollAltNote?: string;
   closingResult?: string;
   closingResultNote?: string;
   closingCta?: string;

@@ -87,8 +87,9 @@ const ClosingSlide = ({ slide }: { slide: Slide }) => {
           )}
 
           {slide.closingPayroll && (
+            <div className="flex-shrink-0 flex flex-col md:flex-row items-stretch justify-center gap-2 md:gap-4">
             <div
-              className="org-in flex-shrink-0 rounded-xl md:rounded-2xl bg-white/95 border border-violet-100 px-3.5 py-2.5 md:px-6 md:py-4 flex items-center justify-center gap-3 md:gap-5 text-center"
+              className="org-in rounded-xl md:rounded-2xl bg-white/95 border border-violet-100 px-3.5 py-2.5 md:px-6 md:py-4 flex items-center justify-center gap-3 md:gap-5 text-center"
               style={{ boxShadow: '0 6px 20px rgba(124,58,237,0.1)', animationDelay: '460ms' }}
             >
               <div
@@ -136,6 +137,31 @@ const ClosingSlide = ({ slide }: { slide: Slide }) => {
                   </p>
                 )}
               </div>
+            </div>
+
+            {slide.closingPayrollAlt && (
+              <div
+                className="org-in rounded-xl md:rounded-2xl bg-white/95 border border-dashed border-slate-300 px-3.5 py-2.5 md:px-6 md:py-4 flex items-center justify-center gap-3 md:gap-5 text-center"
+                style={{ boxShadow: '0 6px 20px rgba(15,23,42,0.06)', animationDelay: '540ms' }}
+              >
+                <div className="flex-shrink-0 w-9 h-9 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center bg-slate-100">
+                  <Icon name="UserPlus" size={22} className="text-slate-500" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[10.5px] md:text-[13px] font-bold uppercase tracking-[0.12em] text-slate-400 leading-none">
+                    {slide.closingPayrollAltLabel ?? 'Альтернативный сценарий'}
+                  </p>
+                  <p className="text-[19px] md:text-[32px] font-black leading-tight tracking-tight mt-1 text-slate-700">
+                    {slide.closingPayrollAlt}
+                  </p>
+                  {slide.closingPayrollAltNote && (
+                    <p className="text-[10.5px] md:text-[13px] text-slate-500 leading-snug">
+                      {slide.closingPayrollAltNote}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
             </div>
           )}
 
