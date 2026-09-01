@@ -66,8 +66,10 @@ const IdeaCardSlide = ({ slide }: { slide: Slide }) => {
       ];
 
   const maxPoints = Math.max(...rawCards.map((c) => c.points.length), 1);
-  const dense = maxPoints >= 8;
-  const veryDense = maxPoints >= 10;
+  const extras = (flow.length > 0 ? 1 : 0) + (slide.ideaText ? 1 : 0) + (slide.ideaNote ? 1 : 0);
+  const load = maxPoints + extras * 1.5;
+  const dense = load >= 8;
+  const veryDense = load >= 10.5;
 
   const usedTitles = new Set<string>();
   const cards = rawCards.map((c, ci) => {
